@@ -1,0 +1,15 @@
+D:\Rafiq\src\Core\Rafiq.Application\bin\Debug\net10.0\Rafiq.Application.deps.json
+D:\Rafiq\src\Core\Rafiq.Application\bin\Debug\net10.0\Rafiq.Application.dll
+D:\Rafiq\src\Core\Rafiq.Application\bin\Debug\net10.0\Rafiq.Application.pdb
+D:\Rafiq\src\Core\Rafiq.Application\bin\Debug\net10.0\Rafiq.Domain.dll
+D:\Rafiq\src\Core\Rafiq.Application\bin\Debug\net10.0\Rafiq.Domain.pdb
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.csproj.AssemblyReference.cache
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.AssemblyInfoInputs.cache
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.AssemblyInfo.cs
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.csproj.CoreCompileInputs.cache
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Ap.EC8490E8.Up2Date
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.dll
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\refint\Rafiq.Application.dll
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\Rafiq.Application.pdb
+D:\Rafiq\src\Core\Rafiq.Application\obj\Debug\net10.0\ref\Rafiq.Application.dll

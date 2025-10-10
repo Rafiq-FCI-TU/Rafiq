@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/Rafiq.Application/Rafiq.Application.csproj" Id="ea69eb33-2f11-45eb-8980-515e2f9d02f5" />
+    <Project Path="src/Core/Rafiq.Domain/Rafiq.Domain.csproj" Id="b344368a-1f2c-4517-bc9b-21346594b432" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/Rafiq.Infrastructure/Rafiq.Infrastructure.csproj" Id="51a2a693-17d8-4d6b-83e6-94da2aa0e964" />
+    <Project Path="src/Infrastructure/Rafiq.Persistence/Rafiq.Persistence.csproj" Id="9b26f470-741d-412a-81d0-f6b674fc03e7" />
+  </Folder>
+  <Folder Name="/src/Web/">
+    <Project Path="src/Web/Rafiq.API/Rafiq.API.csproj" />
+  </Folder>
+</Solution>

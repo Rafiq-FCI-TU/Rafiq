@@ -1,0 +1,16 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Rafiq.API | v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:7025"
+    },
+    {
+      "url": "http://localhost:5164"
+    }
+  ],
+  "paths": { }
+}

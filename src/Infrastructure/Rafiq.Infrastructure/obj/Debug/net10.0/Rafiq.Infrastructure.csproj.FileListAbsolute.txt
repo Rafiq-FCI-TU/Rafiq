@@ -1,0 +1,17 @@
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Infrastructure.deps.json
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Infrastructure.dll
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Infrastructure.pdb
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Application.dll
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Domain.dll
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Application.pdb
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\bin\Debug\net10.0\Rafiq.Domain.pdb
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.csproj.AssemblyReference.cache
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.AssemblyInfoInputs.cache
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.AssemblyInfo.cs
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.csproj.CoreCompileInputs.cache
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.In.553BFC99.Up2Date
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.dll
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\refint\Rafiq.Infrastructure.dll
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\Rafiq.Infrastructure.pdb
+D:\Rafiq\src\Infrastructure\Rafiq.Infrastructure\obj\Debug\net10.0\ref\Rafiq.Infrastructure.dll
