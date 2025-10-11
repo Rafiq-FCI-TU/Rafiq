@@ -1,23 +1,31 @@
+using Rafiq.API;
+using Rafiq.API.ServicesExtension;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region Add services to the container
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.AddDependencies();
+
+#endregion
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+#region Configure the Kestrel pipeline
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwaggerAndOpenApiMiddleware();
 }
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+#endregion
 
 app.Run();
