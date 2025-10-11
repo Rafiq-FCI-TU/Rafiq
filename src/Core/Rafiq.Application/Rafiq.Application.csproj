@@ -10,4 +10,10 @@
     <ProjectReference Include="..\Rafiq.Domain\Rafiq.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="Dtos\" />
+    <Folder Include="MappingProfıles\" />
+  </ItemGroup>
+
 </Project>
