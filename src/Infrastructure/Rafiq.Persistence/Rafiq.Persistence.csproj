@@ -10,4 +10,10 @@
     <ProjectReference Include="..\..\Core\Rafiq.Application\Rafiq.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Data\DataSeeding\" />
+    <Folder Include="Data\Configurations\" />
+  </ItemGroup>
+
 </Project>
