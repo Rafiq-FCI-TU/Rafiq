@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Rafiq.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d914334a98bea4ecb7097bf41364dea59a2688d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Rafiq.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Rafiq.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
