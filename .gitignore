@@ -412,6 +412,13 @@ FodyWeavers.xsd
 
 # Windows Installer files from build outputs
 *.cab
+
+project.lock.json
+project.fragment.lock.json
+*.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+project.assets.json
 *.msi
 *.msix
 *.msm
