@@ -423,3 +423,7 @@ project.assets.json
 *.msix
 *.msm
 *.msp
+
+# Build artifacts
+bin/
+obj/
