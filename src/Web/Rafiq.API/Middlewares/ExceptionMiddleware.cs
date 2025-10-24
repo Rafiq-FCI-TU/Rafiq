@@ -11,9 +11,9 @@
 // ------ If We In Production Environment One Parameter (Status Code) To Client And We Send (Exception Message, Exception Details) To Database | File -> To Backend Developer
 #endregion
 
+using Rafiq.Domain.ErrorHandling;
 using System.Net;
 using System.Text.Json;
-using Rafiq.Domain.ErrorHandling;
 
 namespace Rafiq.API.Middlewares;
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)

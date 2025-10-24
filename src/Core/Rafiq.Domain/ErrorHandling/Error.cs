@@ -2,7 +2,7 @@
 public class Error
 {
     public static readonly Error? None = new(200, string.Empty);
-    
+
     public int StatusCode { get; set; }
     public string Message { get; set; }
 
