@@ -6,8 +6,6 @@ public static class SwaggerServicesExtension
 {
     public static void AddSwaggerServices(this IServiceCollection services)
     {
-        services.AddOpenApi();
-
         services.AddEndpointsApiExplorer();
 
         services.AddSwaggerGen(options =>
@@ -39,8 +37,6 @@ public static class SwaggerServicesExtension
 
     public static void UseSwaggerAndOpenApiMiddleware(this WebApplication app)
     {
-        app.MapOpenApi(); // https://localhost:7025/openapi/v1.json
-
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
