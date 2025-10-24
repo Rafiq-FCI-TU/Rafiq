@@ -42,6 +42,13 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 #endregion
 
+// read connection string
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// register dbcontext
+builder.Services.AddDbContext<RafiqDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 var app = builder.Build();
 
 #region Update Database With Using Way And Seeding Data
