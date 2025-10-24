@@ -4,12 +4,12 @@ using Microsoft.OpenApi.Models;
 namespace Rafiq.API.ServicesExtension;
 public static class SwaggerServicesExtension
 {
-	public static void AddSwaggerServices(this IServiceCollection services)
-	{
+    public static void AddSwaggerServices(this IServiceCollection services)
+    {
         services.AddOpenApi();
 
         services.AddEndpointsApiExplorer();
-        
+
         services.AddSwaggerGen(options =>
         {
             options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
@@ -35,10 +35,10 @@ public static class SwaggerServicesExtension
                 }
             });
         });
-	}
-    
-	public static void UseSwaggerAndOpenApiMiddleware(this WebApplication app)
-	{
+    }
+
+    public static void UseSwaggerAndOpenApiMiddleware(this WebApplication app)
+    {
         app.MapOpenApi(); // https://localhost:7025/openapi/v1.json
 
         app.UseSwagger();
@@ -48,6 +48,6 @@ public static class SwaggerServicesExtension
             options.InjectStylesheet("/swagger-ui/SwaggerDark.css");
             options.RoutePrefix = string.Empty;
         });
-	}
+    }
 
 }
