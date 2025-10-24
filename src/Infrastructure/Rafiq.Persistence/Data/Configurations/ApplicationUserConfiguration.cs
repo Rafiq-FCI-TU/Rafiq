@@ -43,7 +43,7 @@ namespace Rafiq.Persistence.Data.Configurations
 
             // Auto-generate discriminator values
 
-            builder.HasDiscriminator<UserRole>("UserType")  // Enum type, column name "UserType" 
+            builder.HasDiscriminator<UserRole>("Role")  // Enum type, column name "UserType" 
                 .HasValue<FamilyProfile>(UserRole.Family)      // Maps to 0
                 .HasValue<SpecialistProfile>(UserRole.Specialist); // Maps to 1
                                                                    //.HasValue<AdminProfile>(UserRole.Admin); // Maps to 2
