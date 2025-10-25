@@ -114,7 +114,7 @@ jobs:
           git commit -m "Update README with new version ${{ steps.semver.outputs.new_tag }}"
           git push
 
-      # Show New Tag Info
-      - name: Show New Tag Info
+      # Show new version info
+      - name: Show New Version Info
         run: |
           echo "New version published: ${{ steps.semver.outputs.new_tag }} (also tagged as latest)"
