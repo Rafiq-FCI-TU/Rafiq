@@ -113,8 +113,3 @@ jobs:
           git add README.md
           git commit -m "Update README with new version ${{ steps.semver.outputs.new_tag }}"
           git push
-
-      # Show new version info
-      - name: Show New Version Info
-        run: |
-        continue-on-error: ${{ steps.semver.outputs.new_tag }} (also tagged as latest)"
