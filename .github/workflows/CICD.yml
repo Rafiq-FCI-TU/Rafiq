@@ -116,4 +116,6 @@ jobs:
 
       # 16 Show New Tag Info
       - name: Show New Tag Info
-        run: echo "New version published: ${{ steps.semver.outputs.new_tag }} (also tagged as latest)"
+        run: |
+            echo "New version published: ${{ steps.semver.outputs.new_tag }} (also tagged as latest)"
+
