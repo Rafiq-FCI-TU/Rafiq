@@ -117,4 +117,4 @@ jobs:
       # Show new version info
       - name: Show New Version Info
         run: |
-          echo "New version published: ${{ steps.semver.outputs.new_tag }} (also tagged as latest)"
+        continue-on-error: ${{ steps.semver.outputs.new_tag }} (also tagged as latest)"
