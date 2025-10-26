@@ -6,6 +6,10 @@ on:
     types:
       - completed
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   docker-deploy:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
         id: semver
         uses: mathieudutour/github-tag-action@v6.2
         with:
-          github_token: ${{ secrets.GITHUBTOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           release_branches: main
           tag_prefix: "v"
           default_bump: patch
