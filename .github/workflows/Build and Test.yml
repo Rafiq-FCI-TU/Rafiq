@@ -25,17 +25,17 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore src/Rafiq.API.csproj
+        run: dotnet restore Web/Rafiq.API/Rafiq.API.csproj
 
       - name: Run Linter
         run: dotnet format --verify-no-changes || echo "::warning::Code formatting issues detected"
 
       - name: Build
-        run: dotnet build src/Rafiq.API.csproj --configuration Release --no-restore
+        run: dotnet build Web/Rafiq.API/Rafiq.API.csproj --configuration Release --no-restore
 
       - name: Run Unit Tests with Coverage
         run: |
-          dotnet test src/Rafiq.API.csproj --configuration Release --no-build \
+          dotnet test Web/Rafiq.API/Rafiq.API.csproj --configuration Release --no-build \
             --collect:"XPlat Code Coverage" \
             --results-directory ./TestResults \
             /p:CollectCoverage=true \
