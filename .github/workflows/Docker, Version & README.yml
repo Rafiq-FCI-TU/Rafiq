@@ -17,7 +17,7 @@ jobs:
         id: semver
         uses: mathieudutour/github-tag-action@v6.2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUBTOKEN }}
           release_branches: main
           tag_prefix: "v"
           default_bump: patch
