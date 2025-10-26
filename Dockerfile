@@ -1,18 +1,25 @@
-# ========== Build Stage ==========
+# ====== BUILD STAGE ======
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /source
 
-COPY src/Web/Rafiq.API/*.csproj ./ 
+COPY Rafiq.sln ./
+COPY src/Core/Rafiq.Application/Rafiq.Application.csproj src/Core/Rafiq.Application/
+COPY src/Core/Rafiq.Domain/Rafiq.Domain.csproj src/Core/Rafiq.Domain/
+COPY src/Infrastructure/Rafiq.Infrastructure/Rafiq.Infrastructure.csproj src/Infrastructure/Rafiq.Infrastructure/
+COPY src/Infrastructure/Rafiq.Persistence/Rafiq.Persistence.csproj src/Infrastructure/Rafiq.Persistence/
+COPY src/Web/Rafiq.API/Rafiq.API.csproj src/Web/Rafiq.API/
+
 RUN dotnet restore
 
-COPY src/Web/Rafiq.API/. ./
-RUN dotnet publish -c Release -o out
+COPY . .
+RUN dotnet publish src/Web/Rafiq.API/Rafiq.API.csproj -c Release -o /app
 
-# ========== Runtime Stage ==========
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-COPY --from=build /app/out .
+COPY --from=build /app .
 
-EXPOSE 80
+ENV ASPNETCORE_ENVIRONMENT=Production
+EXPOSE 8080
+
 ENTRYPOINT ["dotnet", "Rafiq.API.dll"]
