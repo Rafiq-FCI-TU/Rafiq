@@ -1,1 +1,3 @@
 # Rafiq
+
+Current version: {{VERSION}}
