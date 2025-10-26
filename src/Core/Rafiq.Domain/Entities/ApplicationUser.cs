@@ -17,6 +17,8 @@ namespace Rafiq.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
+        public List<RefreshToken>? RefreshTokens { get; set; }
+
         //public FamilyProfile? FamilyProfile { get; set; }
         //public SpecialistProfile? SpecialistProfile { get; set; }
     }
