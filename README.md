@@ -1,3 +1,3 @@
 # Rafiq
 
-Current version: {{VERSION}}
+Current version: v0.0.10
