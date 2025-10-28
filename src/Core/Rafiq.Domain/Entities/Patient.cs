@@ -3,9 +3,8 @@ using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities
 {
-    public class Patient
+    public class Patient: BaseEntity
     {
-        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
