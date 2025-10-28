@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Rafiq.API.Controllers;
 using Rafiq.Application.Dtos;
 using Rafiq.Infrastructure.Services.Auth;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AccountController : ControllerBase
+[ApiVersion("1.0")] 
+public class AccountController : BaseController
 {
     private readonly IAuthService _authService;
 

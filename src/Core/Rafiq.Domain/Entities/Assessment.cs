@@ -1,12 +1,13 @@
-﻿using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Common;
+using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities;
-public class Assessment
+public class Assessment:BaseEntity
 {
-    public int Id { get; set; }
     public int PatientId { get; set; }
     public Patient Patient { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
+    // TODO:Delete it   
     public DateTime? CompletedAt { get; set; }
 
     public AssessmentStatus Status { get; set; } = AssessmentStatus.InProgress;

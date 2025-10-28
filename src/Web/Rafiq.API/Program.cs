@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Rafiq.API;
 using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
+using Rafiq.Application.Interfaces.Services;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Infrastructure.Services;
 using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Persistence.Data;
 
@@ -20,6 +22,24 @@ builder.AddDependencies();
 #region Services Registration
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0); 
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // v1, v2
+    options.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(typeof(Rafiq.Application.AssemblyReference).Assembly));
+
+
 
 #endregion
 
