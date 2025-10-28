@@ -1,13 +1,14 @@
-﻿using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Common;
+using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities
 {
-    public class Answer
+    public class Answer:BaseEntity
     {
-        public int Id { get; set; }
 
         public int QuestionId { get; set; }
         public Question Question { get; set; } = null!;
+        ///TODO:DELET IT
         public DateTime AnsweredAt { get; set; }
         public int AssessmentId { get; set; }
         public Assessment Assessment { get; set; } = null!;
