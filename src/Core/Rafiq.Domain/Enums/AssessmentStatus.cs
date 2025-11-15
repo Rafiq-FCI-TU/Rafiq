@@ -1,9 +1,6 @@
-﻿namespace Rafiq.Domain.Enums
+﻿namespace Rafiq.Domain.Enums;
+public enum AssessmentStatus
 {
-    public enum AssessmentStatus
-    {
-        InProgress,
-        Completed,
-        Cancelled
-    }
+    InProgress,
+    Completed
 }

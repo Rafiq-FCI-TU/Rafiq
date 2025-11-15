@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using Rafiq.API;
 using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
-using Rafiq.Application.Interfaces.Services;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
-using Rafiq.Infrastructure.Services;
-using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Persistence.Data;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Add services to the container
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.AddDependencies();
 
@@ -21,7 +21,7 @@ builder.AddDependencies();
 
 #region Services Registration
 
-builder.Services.AddScoped<IAuthService, AuthService>();
+//builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -94,7 +94,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // register dbcontext
 builder.Services.AddDbContext<RafiqDbContext>(options =>
-    options.UseSqlServer(connectionString)); 
+    options.UseSqlServer(connectionString));
+#endregion
+
+#region Redis Configuration
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost"));
+
 #endregion
 
 var app = builder.Build();

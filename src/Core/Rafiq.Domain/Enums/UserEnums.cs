@@ -1,16 +1,7 @@
-﻿namespace Rafiq.Domain.Enums
+﻿namespace Rafiq.Domain.Enums;
+public enum UserRole
 {
-    public enum UserRole
-    {
-        Family,
-        Specialist,
-        Admin
-    }
-
-    public enum UserStatus
-    {
-        Active,
-        Inactive,
-        Suspended
-    }
+    Family,
+    Specialist,
+    Admin
 }
