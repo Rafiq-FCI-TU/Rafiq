@@ -2,6 +2,7 @@
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Infrastructure.Services;
+using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Persistence;
 
 namespace Rafiq.API;
@@ -13,6 +14,8 @@ public static class DependencyInjection
 
        
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IFamilyRegistrationService, FamilyRegistrationService>();
+        services.AddScoped<IRedisCacheService, RedisCacheService>();
 
         services.AddScoped<IIQService, IQService>();
 

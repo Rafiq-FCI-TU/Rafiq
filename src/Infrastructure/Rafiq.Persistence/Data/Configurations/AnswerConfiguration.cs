@@ -8,34 +8,23 @@ namespace Rafiq.Persistence.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Answer> builder)
         {
-            builder.Property(a => a.FrequencyAnswer)
-                .HasConversion<string>()
-                .HasMaxLength(20);
+            //builder.Property(a => a.FrequencyAnswer)
+            //    .HasConversion<string>()
+            //    .HasMaxLength(20);
 
 
-            builder.Property(a => a.DifficultyAnswer)
-                .HasConversion<string>()
-                .HasMaxLength(20);
+            //builder.Property(a => a.DifficultyAnswer)
+            //    .HasConversion<string>()
+            //    .HasMaxLength(20);
 
-            builder.Property(a => a.AnsweredAt)
-                    .HasDefaultValueSql("GETUTCDATE()");
-
-
-            // Relationships
-            // Relationship to Question (many-to-one)
-            builder.HasOne(a => a.Question)
-                .WithMany(q => q.Answers)
-                .HasForeignKey(a => a.QuestionId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Relationship to Assessment(many-to - one)
-            builder.HasOne(a => a.Assessment)
-                .WithMany(a => a.Answers)
-                .HasForeignKey(a => a.AssessmentId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //// Relationship to Assessment(many-to - one)
+            //builder.HasOne(a => a.Assessment)
+            //    .WithMany(a => a.Answers)
+            //    .HasForeignKey(a => a.AssessmentId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             // Indexes (unique per assessment/question to prevent duplicates)
-            builder.HasIndex(a => new { a.AssessmentId, a.QuestionId }).IsUnique();
+            builder.HasIndex(a => new { a.QuestionId }).IsUnique();
         }
     }
 }
