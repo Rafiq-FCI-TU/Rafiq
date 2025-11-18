@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b2c78a36-8f6c-469b-8e87-a67f9abdfa19",
-                            ConcurrencyStamp = "ca1d6681-a431-4f64-bcd8-de4be5d5257c",
+                            Id = "c2bfa9ea-d553-4e04-a504-f4454cd95882",
+                            ConcurrencyStamp = "321921d3-d538-4824-848e-a1d1fbd20bea",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "cda82048-524f-4d92-a3ae-491a032adb42",
-                            ConcurrencyStamp = "5ff2f076-b6bf-4ddb-b9f9-67b8ed6dd352",
+                            Id = "076216a9-0edd-467f-8f46-230af2af6164",
+                            ConcurrencyStamp = "5ebd9457-0518-4e7c-b3ce-4e001224b727",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -179,30 +179,16 @@ namespace Rafiq.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AnsweredAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("AssessmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DifficultyAnswer")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("FrequencyAnswer")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SelectedOption")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("AssessmentId", "QuestionId")
+                    b.HasIndex("QuestionId")
                         .IsUnique();
 
                     b.ToTable("Answers");
@@ -294,7 +280,8 @@ namespace Rafiq.Persistence.Migrations
 
                     b.Property<string>("UserType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.HasKey("Id");
 
@@ -308,7 +295,7 @@ namespace Rafiq.Persistence.Migrations
 
                     b.ToTable("AspNetUsers", (string)null);
 
-                    b.HasDiscriminator<string>("Role");
+                    b.HasDiscriminator<string>("UserType").HasValue("ApplicationUser");
 
                     b.UseTphMappingStrategy();
                 });
@@ -321,15 +308,15 @@ namespace Rafiq.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Score")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -392,10 +379,12 @@ namespace Rafiq.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnswerType")
-                        .IsRequired()
+                    b.Property<int>("AnswerType")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("int");
+
+                    b.Property<int>("AssessmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -410,6 +399,8 @@ namespace Rafiq.Persistence.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssessmentId");
 
                     b.ToTable("Questions");
                 });
@@ -454,7 +445,7 @@ namespace Rafiq.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("Family");
+                    b.HasDiscriminator().HasValue("FamilyProfile");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.SpecialistProfile", b =>
@@ -481,7 +472,7 @@ namespace Rafiq.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasDiscriminator().HasValue("Specialist");
+                    b.HasDiscriminator().HasValue("SpecialistProfile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -537,19 +528,11 @@ namespace Rafiq.Persistence.Migrations
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Answer", b =>
                 {
-                    b.HasOne("Rafiq.Domain.Entities.Assessment", "Assessment")
-                        .WithMany("Answers")
-                        .HasForeignKey("AssessmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Rafiq.Domain.Entities.Question", "Question")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionId")
+                        .WithOne("SelectedAnswer")
+                        .HasForeignKey("Rafiq.Domain.Entities.Answer", "QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Assessment");
 
                     b.Navigation("Question");
                 });
@@ -613,6 +596,17 @@ namespace Rafiq.Persistence.Migrations
                     b.Navigation("FamilyProfile");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.Question", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.Assessment", "Assessment")
+                        .WithMany("Questions")
+                        .HasForeignKey("AssessmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assessment");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.SpecialistPatient", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.Patient", "Patient")
@@ -634,7 +628,7 @@ namespace Rafiq.Persistence.Migrations
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Assessment", b =>
                 {
-                    b.Navigation("Answers");
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>
@@ -647,7 +641,8 @@ namespace Rafiq.Persistence.Migrations
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Question", b =>
                 {
-                    b.Navigation("Answers");
+                    b.Navigation("SelectedAnswer")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Common.FamilyProfile", b =>

@@ -13,32 +13,54 @@ namespace Rafiq.Infrastructure.Services
             var assessment = new Assessment
             {
                 PatientId = patientId,
-                Status = AssessmentStatus.InProgress,
                 CreatedAt = DateTime.UtcNow
             };
 
             await _unitOfWork.Repository<Assessment>().AddAsync(assessment);
             await _unitOfWork.CompleteAsync();
 
+            var questions = await GetQuestionsAsync();
+
             return new AssessmentDto(
                 assessment.Id,
                 assessment.PatientId,
                 assessment.Status.ToString(),
-                assessment.CompletedAt
+                questions
             );
         }
+
         public async Task<IReadOnlyList<QuestionDto>> GetQuestionsAsync()
         {
+            var questionsResponse = new List<QuestionDto>();
+
             var questions = await _unitOfWork.Repository<Question>().GetAllAsync();
-            return questions.Select(q => new QuestionDto(
-                q.Id,
-                q.Text,
-                q.Category.ToString(),
-                q.AnswerType,
-                q.Answers.Select(a => a.FrequencyAnswer.HasValue
-                    ? a.FrequencyAnswer.Value.ToString()
-                    : a.DifficultyAnswer.Value.ToString()).ToList()
-            )).ToList();
+
+            foreach (var question in questions)
+            {
+                var options = new List<string>();
+
+                switch (question.AnswerType)
+                {
+                    case AnswerType.Frequency:
+                        options = Enum.GetNames(typeof(Frequency)).ToList();
+                        break;
+                    case AnswerType.DifficultyLevel:
+                        options = Enum.GetNames(typeof(DifficultyLevel)).ToList();
+                        break;
+                    default:
+                        break;
+                }
+
+                questionsResponse.Add(new QuestionDto(
+                    question.Id,
+                    question.Text,
+                    question.Category.ToString(),
+                    question.AnswerType.ToString(),
+                    options
+                ));
+            }
+
+            return questionsResponse;
         }
 
         public async Task SaveAnswersAsync(int assessmentId, IReadOnlyList<AnswerDto> answers)
@@ -52,7 +74,7 @@ namespace Rafiq.Infrastructure.Services
                 {
                     freqAnswer = freq;
                 }
-                
+
                 else if (Enum.TryParse<DifficultyLevel>(a.SelectedOption, out var diff))
                 {
                     diffAnswer = diff;
@@ -60,10 +82,9 @@ namespace Rafiq.Infrastructure.Services
 
                 var answer = new Answer
                 {
-                    AssessmentId = assessmentId,
                     QuestionId = a.QuestionId,
-                    FrequencyAnswer = freqAnswer,
-                    DifficultyAnswer = diffAnswer
+                    //FrequencyAnswer = freqAnswer,
+                    //DifficultyAnswer = diffAnswer
                 };
 
                 await _unitOfWork.Repository<Answer>().AddAsync(answer);
@@ -71,18 +92,18 @@ namespace Rafiq.Infrastructure.Services
 
             await _unitOfWork.CompleteAsync();
         }
-        
+
         public async Task<bool> HasAssessmentAsync(int patientId)
         {
-            var assessment=await _unitOfWork.Repository<Assessment>().GetEntityAsync(patientId);
-            return assessment is not null;  
+            var assessment = await _unitOfWork.Repository<Assessment>().GetEntityAsync(patientId);
+            return assessment is not null;
         }
 
 
         public async Task<AssessmentProgressDto> GetAssessmentProgressAsync(int patientId)
         {
             var assessment = await _unitOfWork.Repository<Assessment>().GetEntityAsync(patientId);
-            return new AssessmentProgressDto(assessment.Id,assessment.PatientId,assessment.Status,assessment.CreatedAt);
+            return new AssessmentProgressDto(assessment.Id, assessment.PatientId, assessment.Status, assessment.CreatedAt);
         }
 
         public async Task DeleteAssessmentAsync(int assessmentId)

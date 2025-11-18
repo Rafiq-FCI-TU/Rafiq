@@ -19,12 +19,7 @@ namespace Rafiq.Persistence.Data.Configurations
             builder.Property(a => a.CreatedAt)
                   .HasDefaultValueSql("GETUTCDATE()")
                 .IsRequired();
-
-
-            // TODO: This line is unnecessary since there is no configuration.
-            // It can be safely removed; EF Core will handle CompletedAt automatically.
-            builder.Property(a => a.CompletedAt);
-
+                
             // Relationships
             builder.HasOne(a => a.Patient)
             .WithOne(p => p.Assessment)
