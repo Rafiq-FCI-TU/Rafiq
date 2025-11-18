@@ -1,5 +1,4 @@
-﻿using Rafiq.Domain.Common;
-using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities;
 public class Answer:BaseEntity
