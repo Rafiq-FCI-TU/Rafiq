@@ -4,9 +4,9 @@ namespace Rafiq.Application.Features.IQ.Commands.DeleteAssessment
 {
     public class DeleteAssessmentHandler : IRequestHandler<DeleteAssessmentCommand, Unit>
     {
-        private readonly IIQService _iqService;
+        private readonly IIqService _iqService;
 
-        public DeleteAssessmentHandler(IIQService iqService)
+        public DeleteAssessmentHandler(IIqService iqService)
         {
             _iqService = iqService;
         }

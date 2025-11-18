@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MappingProfıles\" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.AspNetCore" Version="7.0.0" />
   </ItemGroup>

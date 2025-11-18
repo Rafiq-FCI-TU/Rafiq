@@ -1,7 +1,7 @@
 ﻿using Rafiq.Application.Dtos;
+using Rafiq.Application.Dtos.AuthDtos;
 
 namespace Rafiq.Application.Interfaces.Services;
-
 public interface IAuthService
 {
     Task<ResponseDto> RegisterAsync(RegisterRequestDto model);

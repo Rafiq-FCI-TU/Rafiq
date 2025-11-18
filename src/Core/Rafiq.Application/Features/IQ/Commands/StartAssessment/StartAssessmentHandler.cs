@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using Rafiq.Application.Dtos.IQDto;
+using Rafiq.Application.Dtos.IQDtos;
 using Rafiq.Application.Interfaces.Services;
 
 namespace Rafiq.Application.Features.IQ.Commands.StartAssessment
 {
-    public class StartAssessmentHandler(IIQService _iqService) : IRequestHandler<StartAssessmentCommand, AssessmentDto>
+    public class StartAssessmentHandler(IIqService _iqService) : IRequestHandler<StartAssessmentCommand, AssessmentDto>
     {
         public async Task<AssessmentDto> Handle(StartAssessmentCommand request, CancellationToken cancellationToken)
         {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Rafiq.Domain.Common;
 using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities;
