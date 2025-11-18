@@ -12,12 +12,11 @@ public static class DependencyInjection
     {
         var services = builder.Services;
 
-       
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IFamilyRegistrationService, FamilyRegistrationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
 
-        services.AddScoped<IIQService, IQService>();
+        services.AddScoped<IIqService, IqService>();
 
         services.AddControllers();
 

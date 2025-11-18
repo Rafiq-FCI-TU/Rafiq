@@ -4,10 +4,9 @@ using Rafiq.Domain.Settings;
 using System.Text;
 
 namespace Rafiq.API.ServicesExtension;
-
 public static class JwtServicesExtension
 {
-    public static IServiceCollection AddJwtSettings(this IServiceCollection services, IConfiguration configuration)
+    public static void AddJwtSettings(this IServiceCollection services, IConfiguration configuration)
     {
         // Configure JWT settings from appsettings.json
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
@@ -30,11 +29,9 @@ public static class JwtServicesExtension
                 ValidateLifetime = true,
                 ValidIssuer = configuration["JwtSettings:Issuer"],
                 ValidAudience = configuration["JwtSettings:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!)),
                 ClockSkew = TimeSpan.Zero
             };
         });
-
-        return services;
     }
 }

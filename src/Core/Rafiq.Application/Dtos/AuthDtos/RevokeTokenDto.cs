@@ -1,5 +1,4 @@
-﻿namespace Rafiq.Application.Dtos;
-
+﻿namespace Rafiq.Application.Dtos.AuthDtos;
 public class RevokeTokenDto
 {
     public string? Token { get; set; }
