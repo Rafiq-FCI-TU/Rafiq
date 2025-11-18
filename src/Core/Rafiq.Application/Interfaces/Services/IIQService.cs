@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rafiq.Application.Interfaces.Services
 {
-    public interface IIQService 
+    public interface IIQService
     {
         Task<AssessmentDto> StartAssessmentAsync(int patientId);
         Task<IReadOnlyList<QuestionDto>> GetQuestionsAsync();
@@ -15,7 +15,7 @@ namespace Rafiq.Application.Interfaces.Services
         Task<bool> HasAssessmentAsync(int patientId);
         Task<AssessmentProgressDto> GetAssessmentProgressAsync(int patientId);
         Task DeleteAssessmentAsync(int assessmentId);
-  
+
     }
 
 }

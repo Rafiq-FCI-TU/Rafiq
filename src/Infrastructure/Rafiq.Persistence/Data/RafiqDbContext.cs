@@ -21,7 +21,6 @@ public class RafiqDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Assessment> Assessments { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<Answer> Answers { get; set; }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -29,5 +28,13 @@ public class RafiqDbContext : IdentityDbContext<ApplicationUser>
         builder.ApplyConfigurationsFromAssembly(typeof(RafiqDbContext).Assembly);
 
         builder.Entity<IdentityRole>().HasData(RafiqDbContextSeed.GetRoles());
+
+        // TPH configuration
+        builder.Entity<ApplicationUser>()
+            .HasDiscriminator<string>("UserType")
+            .HasValue<ApplicationUser>("ApplicationUser")
+            .HasValue<FamilyProfile>("FamilyProfile")
+            .HasValue<SpecialistProfile>("SpecialistProfile");
     }
+
 }

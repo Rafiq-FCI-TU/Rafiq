@@ -1,6 +1,6 @@
 ﻿using Rafiq.Application.Dtos;
 
-namespace Rafiq.Infrastructure.Services.Auth;
+namespace Rafiq.Application.Interfaces.Services;
 
 public interface IAuthService
 {

@@ -1,21 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Rafiq.Domain.Enums
+namespace Rafiq.Domain.Enums;
+public enum Frequency
 {
-    public enum Frequency
-    {
-        [Display(Name = "Not Yet")]
-        NotYet,
-        Sometimes,
-        Often,
-        Always
-    }
+    [Display(Name = "Not Yet")]
+    NotYet,
+    Sometimes,
+    Often,
+    Always
+}
 
-    public enum DifficultyLevel
-    {
-        Low,
-        Middle,
-        High
-    }
+public enum DifficultyLevel
+{
+    Low,
+    Middle,
+    High
+}
 
+public enum AnswerType
+{
+    Frequency,
+    DifficultyLevel
 }
