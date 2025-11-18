@@ -19,7 +19,7 @@ namespace Rafiq.Persistence.Data.Configurations
             builder.Property(a => a.CreatedAt)
                   .HasDefaultValueSql("GETUTCDATE()")
                 .IsRequired();
-
+                
             // Relationships
             builder.HasOne(a => a.Patient)
             .WithOne(p => p.Assessment)

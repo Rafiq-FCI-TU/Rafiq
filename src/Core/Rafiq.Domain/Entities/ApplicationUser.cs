@@ -3,9 +3,8 @@ using Rafiq.Domain.Common;
 using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities;
-public /*abstract*/ class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser
 {
-
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public UserRole Role { get; set; } 
@@ -13,7 +12,7 @@ public /*abstract*/ class ApplicationUser : IdentityUser
     public string? Address { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-
+    
     // Navigation properties
     public List<RefreshToken>? RefreshTokens { get; set; }
 }
