@@ -1,24 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rafiq.Domain.Common;
+using Rafiq.Domain.Entities;
 
-namespace Rafiq.Persistence.Data.Configurations
+namespace Rafiq.Persistence.Data.Configurations;
+
+public class FamilyProfileConfiguration : IEntityTypeConfiguration<FamilyProfile>
 {
-    public class FamilyProfileConfiguration : IEntityTypeConfiguration<FamilyProfile>
+    public void Configure(EntityTypeBuilder<FamilyProfile> builder)
     {
-        public void Configure(EntityTypeBuilder<FamilyProfile> builder)
-        {
 
-            builder.Property(fp => fp.Relationship)
-                .IsRequired()
-                .HasMaxLength(50);
+        builder.Property(fp => fp.Relationship)
+            .IsRequired()
+            .HasMaxLength(50);
 
-            builder.Property(fp => fp.EmergencyContactName)
-                .HasMaxLength(100);
+        builder.Property(fp => fp.EmergencyContactName)
+            .HasMaxLength(100);
 
-            builder.Property(fp => fp.EmergencyContactPhone)
-                .HasMaxLength(20);
-        }
+        builder.Property(fp => fp.EmergencyContactPhone)
+            .HasMaxLength(20);
     }
-
 }

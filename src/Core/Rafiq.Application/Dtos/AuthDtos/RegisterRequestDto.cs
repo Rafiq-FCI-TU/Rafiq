@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Rafiq.Application.Dtos;
-
+namespace Rafiq.Application.Dtos.AuthDtos;
 public class RegisterRequestDto
 {
     [Required, StringLength(100)]

@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Rafiq.Application.Dtos;
+using Rafiq.Application.Dtos.StepsDtos;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
-using Rafiq.Domain.Common;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.Enums;
 
 namespace Rafiq.Infrastructure.Services.Auth;
 
-public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager, IRedisCacheService _cache, IUnitOfWork _unitOfWork, IMapper _mapper) : IFamilyRegistrationService
+public class FamilyRegistrationService(UserManager<ApplicationUser> userManager, IRedisCacheService cache, IUnitOfWork unitOfWork, IMapper mapper) : IFamilyRegistrationService
 {
     private const string CacheKeyPrefix = "pending_registration:";
 
@@ -23,7 +22,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
             CurrentStep = 1
         };
 
-        await _cache.SetAsync(CacheKeyPrefix + token, cacheModel, TimeSpan.FromHours(24));
+        await cache.SetAsync(CacheKeyPrefix + token, cacheModel, TimeSpan.FromHours(24));
 
         return (token, 2);
     }
@@ -32,7 +31,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
     {
         var key = CacheKeyPrefix + dto.Token;
 
-        var cacheModel = await _cache.GetAsync<FamilyRegistrationCache>(key);
+        var cacheModel = await cache.GetAsync<FamilyRegistrationCache>(key);
 
         if (cacheModel is null)
             throw new InvalidOperationException("Registration session expired or not found.");
@@ -40,7 +39,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
         cacheModel.PatientData = dto;
         cacheModel.CurrentStep = 2;
 
-        await _cache.SetAsync(key, cacheModel, TimeSpan.FromHours(24));
+        await cache.SetAsync(key, cacheModel, TimeSpan.FromHours(24));
 
         return 3;
     }
@@ -48,7 +47,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
     public async Task<bool> CompleteRegistrationAsync(PasswordStep3Dto dto)
     {
         var key = CacheKeyPrefix + dto.Token;
-        var data = await _cache.GetAsync<FamilyRegistrationCache>(key);
+        var data = await cache.GetAsync<FamilyRegistrationCache>(key);
 
         if (data is null)
             throw new InvalidOperationException("Registration session expired or not found.");
@@ -65,7 +64,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
             EmergencyContactPhone = data.FamilyData.EmergencyContactPhone
         };
 
-        var createResult = await _userManager.CreateAsync(familyProfile, dto.Password);
+        var createResult = await userManager.CreateAsync(familyProfile, dto.Password);
 
         if (!createResult.Succeeded)
             throw new Exception("Failed to create user account.");
@@ -80,11 +79,11 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
             FamilyProfileId = familyProfile.Id
         };
         // Save patient
-        await _unitOfWork.Repository<Patient>().AddAsync(patient);
-        await _unitOfWork.CompleteAsync();
+        await unitOfWork.Repository<Patient>().AddAsync(patient);
+        await unitOfWork.CompleteAsync();
 
         // CLEAR CACHE
-        await _cache.RemoveAsync(key);
+        await cache.RemoveAsync(key);
 
         return true;
     }
@@ -92,6 +91,6 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> _userManager
 
     public async Task<FamilyRegistrationCache?> ResumeRegistrationAsync(string token)
     {
-        return await _cache.GetAsync<FamilyRegistrationCache>(CacheKeyPrefix + token);
+        return await cache.GetAsync<FamilyRegistrationCache>(CacheKeyPrefix + token);
     }
 }

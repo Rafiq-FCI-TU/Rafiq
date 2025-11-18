@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Rafiq.Domain.Common;
 using Rafiq.Domain.Entities;
 
 
 namespace Rafiq.Persistence.Data;
-public class RafiqDbContext : IdentityDbContext<ApplicationUser>
+public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-    public RafiqDbContext(DbContextOptions<RafiqDbContext> options) : base(options)
-    {
-    }
-
-
     // DbSets
     public DbSet<FamilyProfile> FamilyProfiles { get; set; }
     public DbSet<SpecialistProfile> SpecialistProfiles { get; set; }

@@ -1,6 +1,5 @@
 ﻿namespace Rafiq.Application.MappingProfıles;
-
-public class test
+public class MappingProfiles
 {
 
 }

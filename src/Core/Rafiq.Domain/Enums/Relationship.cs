@@ -1,9 +1,7 @@
-﻿namespace Rafiq.Domain.Enums
+﻿namespace Rafiq.Domain.Enums;
+public enum Relationship
 {
-    public enum Relationship
-    {
-        Father,
-        Mother,
-        Other
-    }
+    Father,
+    Mother,
+    Other
 }
