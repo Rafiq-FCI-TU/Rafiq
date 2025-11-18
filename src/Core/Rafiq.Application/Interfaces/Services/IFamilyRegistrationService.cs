@@ -1,4 +1,4 @@
-﻿using Rafiq.Application.Dtos;
+﻿using Rafiq.Application.Dtos.StepsDtos;
 
 namespace Rafiq.Application.Interfaces.Services;
 public interface IFamilyRegistrationService

@@ -5,22 +5,23 @@ public class RafiqDbContextSeed
 {
     public static List<IdentityRole> GetRoles()
     {
-        return new List<IdentityRole>
+        return
+        [
+            new IdentityRole
             {
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "Family",
-                    NormalizedName = "FAMILY",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                },
-                new IdentityRole
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = "Specialist",
-                    NormalizedName = "SPECIALIST",
-                    ConcurrencyStamp = Guid.NewGuid().ToString()
-                }
-            };
+                Id = Guid.NewGuid().ToString(),
+                Name = "Family",
+                NormalizedName = "FAMILY",
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            },
+
+            new IdentityRole
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Specialist",
+                NormalizedName = "SPECIALIST",
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            }
+        ];
     }
 }
