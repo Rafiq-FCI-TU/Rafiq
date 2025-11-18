@@ -1,9 +1,14 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rafiq.API;
 using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
+using Rafiq.Application.Interfaces.Services;
+using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Infrastructure.Services;
+using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Persistence.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +16,47 @@ var builder = WebApplication.CreateBuilder(args);
 #region Add services to the container
 
 builder.AddDependencies();
+
+#endregion
+
+#region Services Registration
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0); 
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // v1, v2
+    options.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(typeof(Rafiq.Application.AssemblyReference).Assembly));
+
+
+
+#endregion
+
+#region Identity Configuration
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+.AddEntityFrameworkStores<RafiqDbContext>()
+.AddDefaultTokenProviders();
+#endregion
+
+#region Jwt Configuration
+builder.Services.AddJwtSettings(builder.Configuration);
+
+#endregion
+
+#region Controllers & API Configuration
+
+builder.Services.AddControllers();
 
 #endregion
 
@@ -42,13 +88,13 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 #endregion
 
+#region Database Configuration
 // read connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // register dbcontext
 builder.Services.AddDbContext<RafiqDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
+    options.UseSqlServer(connectionString)); 
 var app = builder.Build();
 
 #region Update Database With Using Way And Seeding Data
@@ -91,6 +137,8 @@ if (app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Rafiq.Domain.Common;
 using Rafiq.Domain.Entities;
@@ -26,5 +27,7 @@ public class RafiqDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(builder);
 
         builder.ApplyConfigurationsFromAssembly(typeof(RafiqDbContext).Assembly);
+
+        builder.Entity<IdentityRole>().HasData(RafiqDbContextSeed.GetRoles());
     }
 }
