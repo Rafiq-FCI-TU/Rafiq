@@ -4,9 +4,8 @@ using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities
 {
-    public class ApplicationUser : IdentityUser
+    public abstract class ApplicationUser : IdentityUser
     {
-
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string UserType { get; set; } = string.Empty; // "Family", "Specialist"
@@ -17,8 +16,10 @@ namespace Rafiq.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
-        public FamilyProfile? FamilyProfile { get; set; }
-        public SpecialistProfile? SpecialistProfile { get; set; }
+        public List<RefreshToken>? RefreshTokens { get; set; }
+
+        //public FamilyProfile? FamilyProfile { get; set; }
+        //public SpecialistProfile? SpecialistProfile { get; set; }
     }
 
 }

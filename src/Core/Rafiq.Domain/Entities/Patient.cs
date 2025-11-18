@@ -3,9 +3,8 @@ using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities
 {
-    public class Patient
+    public class Patient: BaseEntity
     {
-        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
@@ -18,7 +17,5 @@ namespace Rafiq.Domain.Entities
         // Navigation properties Many-to-many: Multiple specialists
         public ICollection<SpecialistPatient> SpecialistPatients { get; set; } = new List<SpecialistPatient>();
         public Assessment Assessment { get; set; } = null!;//One-to-One with Assessment 
-
-
     }
 }

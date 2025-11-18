@@ -24,7 +24,7 @@ public class SpecialistPatientConfiguration : IEntityTypeConfiguration<Specialis
         builder.HasOne(sp => sp.Patient)
             .WithMany(p => p.SpecialistPatients)
             .HasForeignKey(sp => sp.PatientId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         // Indexes
         builder.HasIndex(sp => sp.SpecialistId);// For specialist lookups
