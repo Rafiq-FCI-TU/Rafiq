@@ -9,10 +9,4 @@ public class FamilyProfile : ApplicationUser
 
     // Navigation properties
     public ICollection<Patient> Patients { get; set; } = new List<Patient>();
-
-    ///TODO: Add them in DTO 
-    /*  // Family-specific methods
-      public int GetPatientsCount() => Patients?.Count ?? 0;
-
-      public bool HasActivePatients() => Patients?.Any(p => p.DateOfBirth > DateTime.Now.AddYears(-18)) ?? false;*/
 }
