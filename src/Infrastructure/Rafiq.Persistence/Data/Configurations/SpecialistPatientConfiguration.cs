@@ -20,11 +20,11 @@ public class SpecialistPatientConfiguration : IEntityTypeConfiguration<Specialis
             .WithMany(s => s.SpecialistPatients)
             .HasForeignKey(sp => sp.SpecialistId)
             .OnDelete(DeleteBehavior.Cascade);
-        // To Patient
-        builder.HasOne(sp => sp.Patient)
-            .WithMany(p => p.SpecialistPatients)
-            .HasForeignKey(sp => sp.PatientId)
-            .OnDelete(DeleteBehavior.NoAction);
+        //// To Patient
+        //builder.HasOne(sp => sp.Patient)
+        //    .WithMany(p => p.SpecialistPatients)
+        //    .HasForeignKey(sp => sp.PatientId)
+        //    .OnDelete(DeleteBehavior.NoAction);
 
         // Indexes
         builder.HasIndex(sp => sp.SpecialistId);// For specialist lookups
