@@ -10,11 +10,9 @@ namespace Rafiq.Infrastructure.Services.Auth;
 
 public class FamilyRegistrationService(UserManager<ApplicationUser> userManager, IRedisCacheService cache, IUnitOfWork unitOfWork, IMapper mapper) : IFamilyRegistrationService
 {
-    private const string CacheKeyPrefix = "pending_registration:";
-
     public async Task<(string Token, int NextStep)> SaveStep1Async(FamilyStep1Dto dto)
     {
-        var token = Guid.NewGuid().ToString();
+        var token = "pending_registration:" + Guid.NewGuid();
         var cacheModel = new FamilyRegistrationCache
         {
             Email = dto.Email,
@@ -22,46 +20,59 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
             CurrentStep = 1
         };
 
-        await cache.SetAsync(CacheKeyPrefix + token, cacheModel, TimeSpan.FromHours(24));
+        await cache.SetAsync(token, cacheModel, TimeSpan.FromHours(24));
 
         return (token, 2);
     }
 
-    public async Task<int> SaveStep2Async(PatientStep2Dto dto)
+    public async Task<(string Token, int NextStep)> SaveStep2Async(PatientStep2Dto dto) // FamilyStep2Dto
     {
-        var key = CacheKeyPrefix + dto.Token;
+        // form one token
+        var key = dto.Token;
 
+        // form one data
         var cacheModel = await cache.GetAsync<FamilyRegistrationCache>(key);
 
         if (cacheModel is null)
             throw new InvalidOperationException("Registration session expired or not found.");
+
+        if(cacheModel.CurrentStep != 1)
+            throw new InvalidOperationException("Invalid registration session.");
 
         cacheModel.PatientData = dto;
         cacheModel.CurrentStep = 2;
 
         await cache.SetAsync(key, cacheModel, TimeSpan.FromHours(24));
 
-        return 3;
+        return (key, 3);
     }
 
     public async Task<bool> CompleteRegistrationAsync(PasswordStep3Dto dto)
     {
-        var key = CacheKeyPrefix + dto.Token;
-        var data = await cache.GetAsync<FamilyRegistrationCache>(key);
+        var key = dto.Token;
+        var cacheModel = await cache.GetAsync<FamilyRegistrationCache>(key);
 
-        if (data is null)
+        if (cacheModel is null)
             throw new InvalidOperationException("Registration session expired or not found.");
+
+        if (cacheModel.CurrentStep != 2)
+            throw new InvalidOperationException("Invalid registration session.");
+
+        List<string> rightRelations = ["Father", "Mother", "Other"];
+
+        if(!rightRelations.Contains(cacheModel.FamilyData.Relationship))
+            throw new InvalidOperationException("Invalid relationship type.");
 
         // CREATE FAMILY PROFILE (Identity User)
         var familyProfile = new FamilyProfile
         {
-            UserName = data.Email,
-            Email = data.Email,
-            FirstName = data.FamilyData.FirstName,
-            LastName = data.FamilyData.LastName,
-            Relationship = Enum.Parse<Relationship>(data.FamilyData.Relationship),
-            EmergencyContactName = data.FamilyData.EmergencyContactName,
-            EmergencyContactPhone = data.FamilyData.EmergencyContactPhone
+            UserName = cacheModel.FamilyData.Email.Split('@')[0],
+            Email = cacheModel.FamilyData.Email,
+            FirstName = cacheModel.FamilyData.FirstName,
+            LastName = cacheModel.FamilyData.LastName,
+            Relationship = Enum.Parse<Relationship>(cacheModel.FamilyData.Relationship),
+            EmergencyContactName = cacheModel.FamilyData.EmergencyContactName,
+            EmergencyContactPhone = cacheModel.FamilyData.EmergencyContactPhone
         };
 
         var createResult = await userManager.CreateAsync(familyProfile, dto.Password);
@@ -69,15 +80,19 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
         if (!createResult.Succeeded)
             throw new Exception("Failed to create user account.");
 
+        // cacheModel.PatientData (validate is exist)
+        // cacheModel.PatientData.Gender
+
         // CREATE PATIENT (child)
         var patient = new Patient
         {
-            FirstName = data.PatientData.FirstName,
-            LastName = data.PatientData.LastName,
-            DateOfBirth = data.PatientData.DateOfBirth,
-            Gender = Enum.Parse<Gender>(data.PatientData.Gender),
+            FirstName = cacheModel.PatientData.FirstName,
+            LastName = cacheModel.PatientData.LastName,
+            DateOfBirth = cacheModel.PatientData.DateOfBirth,
+            Gender = Enum.Parse<Gender>(cacheModel.PatientData.Gender),
             FamilyProfileId = familyProfile.Id
         };
+
         // Save patient
         await unitOfWork.Repository<Patient>().AddAsync(patient);
         await unitOfWork.CompleteAsync();
@@ -91,6 +106,6 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
 
     public async Task<FamilyRegistrationCache?> ResumeRegistrationAsync(string token)
     {
-        return await cache.GetAsync<FamilyRegistrationCache>(CacheKeyPrefix + token);
+        return await cache.GetAsync<FamilyRegistrationCache>(token);
     }
 }
