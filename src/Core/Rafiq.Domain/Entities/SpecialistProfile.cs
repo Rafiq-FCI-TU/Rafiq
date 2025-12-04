@@ -8,11 +8,4 @@ public class SpecialistProfile : ApplicationUser
 
     // Navigation properties
     public ICollection<SpecialistPatient> SpecialistPatients { get; set; } = new List<SpecialistPatient>();
-    
-    ///TODO: Add them in DTO
-    /*
-            // Specialist-specific methods
-            public int GetActivePatientsCount()
-                => SpecialistPatients?.Count(sp => sp.Patient.DateOfBirth > DateTime.Now.AddYears(-18)) ?? 0;
-    */
 }
