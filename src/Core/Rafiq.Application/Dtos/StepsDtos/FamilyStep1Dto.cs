@@ -1,6 +1,4 @@
-﻿using Rafiq.Domain.Entities;
-
-namespace Rafiq.Application.Dtos.StepsDtos;
+﻿namespace Rafiq.Application.Dtos.StepsDtos;
 public class FamilyStep1Dto
 {
     public string FirstName { get; init; } = null!;
