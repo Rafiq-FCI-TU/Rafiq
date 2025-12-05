@@ -8,4 +8,6 @@ public class SpecialistProfile : ApplicationUser
 
     // Navigation properties
     public ICollection<SpecialistPatient> SpecialistPatients { get; set; } = new List<SpecialistPatient>();
+    // Each specialist has many sessions
+    public ICollection<Session> Sessions { get; set; } = new List<Session>();
 }

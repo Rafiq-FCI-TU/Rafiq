@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rafiq.Domain.Entities;
-using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Enums;
 
 namespace Rafiq.Persistence.Data.Configurations;
 public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>

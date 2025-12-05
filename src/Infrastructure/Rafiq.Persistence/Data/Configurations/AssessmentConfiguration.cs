@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rafiq.Domain.Entities;
-using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Enums;
 
 namespace Rafiq.Persistence.Data.Configurations;
 public class AssessmentConfiguration : IEntityTypeConfiguration<Assessment>
@@ -18,12 +15,15 @@ public class AssessmentConfiguration : IEntityTypeConfiguration<Assessment>
         builder.Property(a => a.CreatedAt)
               .HasDefaultValueSql("GETUTCDATE()")
             .IsRequired();
-            
+
+        builder.Property(a => a.QuestionsNumber)
+            .HasDefaultValue(40);
+
         // Relationships
         builder.HasOne(a => a.Patient)
-        .WithOne(p => p.Assessment)
-        .HasForeignKey<Assessment>(a => a.PatientId)
-        .OnDelete(DeleteBehavior.Cascade);
+            .WithOne(p => p.Assessment)
+            .HasForeignKey<Assessment>(a => a.PatientId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Indexes
         builder.HasIndex(a => a.PatientId);

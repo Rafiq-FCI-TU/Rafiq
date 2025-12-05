@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rafiq.Domain.Entities;
-
-namespace Rafiq.Persistence.Data.Configurations;
+﻿namespace Rafiq.Persistence.Data.Configurations;
 public class SpecialistProfileConfiguration : IEntityTypeConfiguration<SpecialistProfile>
 {
     public void Configure(EntityTypeBuilder<SpecialistProfile> builder)
@@ -20,5 +16,9 @@ public class SpecialistProfileConfiguration : IEntityTypeConfiguration<Specialis
 
         builder.Property(sp => sp.ProfessionalBio)
             .HasMaxLength(500);
+
+        builder.HasMany(s => s.Sessions)
+            .WithOne(s => s.Specialist)
+            .HasForeignKey(s => s.SpecialistProfileId);
     }
 }

@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Rafiq.Domain.Entities;
-
-namespace Rafiq.Persistence.Data.Configurations;
+﻿namespace Rafiq.Persistence.Data.Configurations;
 public class SpecialistPatientConfiguration : IEntityTypeConfiguration<SpecialistPatient>
 {
     public void Configure(EntityTypeBuilder<SpecialistPatient> builder)
