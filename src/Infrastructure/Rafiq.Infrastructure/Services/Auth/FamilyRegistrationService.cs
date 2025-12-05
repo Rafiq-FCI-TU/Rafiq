@@ -36,7 +36,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
         if (cacheModel is null)
             throw new InvalidOperationException("Registration session expired or not found.");
 
-        if(cacheModel.CurrentStep != 1)
+        if (cacheModel.CurrentStep != 1)
             throw new InvalidOperationException("Invalid registration session.");
 
         cacheModel.PatientData = dto;
@@ -60,7 +60,7 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
 
         List<string> rightRelations = ["Father", "Mother", "Other"];
 
-        if(!rightRelations.Contains(cacheModel.FamilyData.Relationship))
+        if (!rightRelations.Contains(cacheModel.FamilyData.Relationship))
             throw new InvalidOperationException("Invalid relationship type.");
 
         // CREATE FAMILY PROFILE (Identity User)

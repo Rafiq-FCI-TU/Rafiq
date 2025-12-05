@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Rafiq.Domain.Entities;
 
 
 namespace Rafiq.Persistence.Data;
