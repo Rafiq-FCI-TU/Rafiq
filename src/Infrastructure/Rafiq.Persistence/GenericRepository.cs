@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Rafiq.Application.Interfaces.Repositories;
+﻿using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Domain.Common;
 using Rafiq.Persistence.Data;
 
