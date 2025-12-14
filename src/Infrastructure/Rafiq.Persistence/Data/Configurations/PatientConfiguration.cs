@@ -26,8 +26,7 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.HasOne(p => p.Assessment)  // Patient has one Assessment
         .WithOne(a => a.Patient)  // Assessment belongs to one Patient
         .HasForeignKey<Assessment>(a => a.PatientId)  // FK on Assessment side
-        .OnDelete(DeleteBehavior.Cascade);  // Delete Assessment if Patient deleted
-
+            .OnDelete(DeleteBehavior.NoAction);
         // Indexes
         builder.HasIndex(p => p.FamilyProfileId);// For family lookups
         builder.HasIndex(p => p.DateOfBirth);// For age queries

@@ -15,7 +15,7 @@ public class Patient : BaseEntity
     public FamilyProfile FamilyProfile { get; set; } = null!;
 
     // Navigation properties One-to-many
-    public SpecialistPatient SpecialistPatient { get; set; } = null!;
+    public ICollection<SpecialistPatient> SpecialistPatients { get; set; } = new List<SpecialistPatient>();
     public int AssessmentId { get; set; }   // FK
     public Assessment Assessment { get; set; } = null!; // One-to-One with Assessment 
 }
