@@ -2,6 +2,6 @@
 
 namespace Rafiq.API.Controllers;
 
-[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class BaseController : ControllerBase;

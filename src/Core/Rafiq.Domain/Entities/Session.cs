@@ -14,7 +14,7 @@
         public string ThumbnailUrl { get; set; } = string.Empty;
 
         // Relation with SpecialistProfile
-        public int SpecialistProfileId { get; set; }
+        public string SpecialistProfileId { get; set; } = string.Empty;
         public SpecialistProfile Specialist { get; set; } = null!;
     }
 
