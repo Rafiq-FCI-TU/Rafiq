@@ -15,16 +15,18 @@ public class SpecialistPatientConfiguration : IEntityTypeConfiguration<Specialis
         builder.HasOne(sp => sp.Specialist)
             .WithMany(s => s.SpecialistPatients)
             .HasForeignKey(sp => sp.SpecialistId)
-            .OnDelete(DeleteBehavior.Cascade);
-        //// To Patient
-        //builder.HasOne(sp => sp.Patient)
-        //    .WithMany(p => p.SpecialistPatients)
-        //    .HasForeignKey(sp => sp.PatientId)
-        //    .OnDelete(DeleteBehavior.NoAction);
+          .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(sp => sp.Patient)
+       .WithMany(p => p.SpecialistPatients)
+       .HasForeignKey(sp => sp.PatientId)
+       .OnDelete(DeleteBehavior.NoAction); 
+
 
         // Indexes
         builder.HasIndex(sp => sp.SpecialistId);// For specialist lookups
         builder.HasIndex(sp => sp.PatientId);// For patient lookups
+
     }
 }
 
