@@ -1,111 +1,185 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Rafiq.Application.Dtos.AuthDtos;
 using Rafiq.Application.Dtos.StepsDtos;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.Enums;
+using Rafiq.Domain.ErrorHandling;
 
 namespace Rafiq.Infrastructure.Services.Auth;
 
-public class FamilyRegistrationService(UserManager<ApplicationUser> userManager, IRedisCacheService cache, IUnitOfWork unitOfWork, IMapper mapper) : IFamilyRegistrationService
+public class FamilyRegistrationService(
+    UserManager<ApplicationUser> userManager,
+    IRedisCacheService cache,
+    IUnitOfWork unitOfWork,
+    IMapper mapper
+) : IFamilyRegistrationService
 {
-    public async Task<(string Token, int NextStep)> SaveStep1Async(FamilyStep1Dto dto)
+    private static readonly List<string> AllowedRelationships = new() { "Father", "Mother", "Other" };
+
+    // -------------------- Step 1 --------------------
+    public async Task<Result<StepResponseDto>> RegisterFamilyStep1Async(FamilyStep1Dto dto)
     {
-        var token = "pending_registration:" + Guid.NewGuid();
-        var cacheModel = new FamilyRegistrationCache
+        var validationResult = ValidateStep1Dto(dto);
+        if (!validationResult.IsSuccess)
+            return Result.Failure<StepResponseDto>(400, "Step 1 data cannot be null.");
+
+        var token = GenerateToken();
+
+        var registrationCache = new FamilyRegistrationCache
         {
             Email = dto.Email,
             FamilyData = dto,
             CurrentStep = 1
         };
-
-        await cache.SetAsync(token, cacheModel, TimeSpan.FromHours(24));
-
-        return (token, 2);
-    }
-
-    public async Task<(string Token, int NextStep)> SaveStep2Async(PatientStep2Dto dto) // FamilyStep2Dto
-    {
-        // form one token
-        var key = dto.Token;
-
-        // form one data
-        var cacheModel = await cache.GetAsync<FamilyRegistrationCache>(key);
-
-        if (cacheModel is null)
-            throw new InvalidOperationException("Registration session expired or not found.");
-
-        if (cacheModel.CurrentStep != 1)
-            throw new InvalidOperationException("Invalid registration session.");
-
-        cacheModel.PatientData = dto;
-        cacheModel.CurrentStep = 2;
-
-        await cache.SetAsync(key, cacheModel, TimeSpan.FromHours(24));
-
-        return (key, 3);
-    }
-
-    public async Task<bool> CompleteRegistrationAsync(PasswordStep3Dto dto)
-    {
-        var key = dto.Token;
-        var cacheModel = await cache.GetAsync<FamilyRegistrationCache>(key);
-
-        if (cacheModel is null)
-            throw new InvalidOperationException("Registration session expired or not found.");
-
-        if (cacheModel.CurrentStep != 2)
-            throw new InvalidOperationException("Invalid registration session.");
-
-        List<string> rightRelations = ["Father", "Mother", "Other"];
-
-        if (!rightRelations.Contains(cacheModel.FamilyData.Relationship))
-            throw new InvalidOperationException("Invalid relationship type.");
-
-        // CREATE FAMILY PROFILE (Identity User)
-        var familyProfile = new FamilyProfile
+        var response = new StepResponseDto
         {
-            UserName = cacheModel.FamilyData.Email.Split('@')[0],
-            Email = cacheModel.FamilyData.Email,
-            FirstName = cacheModel.FamilyData.FirstName,
-            LastName = cacheModel.FamilyData.LastName,
-            Relationship = Enum.Parse<Relationship>(cacheModel.FamilyData.Relationship),
-            EmergencyContactName = cacheModel.FamilyData.EmergencyContactName,
-            EmergencyContactPhone = cacheModel.FamilyData.EmergencyContactPhone
+            Token = token,
+            NextStep = 2
+        };  
+
+        await cache.SetAsync(token, registrationCache, TimeSpan.FromHours(24));
+
+        return Result.Success(response, "Step 1 completed successfully.");
+    }
+
+    // -------------------- Step 2 --------------------
+    public async Task<Result<StepResponseDto>> RegisterFamilyStep2Async(PatientStep2Dto dto)
+    {
+        if (dto is null || string.IsNullOrWhiteSpace(dto.Token))
+            return Result.Failure<StepResponseDto>(400, "Step 2 data or token cannot be null.");
+
+        var registrationCache = await cache.GetAsync<FamilyRegistrationCache>(dto.Token);
+        var guardResult = CheckStepCache(registrationCache,expectedStep: 1);
+        if (!guardResult.IsSuccess)
+            return Result.Failure<StepResponseDto>(guardResult.StatusCode, guardResult.Message);
+        if (AllowedRelationships.Contains(dto.Gender))
+            return Result.Failure<StepResponseDto>(400, "Invalid gender type.");
+
+        registrationCache.PatientData = dto;
+        registrationCache.CurrentStep = 2;
+
+        var response = new StepResponseDto
+        {
+            Token = dto.Token,
+            NextStep = 3
         };
+        
+        await cache.SetAsync(dto.Token, registrationCache, TimeSpan.FromHours(24));
 
-        var createResult = await userManager.CreateAsync(familyProfile, dto.Password);
+        return Result.Success(response, "Step 2 completed successfully.");
+    }
 
-        if (!createResult.Succeeded)
-            throw new Exception("Failed to create user account.");
 
-        // cacheModel.PatientData (validate is exist)
-        // cacheModel.PatientData.Gender
+    // -------------------- Step 3 --------------------
+    public async Task<Result> CompleteFamilyRegistrationAsync(PasswordStep3Dto dto)
+    {
+        if (dto is null || string.IsNullOrWhiteSpace(dto.Token))
+            return Result.BadRequest("Step 3 data or token cannot be null.");
 
-        // CREATE PATIENT (child)
+        var registrationCache = await cache.GetAsync<FamilyRegistrationCache>(dto.Token);
+        var guardResult = CheckStepCache(registrationCache, expectedStep: 2);
+        if (!guardResult.IsSuccess)
+            return guardResult;
+
+        // Parse enums safely after guard checks passed 
+        Enum.TryParse<Relationship>(registrationCache.FamilyData.Relationship, true, out var relationship);
+        Enum.TryParse<Gender>(registrationCache.PatientData.Gender, true, out var gender);
+
+        var userCreationResult = await CreateFamilyProfileAsync(registrationCache.FamilyData, dto.Password);
+        if (!userCreationResult.IsSuccess)
+            return userCreationResult;
+
+        var familyProfile = userCreationResult.Value;
+
         var patient = new Patient
         {
-            FirstName = cacheModel.PatientData.FirstName,
-            LastName = cacheModel.PatientData.LastName,
-            DateOfBirth = cacheModel.PatientData.DateOfBirth,
-            Gender = Enum.Parse<Gender>(cacheModel.PatientData.Gender),
+            FirstName = registrationCache.PatientData.FirstName,
+            LastName = registrationCache.PatientData.LastName,
+            DateOfBirth = registrationCache.PatientData.DateOfBirth,
+            Gender = gender,
             FamilyProfileId = familyProfile.Id
         };
 
-        // Save patient
         await unitOfWork.Repository<Patient>().AddAsync(patient);
         await unitOfWork.CompleteAsync();
 
-        // CLEAR CACHE
-        await cache.RemoveAsync(key);
+        await cache.RemoveAsync(dto.Token);
 
-        return true;
+        return Result.Success("Registration completed successfully.");
     }
 
-
-    public async Task<FamilyRegistrationCache?> ResumeRegistrationAsync(string token)
+    // -------------------- Resume --------------------
+    public async Task<Result<FamilyRegistrationCache>> ResumeRegistrationAsync(string token)
     {
-        return await cache.GetAsync<FamilyRegistrationCache>(token);
+        if (string.IsNullOrWhiteSpace(token))
+            return Result.Failure<FamilyRegistrationCache>(400, "Token cannot be null.");
+
+        var registrationCache = await cache.GetAsync<FamilyRegistrationCache>(token);
+        if (registrationCache is null)
+            return Result.Failure<FamilyRegistrationCache>(404,"Registration session not found.");
+
+        return Result.Success(registrationCache, "Registration session retrieved successfully.");
     }
+
+    #region --- Helpers & Guards ---
+
+    private static string GenerateToken() => $"pending_registration:{Guid.NewGuid()}";
+
+    private static Result ValidateStep1Dto(FamilyStep1Dto dto)
+    {
+        if (dto is null)
+            return Result.Failure<(string, int)>(400, "Step 1 data cannot be null.");
+
+        if (string.IsNullOrWhiteSpace(dto.Email))
+            return Result.Failure<(string, int)>(400, "Email is required.");
+
+        if (!AllowedRelationships.Contains(dto.Relationship))
+            return Result.Failure<(string, int)>(400, "Invalid relationship type.");
+
+        return Result.Success();
+    }
+
+    private static Result CheckStepCache(FamilyRegistrationCache? cache, int expectedStep)
+    {
+        if (cache is null)
+            return Result.NotFound("Registration session not found or expired.");
+
+        if (cache.CurrentStep != expectedStep)
+            return Result.Failure(400, "Invalid registration step sequence.");
+
+        if (cache.FamilyData is null)
+            return Result.Failure(400, "Incomplete registration data.");
+
+        if (!Enum.TryParse<Relationship>(cache.FamilyData.Relationship, true, out _))
+            return Result.Failure(400, "Invalid relationship type.");
+
+        return Result.Success();
+    }
+
+    private async Task<Result<FamilyProfile>> CreateFamilyProfileAsync(FamilyStep1Dto familyDto, string password)
+    {
+        var profile = new FamilyProfile
+        {
+            UserName = familyDto.Email.Split('@')[0],
+            Email = familyDto.Email,
+            FirstName = familyDto.FirstName,
+            LastName = familyDto.LastName,
+            Relationship = Enum.Parse<Relationship>(familyDto.Relationship),
+            EmergencyContactName = familyDto.EmergencyContactName,
+            EmergencyContactPhone = familyDto.EmergencyContactPhone
+        };
+
+        var result = await userManager.CreateAsync(profile, password);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(" | ", result.Errors.Select(e => e.Description));
+            return Result.Failure<FamilyProfile>(400, $"Failed to create user account: {errors}");
+        }
+
+        return Result.Success(profile);
+    }
+    #endregion
 }
