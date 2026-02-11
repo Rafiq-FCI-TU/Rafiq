@@ -6,6 +6,12 @@ on:
       - "main"
     paths:
       - "**/*.cs"
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to generate docs from"
+        required: false
+        default: "main"
 
 jobs:
   redocly:
@@ -15,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
