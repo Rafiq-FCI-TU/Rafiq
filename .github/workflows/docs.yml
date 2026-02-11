@@ -1,0 +1,48 @@
+name: OpenAPI Specification and Documentation
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "**/*.cs"
+
+jobs:
+  redocly:
+    name: Generate Redocly docs
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore & Build
+        run: |
+          dotnet restore
+          dotnet build -c Release
+
+      - name: Install Swagger CLI
+        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
+
+      - name: Generate Swagger spec
+        run: |
+          dotnet swagger tofile \
+            --output swagger.json \
+            bin/Release/net8.0/Rafiq.API.dll v1
+
+      - name: Install Redocly
+        run: npm install -g @redocly/cli
+
+      - name: Generate documentation
+        run: redocly build-docs swagger.json -o docs/index.html
+
+      - name: Commit docs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          file_pattern: docs
+          commit_message: "[Docs] Update API documentation"
