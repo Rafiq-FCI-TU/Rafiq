@@ -19,38 +19,56 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+      # Checkout the selected branch
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
 
+      # Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
+      # Restore & Build project
       - name: Restore & Build
         run: |
           dotnet restore
           dotnet build -c Release
 
+      # Install Swagger CLI as global tool
       - name: Install Swagger CLI
         run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
 
+      # Add dotnet tools to PATH
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      # Generate Swagger JSON
       - name: Generate Swagger spec
         run: |
-          dotnet swagger tofile \
-            --output swagger.json \
-            bin/Release/net8.0/Rafiq.API.dll v1
+          dotnet swagger tofile --output swagger.json bin/Release/net8.0/YourProject.API.dll v1
 
+      # Install Redocly CLI
       - name: Install Redocly
-        run: npm install -g @redocly/cli
+        run: npm install -g @redocly/openapi-cli
 
+      # Build docs
       - name: Generate documentation
-        run: redocly build-docs swagger.json -o docs/index.html
+        run: npx @redocly/cli build-docs swagger.json -o docs/index.html
 
+      # Pull latest changes to avoid conflicts
+      - name: Pull latest changes
+        run: git pull origin ${{ github.event.inputs.branch || github.ref_name }}
+
+      # Commit changes (or create a PR)
       - name: Commit docs
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           file_pattern: docs
+          commit_user_name: YourName
+          commit_user_email: your-email@example.com
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
