@@ -30,6 +30,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
+          
+      - name: Prepare docs folder
+        run: rm -rf docs && mkdir docs
 
       # Run API in background
       - name: Run API
@@ -65,5 +68,6 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
+
 
 
