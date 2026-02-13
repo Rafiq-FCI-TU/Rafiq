@@ -16,7 +16,7 @@ on:
 jobs:
   redocly:
     name: Generate Redocly docs
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       # Checkout the selected branch
@@ -31,24 +31,17 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      # Restore & Build project
-      - name: Restore & Build
-        run: |
-          dotnet restore
-          dotnet build -c Release
+      # Install NSwag
+      - name: Install NSwag
+        run: dotnet tool install --global NSwag.ConsoleCore
 
-      # Install Swagger CLI as global tool
-      - name: Install Swagger CLI
-        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli
-
-      # Add dotnet tools to PATH
-      - name: Add dotnet tools to PATH
-        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+      # Build API
+      - name: Build API
+        run: dotnet build src/Web/Rafiq.API/Rafiq.API.csproj --configuration Release
 
       # Generate Swagger JSON
-      - name: Generate Swagger spec
-        run: swagger tofile --output swagger.json src/Web/Rafiq.API/bin/Release/net8.0/Rafiq.API.dll v1
-
+      - name: Generate Swagger JSON
+        run: dotnet tool run nswag run src/Web/Rafiq.API/swagger.nswag /output:swagger.json
 
       # Install Redocly CLI
       - name: Install Redocly
@@ -62,7 +55,7 @@ jobs:
       - name: Pull latest changes
         run: git pull origin ${{ github.event.inputs.branch || github.ref_name }}
 
-      # Commit changes (or create a PR)
+      # Commit docs
       - name: Commit docs
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
@@ -72,8 +65,3 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
-
-
-
-
-
