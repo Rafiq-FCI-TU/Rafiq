@@ -65,9 +65,10 @@ jobs:
           commit_user_name: GitHub Actions
           commit_user_email: actions@github.com
           commit_message: "[Docs] Update API documentation"
-          push: true
           branch: docs-auto-update
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          create_branch: true
+          commit_options: "--signoff"
+
 
       # 9️⃣ Create PR to main
       - name: Create Pull Request
@@ -79,3 +80,4 @@ jobs:
           base: main
           title: "[Docs] Update API documentation"
           body: "Automated update of Swagger docs"
+
