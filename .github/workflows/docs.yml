@@ -68,6 +68,6 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
-
-
-
+          push: true
+          branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
