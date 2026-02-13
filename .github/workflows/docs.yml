@@ -41,7 +41,7 @@ jobs:
 
       # Generate Swagger JSON
       - name: Generate Swagger JSON
-        run: dotnet tool run nswag run src/Web/Rafiq.API/swagger.nswag /output:swagger.json
+        run: ~/.dotnet/tools/nswag run src/Web/Rafiq.API/swagger.nswag /output:swagger.json
 
       # Install Redocly CLI
       - name: Install Redocly
@@ -65,3 +65,4 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
+
