@@ -31,43 +31,37 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      # Install NSwag
-      - name: Install NSwag
-        run: dotnet tool install --global NSwag.ConsoleCore --version 14.2.0
+      # Run API in background
+      - name: Run API
+        run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://localhost:5000 &
 
-      # Build API
-      - name: Build API
-        run: dotnet build src/Web/Rafiq.API/Rafiq.API.csproj --configuration Release
+      # Wait a few seconds for API to start
+      - name: Wait for API
+        run: sleep 10
 
-      # Generate Swagger JSON
-      - name: Generate Swagger JSON
-        run: dotnet swagger tofile --output swagger.json src/Web/Rafiq.API/bin/Release/net8.0/Rafiq.API.dll v1
+      # Prepare docs folder
+      - name: Prepare docs folder
+        run: mkdir -p docs
+
+      # Download Swagger JSON
+      - name: Download Swagger JSON
+        run: curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json
 
       # Install Redocly CLI
       - name: Install Redocly
         run: npm install -g @redocly/openapi-cli
 
-      # Build docs
+      # Build documentation
       - name: Generate documentation
-        run: npx @redocly/cli build-docs swagger.json -o docs/index.html
-
-      # Pull latest changes to avoid conflicts
-      - name: Pull latest changes
-        run: git pull origin ${{ github.event.inputs.branch || github.ref_name }}
+        run: npx @redocly/cli build-docs docs/swagger.json -o docs/index.html
 
       # Commit docs
       - name: Commit docs
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          file_pattern: docs
+          file_pattern: docs/**
           commit_user_name: YourName
           commit_user_email: your-email@example.com
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
-
-
-
-
-
-
