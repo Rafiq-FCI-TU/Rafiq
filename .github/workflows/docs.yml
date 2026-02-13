@@ -39,10 +39,6 @@ jobs:
       - name: Wait for API
         run: sleep 10
 
-      # Prepare docs folder
-      - name: Prepare docs folder
-        run: mkdir -p docs
-
       # Download Swagger JSON
       - name: Download Swagger JSON
         run: curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json
@@ -65,3 +61,4 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
+
