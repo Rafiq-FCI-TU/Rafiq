@@ -1,4 +1,6 @@
 name: OpenAPI Specification and Documentation
+permissions:
+  contents: write
 
 on:
   push:
@@ -80,4 +82,5 @@ jobs:
           base: main
           title: "[Docs] Update API documentation"
           body: "Automated update of Swagger docs"
+
 
