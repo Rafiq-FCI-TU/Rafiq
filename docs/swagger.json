@@ -1,0 +1,805 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Rafiq API",
+    "description": "\nRafiq API is a comprehensive platform for managing care services for children with Down syndrome. \nIt provides a full set of endpoints to handle all aspects of patient care, family management, appointments, and clinical operations.\n\nThis API is developed as a graduation project aimed at improving care for children with special needs.",
+    "contact": {
+      "name": "Support",
+      "url": "https://yourwebsite.com",
+      "email": "abdulrahmanfikry1@gmail.com"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/FamilyRegistration/step1": {
+      "post": {
+        "tags": [
+          "FamilyRegistration"
+        ],
+        "summary": "Step 1: Submit family basic information.",
+        "requestBody": {
+          "description": "The family information DTO containing Email, Relationship, Name, and EmergencyContact info.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FamilyStep1Dto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FamilyStep1Dto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FamilyStep1Dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Step 1 completed successfully, returns token and next step.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringInt32ValueTuple"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringInt32ValueTuple"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringInt32ValueTuple"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed (e.g., missing Email or invalid Relationship).",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/FamilyRegistration/step2": {
+      "post": {
+        "tags": [
+          "FamilyRegistration"
+        ],
+        "summary": "Step 2: Submit patient details.",
+        "requestBody": {
+          "description": "The patient details DTO containing FirstName, LastName, DateOfBirth, Gender, and Token.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientStep2Dto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientStep2Dto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientStep2Dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Step 2 completed successfully, returns token and next step.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringInt32ValueTuple"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringInt32ValueTuple"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringInt32ValueTuple"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token or step sequence, or missing patient data.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registration session not found or expired.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/FamilyRegistration/step3": {
+      "post": {
+        "tags": [
+          "FamilyRegistration"
+        ],
+        "summary": "Step 3: Complete family registration by setting a password.",
+        "requestBody": {
+          "description": "The password DTO containing the registration token and password.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordStep3Dto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordStep3Dto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordStep3Dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration completed successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token, incomplete registration data, or invalid step sequence.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registration session not found or expired.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/FamilyRegistration/resume": {
+      "get": {
+        "tags": [
+          "FamilyRegistration"
+        ],
+        "summary": "Resume a previously started registration process using the token.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "The registration session token obtained from step 1 or 2.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registration session retrieved successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyRegistrationCache"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyRegistrationCache"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyRegistrationCache"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token is null or empty.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registration session not found or expired.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Iq/start": {
+      "post": {
+        "tags": [
+          "Iq"
+        ],
+        "parameters": [
+          {
+            "name": "patientId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Iq/questions": {
+      "get": {
+        "tags": [
+          "Iq"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Iq/{assessmentId}/answers": {
+      "post": {
+        "tags": [
+          "Iq"
+        ],
+        "parameters": [
+          {
+            "name": "assessmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AnswerDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AnswerDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Iq/progress": {
+      "get": {
+        "tags": [
+          "Iq"
+        ],
+        "parameters": [
+          {
+            "name": "patientId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Iq/{assessmentId}": {
+      "delete": {
+        "tags": [
+          "Iq"
+        ],
+        "parameters": [
+          {
+            "name": "assessmentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerDto": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "selectedOption": {
+            "type": "string",
+            "nullable": true
+          },
+          "frequencyAnswer": {
+            "$ref": "#/components/schemas/Frequency"
+          },
+          "difficultyAnswer": {
+            "$ref": "#/components/schemas/DifficultyLevel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DifficultyLevel": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "FamilyRegistrationCache": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "familyData": {
+            "$ref": "#/components/schemas/FamilyStep1Dto"
+          },
+          "patientData": {
+            "$ref": "#/components/schemas/PatientStep2Dto"
+          },
+          "currentStep": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FamilyStep1Dto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "First name of the family head.",
+            "nullable": true,
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of the family head.",
+            "nullable": true,
+            "example": "Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the family head.",
+            "nullable": true,
+            "example": "john.doe@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number of the family head.",
+            "nullable": true,
+            "example": "+201234567890"
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Allowed values: Father, Mother, Other",
+            "nullable": true,
+            "example": "Father"
+          },
+          "address": {
+            "type": "string",
+            "description": "Address of the family head.",
+            "nullable": true,
+            "example": "123 Main Street, Cairo, Egypt"
+          },
+          "emergencyContactName": {
+            "type": "string",
+            "description": "Name of the emergency contact person.",
+            "nullable": true,
+            "example": "Jane Doe"
+          },
+          "emergencyContactPhone": {
+            "type": "string",
+            "description": "Phone number of the emergency contact person.",
+            "nullable": true,
+            "example": "+201112223334"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO for Step 1 of family registration, containing basic family information."
+      },
+      "Frequency": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "PasswordStep3Dto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Registration session token obtained from Step 1 or Step 2.",
+            "nullable": true,
+            "example": "pending_registration:abc123xyz"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password to create the family account.",
+            "nullable": true,
+            "example": "P@ssw0rd123"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Confirmation of the password. Must match Rafiq.Application.Dtos.StepsDtos.PasswordStep3Dto.Password.",
+            "nullable": true,
+            "example": "P@ssw0rd123"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO for Step 3 of family registration, containing the password information to complete registration."
+      },
+      "PatientStep2Dto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Registration session token obtained from Step 1.",
+            "nullable": true,
+            "example": "pending_registration:abc123xyz"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name of the patient.",
+            "nullable": true,
+            "example": "Alex"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of the patient.",
+            "nullable": true,
+            "example": "Doe"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "Date of birth of the patient.",
+            "format": "date-time",
+            "example": "2015-08-12"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender of the patient. Possible values: Male, Female.",
+            "nullable": true,
+            "example": "Male"
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO for Step 2 of family registration, containing patient details."
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "StringInt32ValueTuple": {
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer token\"",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
