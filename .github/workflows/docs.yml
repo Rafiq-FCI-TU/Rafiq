@@ -21,28 +21,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
-          persist-credentials: true
+          persist-credentials: false 
 
-      # 2️⃣ Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      # 3️⃣ Prepare docs folder
       - name: Prepare docs folder
         run: rm -rf docs && mkdir docs
 
-      # 4️⃣ Run API in background
       - name: Run API
         run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://0.0.0.0:5000 &
 
-      # 5️⃣ Wait for API to start
       - name: Wait for API
         run: |
            for i in {1..12}; do
@@ -51,16 +46,13 @@ jobs:
              sleep 5
            done
 
-      # 6️⃣ Install Redocly CLI
-      - name: Install Redocly
+      - name: Install Redocly CLI
         run: npm install -g @redocly/openapi-cli
 
-      # 7️⃣ Build documentation
       - name: Generate documentation
         run: npx @redocly/cli build-docs docs/swagger.json -o docs/index.html
 
-      # 8️⃣ Commit & push to branch 
-      - name: Commit docs
+      - name: Commit & push to branch 
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           file_pattern: docs/**
@@ -87,6 +79,4 @@ jobs:
           signoff: false
           draft: false
           delete-branch: false
-      
-
-
+          token: ${{ secrets.GITHUB_TOKEN }}  
