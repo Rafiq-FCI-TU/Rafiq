@@ -33,11 +33,15 @@ jobs:
 
       # Run API in background
       - name: Run API
-        run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://localhost:5000 &
+        run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://0.0.0.0:5000 &
 
-      # Wait a few seconds for API to start
       - name: Wait for API
-        run: sleep 10
+        run: |
+           for i in {1..10}; do
+           curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json && break
+           echo "Waiting for API to start..."
+           sleep 5
+           done
 
       # Download Swagger JSON
       - name: Download Swagger JSON
@@ -61,4 +65,5 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
+
 
