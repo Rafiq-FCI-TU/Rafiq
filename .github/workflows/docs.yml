@@ -19,55 +19,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the selected branch
+      # 1️⃣ Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
+          persist-credentials: true
 
-      # Setup .NET
+      # 2️⃣ Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-          
+
+      # 3️⃣ Prepare docs folder
       - name: Prepare docs folder
         run: rm -rf docs && mkdir docs
 
-      # Run API in background
+      # 4️⃣ Run API in background
       - name: Run API
         run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://0.0.0.0:5000 &
 
+      # 5️⃣ Wait for API to start
       - name: Wait for API
         run: |
-           for i in {1..10}; do
-           curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json && break
-           echo "Waiting for API to start..."
-           sleep 5
+           for i in {1..12}; do
+             curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json && break
+             echo "Waiting for API to start..."
+             sleep 5
            done
 
-      # Download Swagger JSON
-      - name: Download Swagger JSON
-        run: curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json
-
-      # Install Redocly CLI
+      # 6️⃣ Install Redocly CLI
       - name: Install Redocly
         run: npm install -g @redocly/openapi-cli
 
-      # Build documentation
+      # 7️⃣ Build documentation
       - name: Generate documentation
         run: npx @redocly/cli build-docs docs/swagger.json -o docs/index.html
 
-      # Commit docs
-      - name: Commit docs
+      # 8️⃣ Commit & push to branch 
+      - name: Commit docs to branch
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           file_pattern: docs/**
-          commit_user_name: YourName
-          commit_user_email: your-email@example.com
-          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          commit_options: "--signoff"
+          commit_user_name: GitHub Actions
+          commit_user_email: actions@github.com
           commit_message: "[Docs] Update API documentation"
           push: true
-          branch: main
+          branch: docs-auto-update
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 9️⃣ Create PR to main
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "[Docs] Update API documentation"
+          branch: docs-auto-update
+          base: main
+          title: "[Docs] Update API documentation"
+          body: "Automated update of Swagger docs"
