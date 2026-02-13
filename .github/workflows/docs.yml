@@ -69,22 +69,24 @@ jobs:
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
-          push: true
-          branch: docs-auto-update
           create_branch: true
+          branch: docs-auto-update-${{ github.run_id }}
+          push_options: '--set-upstream'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           commit-message: "[Docs] Update API documentation"
-          branch: docs-auto-update
+          branch: docs-auto-update-${{ github.run_id }}
           base: main
           title: "[Docs] Update API documentation"
           body: "Automated update of Swagger docs"
           committer: GitHub <noreply@github.com>
           author: abdulrahman11a <abdulrahman11a@users.noreply.github.com>
           signoff: false
+          draft: false
           delete-branch: false
       
+
 
