@@ -5,6 +5,7 @@ public class SpecialistProfile : ApplicationUser
     public string Specialty { get; set; } = string.Empty;// Pediatrician, Therapist, Psychologist, etc.
     public string Organization { get; set; } = string.Empty;
     public string ProfessionalBio { get; set; } = string.Empty;
+    public string Gender { get; set; } = string.Empty;
 
     // Navigation properties
     public ICollection<SpecialistPatient> SpecialistPatients { get; set; } = new List<SpecialistPatient>();

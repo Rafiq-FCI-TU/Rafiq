@@ -76,7 +76,7 @@ namespace Rafiq.API.Controllers
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Step3([FromBody] PasswordStep3Dto dto)
+        public async Task<IActionResult> Step3([FromBody] PasswordStepDto dto)
             => (await registrationService.CompleteFamilyRegistrationAsync(dto)).ToActionResult();
 
         /// <summary>
