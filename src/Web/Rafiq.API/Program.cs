@@ -6,9 +6,9 @@ using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Domain.Settings;
 using Rafiq.Persistence.Data;
 using StackExchange.Redis;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.AddDependencies();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 #endregion
 
@@ -31,7 +33,13 @@ builder.Services.AddMediatR(cfg =>
 #endregion
 
 #region Identity Configuration
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
+{
+    option.Password.RequireDigit = false;
+    option.Password.RequireNonAlphanumeric = true;
+    option.Password.RequiredUniqueChars = 3;
+    option.Password.RequiredLength = 8;
+})
 .AddEntityFrameworkStores<RafiqDbContext>()
 .AddDefaultTokenProviders();
 
@@ -74,6 +82,10 @@ This API is developed as a graduation project aimed at improving care for childr
 #endregion
 
 #region Jwt Configuration
+
+// Configure JWT settings from appsettings.json
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
 builder.Services.AddJwtSettings(builder.Configuration);
 
 #endregion
@@ -114,16 +126,30 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 #region Database Configuration
 // read connection string
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // register dbcontext
 builder.Services.AddDbContext<RafiqDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(databaseConnectionString));
+#endregion
+
+#region CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyPolicy", corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+    });
+});
+
 #endregion
 
 #region Redis Configuration
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost"));
+var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection") ?? "localhost";
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
 
 #endregion
 
@@ -161,14 +187,14 @@ catch (Exception ex)
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerAndOpenApiMiddleware();
-}
+
+app.UseSwaggerAndOpenApiMiddleware();
 
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
+
+app.UseCors("MyPolicy");
 
 app.UseAuthentication();
 
