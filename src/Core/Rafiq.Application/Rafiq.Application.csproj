@@ -16,7 +16,7 @@
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
 	<PackageReference Include="Azure.Storage.Blobs" Version="12.28.0-beta.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.AspNetCore" Version="7.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.4" />
   </ItemGroup>
 
 </Project>

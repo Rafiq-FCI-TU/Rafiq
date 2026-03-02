@@ -1,7 +1,7 @@
 ﻿using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Domain.ErrorHandling;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace Rafiq.Application.Interfaces.Services
 {
@@ -35,7 +35,7 @@ namespace Rafiq.Application.Interfaces.Services
         /// </summary>
         /// <param name="patientId">Patient identifier</param>
         /// <returns>List of sessions available to the patient</returns>
-        Task<Result<IEnumerable<SessionDto>>> GetSessionsBySpecialistIdForPatientAsync(int patientId);
+        Task<Result<IEnumerable<SessionDto>>> GetSessionsBySpecialistIdForPatientAsync(string specialistId, int patientId);
 
         #endregion
 
