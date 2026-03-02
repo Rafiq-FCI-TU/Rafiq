@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Rafiq.API;
 using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
+using Rafiq.Application.MappingProfıles;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
 using Rafiq.Domain.Settings;
@@ -14,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Add services to the container
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
 builder.AddDependencies();
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Rafiq.Application.Dtos.SessionDtos;
@@ -80,6 +81,28 @@ namespace Rafiq.Infrastructure.Services
             }
         }
 
+        //private async Task<string> UploadFileToAzureAsync(IFormFile? file, string folder)
+        //{
+        //    if (file == null) return string.Empty;
+
+        //    try
+        //    {
+        //        var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+        //        await containerClient.CreateIfNotExistsAsync();
+
+        //        string blobName = $"{folder}/{Guid.NewGuid()}_{file.FileName}";
+        //        var blobClient = containerClient.GetBlobClient(blobName);
+
+        //        using var stream = file.OpenReadStream();
+        //        await blobClient.UploadAsync(stream, overwrite: true);
+
+        //        return blobClient.Uri.ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Azure upload failed: {ex.Message}");
+        //    }
+        //}
         private async Task<string> UploadFileToAzureAsync(IFormFile? file, string folder)
         {
             if (file == null) return string.Empty;
@@ -95,7 +118,20 @@ namespace Rafiq.Infrastructure.Services
                 using var stream = file.OpenReadStream();
                 await blobClient.UploadAsync(stream, overwrite: true);
 
-                return blobClient.Uri.ToString();
+                //  Generate SAS URL (valid for 1 hour)
+                var sasBuilder = new BlobSasBuilder
+                {
+                    BlobContainerName = containerClient.Name,
+                    BlobName = blobName,
+                    Resource = "b",
+                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                };
+
+                sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+                var sasUri = blobClient.GenerateSasUri(sasBuilder);
+
+                return sasUri.ToString();
             }
             catch (Exception ex)
             {
