@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c1101165-b643-40f8-9542-481b81eadf73",
-                            ConcurrencyStamp = "9ed2faae-119a-4749-a7dc-8e04cbfc5946",
+                            Id = "72e29afe-8e79-4290-8868-5c13a57dd61f",
+                            ConcurrencyStamp = "e2c9ffee-290a-4327-801d-8bd2e452d02e",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "a4956601-975d-4a80-bb5b-43299f240cd7",
-                            ConcurrencyStamp = "1b6e1131-5240-4a42-a4b4-ffe8737e69c6",
+                            Id = "768ac1ca-c0f9-4b46-89c7-e01ef12746ab",
+                            ConcurrencyStamp = "76cd1a43-e2a9-46f1-91e1-f0f71824616a",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -510,6 +510,37 @@ namespace Rafiq.Persistence.Migrations
                     b.ToTable("Gaming");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("PasswordResetToken");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>
                 {
                     b.Property<int>("Id")
@@ -689,6 +720,10 @@ namespace Rafiq.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Organization")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -865,6 +900,13 @@ namespace Rafiq.Persistence.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", null)
+                        .WithMany("PasswordResetTokens")
+                        .HasForeignKey("ApplicationUserId");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.FamilyProfile", "FamilyProfile")
@@ -915,6 +957,11 @@ namespace Rafiq.Persistence.Migrations
                     b.Navigation("Patient");
 
                     b.Navigation("Specialist");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("PasswordResetTokens");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Assessment", b =>
