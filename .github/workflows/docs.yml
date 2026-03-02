@@ -1,0 +1,67 @@
+name: OpenAPI Specification and Documentation
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "**/*.cs"
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to generate docs from"
+        required: false
+        default: "main"
+
+jobs:
+  redocly:
+    name: Generate Redocly docs
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the selected branch
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+
+      # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Install NSwag
+      - name: Install NSwag
+        run: dotnet tool install --global NSwag.ConsoleCore
+
+      # Build API
+      - name: Build API
+        run: dotnet build src/Web/Rafiq.API/Rafiq.API.csproj --configuration Release
+
+      # Generate Swagger JSON
+      - name: Generate Swagger JSON
+        run: dotnet tool run nswag run src/Web/Rafiq.API/swagger.nswag /output:swagger.json
+
+      # Install Redocly CLI
+      - name: Install Redocly
+        run: npm install -g @redocly/openapi-cli
+
+      # Build docs
+      - name: Generate documentation
+        run: npx @redocly/cli build-docs swagger.json -o docs/index.html
+
+      # Pull latest changes to avoid conflicts
+      - name: Pull latest changes
+        run: git pull origin ${{ github.event.inputs.branch || github.ref_name }}
+
+      # Commit docs
+      - name: Commit docs
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          file_pattern: docs
+          commit_user_name: YourName
+          commit_user_email: your-email@example.com
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          commit_options: "--signoff"
+          commit_message: "[Docs] Update API documentation"

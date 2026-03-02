@@ -1,9 +1,9 @@
-﻿namespace Rafiq.Domain.Entities
-{
-    public class Session
-    {
-        public int Id { get; set; }
+﻿using Rafiq.Domain.Common;
 
+namespace Rafiq.Domain.Entities
+{
+    public class Session: BaseEntity
+    {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string VideoUrl { get; set; } = string.Empty;
