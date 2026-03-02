@@ -15,7 +15,7 @@ namespace Rafiq.API.Controllers
     {
         private readonly ISessionService _sessionService;
 
-        public SessionController(ISessionService sessionService)
+        public SessionController(ISessionService sessionService)    
         {
             _sessionService = sessionService;
         }
