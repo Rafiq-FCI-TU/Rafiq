@@ -1,6 +1,7 @@
 ﻿using Rafiq.API.ServicesExtension;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
+using Rafiq.Domain.Entities;
 using Rafiq.Infrastructure.Services;
 using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Persistence;
@@ -17,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IRedisCacheService, RedisCacheService>();
 
         services.AddScoped<IIqService, IqService>();
+        services.AddScoped<ISessionService, SessionService>();
 
         services.AddControllers();
 
