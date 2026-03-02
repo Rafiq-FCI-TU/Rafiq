@@ -1,4 +1,6 @@
 name: OpenAPI Specification and Documentation
+permissions:
+  contents: write
 
 on:
   push:
@@ -19,49 +21,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the selected branch
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
+          persist-credentials: false   
 
-      # Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      # Install NSwag
-      - name: Install NSwag
-        run: dotnet tool install --global NSwag.ConsoleCore
+      - name: Prepare docs folder
+        run: rm -rf docs && mkdir docs
 
-      # Build API
-      - name: Build API
-        run: dotnet build src/Web/Rafiq.API/Rafiq.API.csproj --configuration Release
+      - name: Run API
+        run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://0.0.0.0:5000 &
 
-      # Generate Swagger JSON
-      - name: Generate Swagger JSON
-        run: dotnet tool run nswag run src/Web/Rafiq.API/swagger.nswag /output:swagger.json
+      - name: Wait for API
+        run: |
+           for i in {1..12}; do
+             curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json && break
+             echo "Waiting for API to start..."
+             sleep 5
+           done
 
-      # Install Redocly CLI
-      - name: Install Redocly
+      - name: Install Redocly CLI
         run: npm install -g @redocly/openapi-cli
 
-      # Build docs
       - name: Generate documentation
-        run: npx @redocly/cli build-docs swagger.json -o docs/index.html
+        run: npx @redocly/cli build-docs docs/swagger.json -o docs/index.html
 
-      # Pull latest changes to avoid conflicts
-      - name: Pull latest changes
-        run: git pull origin ${{ github.event.inputs.branch || github.ref_name }}
-
-      # Commit docs
-      - name: Commit docs
+      - name: Commit & push to branch 
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          file_pattern: docs
-          commit_user_name: YourName
-          commit_user_email: your-email@example.com
+          file_pattern: docs/**
+          commit_user_name: GitHub Actions
+          commit_user_email: actions@github.com
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
+          create_branch: true
+          branch: docs-auto-update-${{ github.run_id }}
+          push_options: '--set-upstream'
+          
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "[Docs] Update API documentation"
+          branch: docs-auto-update-${{ github.run_id }}
+          base: main
+          title: "[Docs] Update API documentation"
+          body: "Automated update of Swagger docs"
+          committer: GitHub <noreply@github.com>
+          author: abdulrahman11a <abdulrahman11a@users.noreply.github.com>
+          signoff: false
+          draft: false
+          delete-branch: false
