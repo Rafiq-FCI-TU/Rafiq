@@ -15,7 +15,12 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IFamilyRegistrationService, FamilyRegistrationService>();
+        services.AddScoped<ISpecialistRegistrationService, SpecialistRegistrationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
+        services.AddScoped<IEmailService, EmailService>();
+
 
         services.AddScoped<IIqService, IqService>();
         services.AddScoped<ISessionService, SessionService>();
