@@ -1,10 +1,10 @@
-﻿using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Common;
+using Rafiq.Domain.Enums;
 
 namespace Rafiq.Domain.Entities
 {
-    public class Game
+    public class Game : BaseEntity
     {
-        public int Id { get; set; }
         public int CategoryId { get; set; }
         public string Title { get; set; } = string.Empty;
         public int MaxPoints { get; set; }

@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c1101165-b643-40f8-9542-481b81eadf73",
-                            ConcurrencyStamp = "9ed2faae-119a-4749-a7dc-8e04cbfc5946",
+                            Id = "20baec5c-7c6c-4d6b-a2d7-b6a60ecac4f5",
+                            ConcurrencyStamp = "a7a658a1-0519-461d-bf28-845c0deee19d",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "a4956601-975d-4a80-bb5b-43299f240cd7",
-                            ConcurrencyStamp = "1b6e1131-5240-4a42-a4b4-ffe8737e69c6",
+                            Id = "83035346-4239-4824-b4cc-f9dda0fe042f",
+                            ConcurrencyStamp = "f96d90e4-ca1d-47af-9d62-0b13716f62d1",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -410,7 +410,7 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Game");
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
@@ -438,7 +438,7 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasIndex("GamingId");
 
-                    b.ToTable("GameCategory");
+                    b.ToTable("GameCategories");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameProgress", b =>
@@ -481,7 +481,7 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("GameProgress");
+                    b.ToTable("GameProgresses");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Gaming", b =>
@@ -507,7 +507,7 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gaming");
+                    b.ToTable("Gamings");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>

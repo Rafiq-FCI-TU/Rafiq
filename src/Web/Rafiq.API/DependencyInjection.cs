@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddScoped<IRedisCacheService, RedisCacheService>();
 
         services.AddScoped<IIqService, IqService>();
+        services.AddScoped<IGamingService, GamingService>();
 
         services.AddControllers();
 

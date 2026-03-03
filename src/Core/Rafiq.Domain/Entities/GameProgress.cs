@@ -1,8 +1,9 @@
-﻿namespace Rafiq.Domain.Entities
+﻿using Rafiq.Domain.Common;
+
+namespace Rafiq.Domain.Entities
 {
-    public class GameProgress // A class to track progress in each game
+    public class GameProgress : BaseEntity // A class to track progress in each game
     {
-        public int Id { get; set; }
         public int GameId { get; set; }
         public int PatientId { get; set; }
         public int AchievedPoints { get; set; }

@@ -1,8 +1,9 @@
-﻿namespace Rafiq.Domain.Entities
+﻿using Rafiq.Domain.Common;
+
+namespace Rafiq.Domain.Entities
 {
-    public class GameCategory
+    public class GameCategory : BaseEntity
     {
-        public int Id { get; set; }
         public int GamingId { get; set; }
         public int InitialScore { get; set; } //from assessment
         public string Name { get; set; }
