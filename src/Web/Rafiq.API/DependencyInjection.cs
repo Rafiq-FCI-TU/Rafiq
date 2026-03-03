@@ -20,10 +20,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
         services.AddScoped<IEmailService, EmailService>();
-
-
-        services.AddScoped<IIqService, IqService>();
         services.AddScoped<ISessionService, SessionService>();
+        services.AddScoped<IAssessmentService, AssessmentService>();
 
         services.AddControllers();
 
