@@ -14,12 +14,6 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
 
         builder.Property(q => q.Order)
                .IsRequired();
-
-        // FK relation with Category
-        builder.HasOne(q => q.Category)
-               .WithMany(c => c.Questions)
-               .HasForeignKey(q => q.CategoryId)
-               .OnDelete(DeleteBehavior.Cascade);
     }
 
 }
