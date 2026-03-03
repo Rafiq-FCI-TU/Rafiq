@@ -8,7 +8,21 @@ public class GenericRepository<T>(RafiqDbContext rafiqDbContext) : IGenericRepos
     ///Note : Add AsNoTracking this method in implementation to improve performance for read-only operations
     public async Task<IReadOnlyList<T>> GetAllAsync() => await rafiqDbContext.Set<T>().AsNoTracking().ToListAsync();
 
+    public async Task<IReadOnlyList<T>> GetAllSortAsync() => await rafiqDbContext.Set<T>().AsNoTracking().ToListAsync();
+
+    public async Task<IReadOnlyList<T>> GetAllAsync(ISpecifications<T> spec)
+    {
+        var query = SpecificationsEvaluator<T>.GetQuery(rafiqDbContext.Set<T>().AsNoTracking(), spec);
+        return await query.ToListAsync();
+    }
+
     public async Task<T?> GetEntityAsync(int id) => await rafiqDbContext.Set<T>().FindAsync(id);
+
+    public async Task<T?> GetEntityAsync(ISpecifications<T> spec)
+    {
+        var query = SpecificationsEvaluator<T>.GetQuery(rafiqDbContext.Set<T>(), spec);
+        return await query.FirstOrDefaultAsync();
+    }
 
     public async Task AddAsync(T entity) => await rafiqDbContext.Set<T>().AddAsync(entity);
 

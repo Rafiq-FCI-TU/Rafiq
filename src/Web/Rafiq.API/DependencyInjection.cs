@@ -21,7 +21,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
 
 
-        services.AddScoped<IIqService, IqService>();
+        services.AddScoped<IAssessmentService, AssessmentService>();
 
         services.AddControllers();
 
