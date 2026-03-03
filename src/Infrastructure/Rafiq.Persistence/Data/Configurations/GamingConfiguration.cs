@@ -10,11 +10,5 @@ public class GamingConfiguration : IEntityTypeConfiguration<Gaming>
 
         builder.Property(g => g.CreatedAt)
             .HasDefaultValueSql("GETDATE()");
-
-        // One Gaming → Many Categories
-        builder.HasMany(g => g.Categories)
-            .WithOne()
-            .HasForeignKey(c => c.GamingId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

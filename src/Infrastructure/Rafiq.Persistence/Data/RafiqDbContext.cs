@@ -26,6 +26,10 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
 
         builder.Entity<IdentityRole>().HasData(RafiqDbContextSeed.GetRoles());
 
+        // Gaming seed data
+        builder.Entity<GameCategory>().HasData(RafiqDbContextSeed.GetGameCategories());
+        builder.Entity<Game>().HasData(RafiqDbContextSeed.GetGames());
+
         // TPH configuration
         builder.Entity<ApplicationUser>()
             .HasDiscriminator<string>("UserType")

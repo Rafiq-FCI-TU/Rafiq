@@ -20,41 +20,9 @@ public class GamingService(IUnitOfWork unitOfWork) : IGamingService
                 CreatedAt = DateTime.UtcNow
             };
             await unitOfWork.Repository<Gaming>().AddAsync(gaming);
-            await unitOfWork.CompleteAsync(); // Saves and gets the assigned gaming ID
-        }
-
-        var existingCategories = await unitOfWork.Repository<GameCategory>().GetAllAsync();
-        if (!existingCategories.Any(c => c.GamingId == gaming.Id))
-        {
-            var categories = new List<GameCategory>
-            {
-                new GameCategory { GamingId = gaming.Id, Name = "Cognitive Skills", InitialScore = 0 },
-                new GameCategory { GamingId = gaming.Id, Name = "Memory Training", InitialScore = 0 }
-            };
-
-            foreach (var category in categories)
-            {
-                await unitOfWork.Repository<GameCategory>().AddAsync(category);
-            }
-            await unitOfWork.CompleteAsync();
-
-            var games = new List<Game>
-            {
-                // Puzzles under Cognitive
-                new Game { CategoryId = categories[0].Id, Title = "Match Shapes", MaxPoints = 100, Duration = "5 mins", Status = GameStatus.NotStarted, CreatedAt = DateTime.UtcNow },
-                new Game { CategoryId = categories[0].Id, Title = "Logic Puzzle", MaxPoints = 200, Duration = "10 mins", Status = GameStatus.NotStarted, CreatedAt = DateTime.UtcNow },
-                // Memory under Memory Training
-                new Game { CategoryId = categories[1].Id, Title = "Card Flip", MaxPoints = 150, Duration = "8 mins", Status = GameStatus.NotStarted, CreatedAt = DateTime.UtcNow }
-            };
-
-            foreach (var game in games)
-            {
-                await unitOfWork.Repository<Game>().AddAsync(game);
-            }
             await unitOfWork.CompleteAsync();
         }
 
-        // Return the fully populated gaming profile with all newly created categories and games
         return await GetGamingByPatientAsync(patientId);
     }
 
@@ -66,13 +34,13 @@ public class GamingService(IUnitOfWork unitOfWork) : IGamingService
         if (gaming is null)
             return new GamingDto();
 
-        // Load categories
-        var allCategories = await unitOfWork.Repository<GameCategory>().GetAllAsync();
-        var categories = allCategories.Where(c => c.GamingId == gaming.Id).ToList();
+        // Load all global categories
+        var categories = await unitOfWork.Repository<GameCategory>().GetAllAsync();
 
-        // Load games for each category
+        // Load games and patient-specific progress
         var allGames = await unitOfWork.Repository<Game>().GetAllAsync();
         var allProgress = await unitOfWork.Repository<GameProgress>().GetAllAsync();
+        var patientProgress = allProgress.Where(p => p.PatientId == patientId).ToList();
 
         var categoryDtos = new List<GameCategoryDto>();
         foreach (var category in categories)
@@ -80,7 +48,7 @@ public class GamingService(IUnitOfWork unitOfWork) : IGamingService
             var games = allGames.Where(g => g.CategoryId == category.Id).ToList();
             var gameDtos = games.Select(g =>
             {
-                var progressRecords = allProgress.Where(p => p.GameId == g.Id).ToList();
+                var progressRecords = patientProgress.Where(p => p.GameId == g.Id).ToList();
                 return new GameDto
                 {
                     Id = g.Id,
@@ -99,7 +67,6 @@ public class GamingService(IUnitOfWork unitOfWork) : IGamingService
             categoryDtos.Add(new GameCategoryDto
             {
                 Id = category.Id,
-                GamingId = category.GamingId,
                 Name = category.Name,
                 InitialScore = category.InitialScore,
                 Progress = gameDtos.Any() ? gameDtos.Average(g => g.Progress) : 0,
@@ -212,18 +179,5 @@ public class GamingService(IUnitOfWork unitOfWork) : IGamingService
             unitOfWork.Repository<Game>().Update(game);
             await unitOfWork.CompleteAsync();
         }
-    }
-
-    private static GamingDto MapToGamingDto(Gaming gaming)
-    {
-        return new GamingDto
-        {
-            Id = gaming.Id,
-            PatientId = gaming.PatientId,
-            TotalScore = gaming.TotalScore,
-            CreatedAt = gaming.CreatedAt,
-            OverallProgress = 0,
-            Categories = []
-        };
     }
 }

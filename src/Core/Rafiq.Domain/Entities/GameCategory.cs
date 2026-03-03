@@ -4,7 +4,6 @@ namespace Rafiq.Domain.Entities
 {
     public class GameCategory : BaseEntity
     {
-        public int GamingId { get; set; }
         public int InitialScore { get; set; } //from assessment
         public string Name { get; set; }
         public List<Game> Games { get; set; } = new List<Game>();

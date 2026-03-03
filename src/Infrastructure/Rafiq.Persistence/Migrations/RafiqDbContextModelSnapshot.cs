@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "20baec5c-7c6c-4d6b-a2d7-b6a60ecac4f5",
-                            ConcurrencyStamp = "a7a658a1-0519-461d-bf28-845c0deee19d",
+                            Id = "5999cb1e-104e-4580-b296-76770fdc5614",
+                            ConcurrencyStamp = "e0b231ba-f1d6-4bfb-b3b0-dea52635d8a1",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "83035346-4239-4824-b4cc-f9dda0fe042f",
-                            ConcurrencyStamp = "f96d90e4-ca1d-47af-9d62-0b13716f62d1",
+                            Id = "a18a2e2f-7275-4237-9c5f-cf6647728bfb",
+                            ConcurrencyStamp = "6bb51057-b59a-40e8-bf2c-797cd4ec7905",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -411,6 +411,38 @@ namespace Rafiq.Persistence.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Games");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 3, 3, 5, 1, 27, 327, DateTimeKind.Local).AddTicks(4852),
+                            Duration = "5 mins",
+                            MaxPoints = 100,
+                            Status = 0,
+                            Title = "Match Shapes"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 3, 3, 5, 1, 27, 327, DateTimeKind.Local).AddTicks(4907),
+                            Duration = "10 mins",
+                            MaxPoints = 200,
+                            Status = 0,
+                            Title = "Logic Puzzle"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 3, 3, 5, 1, 27, 327, DateTimeKind.Local).AddTicks(4910),
+                            Duration = "8 mins",
+                            MaxPoints = 150,
+                            Status = 0,
+                            Title = "Card Flip"
+                        });
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
@@ -420,9 +452,6 @@ namespace Rafiq.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GamingId")
-                        .HasColumnType("int");
 
                     b.Property<int>("InitialScore")
                         .ValueGeneratedOnAdd()
@@ -436,9 +465,21 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GamingId");
-
                     b.ToTable("GameCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            InitialScore = 0,
+                            Name = "Cognitive Skills"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            InitialScore = 0,
+                            Name = "Memory Training"
+                        });
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameProgress", b =>
@@ -837,15 +878,6 @@ namespace Rafiq.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
-                {
-                    b.HasOne("Rafiq.Domain.Entities.Gaming", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("GamingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Rafiq.Domain.Entities.GameProgress", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.Game", "Game")
@@ -935,11 +967,6 @@ namespace Rafiq.Persistence.Migrations
             modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
                 {
                     b.Navigation("Games");
-                });
-
-            modelBuilder.Entity("Rafiq.Domain.Entities.Gaming", b =>
-                {
-                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>
