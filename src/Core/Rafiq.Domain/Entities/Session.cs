@@ -1,9 +1,9 @@
-﻿namespace Rafiq.Domain.Entities
-{
-    public class Session
-    {
-        public int Id { get; set; }
+using Rafiq.Domain.Common;
 
+namespace Rafiq.Domain.Entities
+{
+    public class Session: BaseEntity
+    {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string VideoUrl { get; set; } = string.Empty;
@@ -11,10 +11,10 @@
         public int Sequence { get; set; }
         public int Score { get; set; }
         public DateTime PublishedAt { get; set; }
-        public string ThumbnailUrl { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = null!;
 
         // Relation with SpecialistProfile
-        public string SpecialistProfileId { get; set; } = string.Empty;
+        public string SpecialistProfileId { get; set; } = null!;
         public SpecialistProfile Specialist { get; set; } = null!;
     }
 

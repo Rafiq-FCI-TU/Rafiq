@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Rafiq.Domain.Common;
 
 namespace Rafiq.Domain.Entities;
-public class AssessmentCategory
+public class AssessmentCategory: BaseEntity
 {
-    public int Id { get; set; }
-    public int AssessmentId { get; set; }
     public int Score { get; set; }
     public int QuestionsNumber { get; set; } = 10;
     public int CurrentQuestion { get; set; } = 1;
-    public int Sequence { get; set; } // Assuming sequence for ordering categories
+
+    public int AssessmentId { get; set; }
     public Assessment Assessment { get; set; } = null!;
-    public List<Question> Questions { get; set; } = new List<Question>();
+    public int CategoryId { get; set; }
+    public Category Category { get; set; } = null!;
 }

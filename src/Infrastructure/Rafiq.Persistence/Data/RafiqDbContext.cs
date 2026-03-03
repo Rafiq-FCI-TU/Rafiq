@@ -18,6 +18,9 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<Game> Games { get; set; }
     public DbSet<GameProgress> GameProgresses { get; set; }
 
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<AssessmentAnswer> AssessmentAnswers { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

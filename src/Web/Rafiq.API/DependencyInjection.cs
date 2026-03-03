@@ -1,6 +1,7 @@
 ﻿using Rafiq.API.ServicesExtension;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
+using Rafiq.Domain.Entities;
 using Rafiq.Infrastructure.Services;
 using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Persistence;
@@ -14,10 +15,16 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IFamilyRegistrationService, FamilyRegistrationService>();
+        services.AddScoped<ISpecialistRegistrationService, SpecialistRegistrationService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
 
         services.AddScoped<IIqService, IqService>();
         services.AddScoped<IGamingService, GamingService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ISessionService, SessionService>();
+        services.AddScoped<IAssessmentService, AssessmentService>();
 
         services.AddControllers();
 

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace Rafiq.API.ServicesExtension;
+
 public static class SwaggerServicesExtension
 {
     public static void AddSwaggerServices(this IServiceCollection services)
@@ -10,7 +11,31 @@ public static class SwaggerServicesExtension
 
         services.AddSwaggerGen(options =>
         {
-            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
+           
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Rafiq API",
+                Description = "API for managing care services for children with Down syndrome",
+                Contact = new OpenApiContact
+                {
+                    Name = "Support",
+                    Email = "abdulrahmanfikry1@gmail.com",
+                    Url = new Uri("https://yourwebsite.com")
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "MIT License",
+                    Url = new Uri("https://opensource.org/licenses/MIT")
+                }
+            });
+
+            
+            //var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            //options.IncludeXmlComments(xmlPath);
+
+            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
                 Name = "Authorization",
                 Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer token\"",
@@ -18,20 +43,8 @@ public static class SwaggerServicesExtension
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Id = JwtBearerDefaults.AuthenticationScheme,
-                            Type = ReferenceType.SecurityScheme
-                        }
-                    },
-                    new List<string>()
-                }
-            });
+
+            
         });
     }
 
@@ -41,9 +54,8 @@ public static class SwaggerServicesExtension
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Rafiq API");
-            options.InjectStylesheet("/swagger-ui/SwaggerDark.css");
+            options.InjectStylesheet("/swagger-ui/SwaggerDark.css"); 
             options.RoutePrefix = string.Empty;
         });
     }
-
 }

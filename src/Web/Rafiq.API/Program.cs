@@ -4,19 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using Rafiq.API;
 using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
+using Rafiq.Application.MappingProfıles;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Domain.Settings;
 using Rafiq.Persistence.Data;
 using StackExchange.Redis;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Add services to the container
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
 builder.AddDependencies();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 #endregion
 
@@ -31,49 +34,62 @@ builder.Services.AddMediatR(cfg =>
 #endregion
 
 #region Identity Configuration
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
+{
+    option.Password.RequireDigit = false;
+    option.Password.RequireNonAlphanumeric = true;
+    option.Password.RequiredUniqueChars = 3;
+    option.Password.RequiredLength = 8;
+})
 .AddEntityFrameworkStores<RafiqDbContext>()
 .AddDefaultTokenProviders();
 
 #endregion
 
-#region Swagger Configuration 
-builder.Services.AddSwaggerGen(c =>
-{
-    var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
-    foreach (var xmlFile in xmlFiles)
-    {
-        c.IncludeXmlComments(xmlFile);
-    }
+//#region Swagger Configuration 
+//builder.Services.AddSwaggerGen(c =>
+//{
+//    var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
+//    foreach (var xmlFile in xmlFiles)
+//    {
+//        c.IncludeXmlComments(xmlFile);
+//    }
 
-    c.EnableAnnotations();
+//    c.EnableAnnotations();
 
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "Rafiq API",
-        Version = "v1",
-        Description = @"
-Rafiq API is a comprehensive platform for managing care services for children with Down syndrome. 
-It provides a full set of endpoints to handle all aspects of patient care, family management, appointments, and clinical operations.
+//    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+//    {
+//        Title = "Rafiq API",
+//        Version = "v1",
+//        Description = @"
+//Rafiq API is a comprehensive platform for managing care services for children with Down syndrome. 
+//It provides a full set of endpoints to handle all aspects of patient care, family management, appointments, and clinical operations.
 
-This API is developed as a graduation project aimed at improving care for children with special needs.",
-        Contact = new Microsoft.OpenApi.Models.OpenApiContact
-        {
-            Name = "Support",
-            Email = "abdulrahmanfikry1@gmail.com",
-            Url = new Uri("https://yourwebsite.com")
-        },
-        License = new Microsoft.OpenApi.Models.OpenApiLicense
-        {
-            Name = "MIT License",
-            Url = new Uri("https://opensource.org/licenses/MIT")
-        }
-    });
+//This API is developed as a graduation project aimed at improving care for children with special needs.",
+//        Contact = new Microsoft.OpenApi.Models.OpenApiContact
+//        {
+//            Name = "Support",
+//            Email = "abdulrahmanfikry1@gmail.com",
+//            Url = new Uri("https://yourwebsite.com")
+//        },
+//        License = new Microsoft.OpenApi.Models.OpenApiLicense
+//        {
+//            Name = "MIT License",
+//            Url = new Uri("https://opensource.org/licenses/MIT")
+//        }
+//    });
 
-});
-#endregion
+//});
+
+
+
+//#endregion
 
 #region Jwt Configuration
+
+// Configure JWT settings from appsettings.json
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
 builder.Services.AddJwtSettings(builder.Configuration);
 
 #endregion
@@ -114,16 +130,30 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 #region Database Configuration
 // read connection string
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // register dbcontext
 builder.Services.AddDbContext<RafiqDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(databaseConnectionString));
+#endregion
+
+#region CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyPolicy", corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+    });
+});
+
 #endregion
 
 #region Redis Configuration
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect("localhost"));
+var redisConnectionString = builder.Configuration.GetConnectionString("RedisConnection") ?? "localhost";
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
 
 #endregion
 
@@ -148,6 +178,9 @@ try
 {
     // Migrate StoreContext
     await rafiqContext.Database.MigrateAsync();
+
+    // Seed Data To StoreContext
+    await RafiqDbContextSeed.SeedAsync(rafiqContext);
 }
 catch (Exception ex)
 {
@@ -161,14 +194,14 @@ catch (Exception ex)
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerAndOpenApiMiddleware();
-}
+
+app.UseSwaggerAndOpenApiMiddleware();
 
 app.UseStaticFiles();
-
+    
 app.UseHttpsRedirection();
+
+app.UseCors("MyPolicy");
 
 app.UseAuthentication();
 
@@ -181,3 +214,4 @@ app.MapControllers();
 #endregion
 
 app.Run();
+

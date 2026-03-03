@@ -12,6 +12,8 @@ public class ApplicationUser : IdentityUser
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 
+    public List<PasswordResetToken>? PasswordResetTokens { get; set; } = [];
+
     // Navigation properties
     public List<RefreshToken>? RefreshTokens { get; set; }
 }

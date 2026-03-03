@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Rafiq.Domain.Entities;
-using Rafiq.Domain.Enums;
+using System.Text.Json;
 
 namespace Rafiq.Persistence.Data;
-public class RafiqDbContextSeed
+public static class RafiqDbContextSeed
 {
     public static List<IdentityRole> GetRoles()
     {
@@ -27,24 +26,29 @@ public class RafiqDbContextSeed
         ];
     }
 
-    public static List<GameCategory> GetGameCategories()
+    public static async Task SeedAsync(RafiqDbContext context)
     {
-        return
-        [
-            new GameCategory { Id = 1, Name = "Cognitive Skills", InitialScore = 0 },
-            new GameCategory { Id = 2, Name = "Memory Training", InitialScore = 0 }
-        ];
+        if (!context.Categories.Any())
+        {
+            var categories = ReadJson<Category>("categories.json");
+            context.Categories.AddRange(categories);
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.Questions.Any())
+        {
+            var questions = ReadJson<Question>("questions.json");
+            context.Questions.AddRange(questions);
+        }
+
+        await context.SaveChangesAsync();
     }
 
-    public static List<Game> GetGames()
+    private static List<T> ReadJson<T>(string fileName)
     {
-        return
-        [
-            // Cognitive Skills games
-            new Game { Id = 1, CategoryId = 1, Title = "Match Shapes", MaxPoints = 100, Duration = "5 mins", Status = GameStatus.NotStarted },
-            new Game { Id = 2, CategoryId = 1, Title = "Logic Puzzle", MaxPoints = 200, Duration = "10 mins", Status = GameStatus.NotStarted },
-            // Memory Training games
-            new Game { Id = 3, CategoryId = 2, Title = "Card Flip", MaxPoints = 150, Duration = "8 mins", Status = GameStatus.NotStarted }
-        ];
+        var path = Path.Combine(AppContext.BaseDirectory, "Data", "Seed", fileName);
+
+        var json = File.ReadAllText(path);
+        return JsonSerializer.Deserialize<List<T>>(json)!;
     }
 }
