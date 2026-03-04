@@ -22,5 +22,3 @@ public class AssessmentDto
     public Patient Patient { get; set; } = null!;
     public List<AssessmentCategory> Categories { get; set; } = [];
 }
-
-

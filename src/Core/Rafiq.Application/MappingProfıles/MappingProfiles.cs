@@ -8,11 +8,25 @@ namespace Rafiq.Application.MappingProfıles
     {
         public MappingProfiles()
         {
+            // Session => SessionDto
             CreateMap<Session, SessionDto>()
-                .ForMember(dest => dest.SpecialistName, opt => opt.MapFrom(src => src.Specialist.FirstName));
+                .ForMember(dest => dest.SpecialistName,
+                           opt => opt.MapFrom(src => src.Specialist.FirstName));
 
+            // SessionCreateDto => Session
             CreateMap<SessionCreateDto, Session>()
-                .ForMember(dest => dest.VideoUrl, opt => opt.MapFrom(src => src.MediaUrl));
+                .ForMember(dest => dest.VideoUrl,
+                           opt => opt.MapFrom(src => src.MediaUrl));
+
+            // Session => Sessionfor_Specialist_patientDto
+            CreateMap<Session, Sessionfor_Specialist_patientDto>()
+                .ForMember(dest => dest.PatientId,
+                           opt => opt.MapFrom((src, dest, destMember, context) =>
+                           {
+                               return context.Items.ContainsKey("PatientId")
+                                   ? (int)context.Items["PatientId"]
+                                   : 0;
+                           }));
         }
     }
 }
