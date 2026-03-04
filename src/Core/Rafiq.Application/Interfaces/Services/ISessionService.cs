@@ -35,7 +35,7 @@ namespace Rafiq.Application.Interfaces.Services
         /// </summary>
         /// <param name="patientId">Patient identifier</param>
         /// <returns>List of sessions available to the patient</returns>
-        Task<Result<IEnumerable<SessionDto>>> GetSessionsBySpecialistIdForPatientAsync(string specialistId, int patientId);
+        Task<Result<IEnumerable<Sessionfor_Specialist_patientDto>>> GetSessionsByPatientAndStatusAsync(int patientId, string status);
 
         #endregion
 
@@ -44,11 +44,11 @@ namespace Rafiq.Application.Interfaces.Services
         /// Get video URL for a patient to access a session recording.
         /// Verify patient access using patientId and sessionId.
         /// </summary>
-        Task<Result<string>> GetSessionVideoUrlAsync(int sessionId, int patientId);
 
         /// <summary>
         /// Get details of a single session by sessionId
         /// </summary>
         Task<Result<SessionDto>> GetSessionDetailsAsync(int sessionId);
+
     }
 }
