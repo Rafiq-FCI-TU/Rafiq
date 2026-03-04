@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fa8017f7-0843-4230-87c1-9c2311f4b638",
-                            ConcurrencyStamp = "c4f86e56-66e0-4da3-a9a8-793c2f4e296f",
+                            Id = "549ea74f-0c74-45d9-b0c5-57f29c0c6713",
+                            ConcurrencyStamp = "aba5ee1c-63f1-4101-a010-10b02d3df9fe",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "09c7b2bf-50db-47c7-be43-3c74ac332e26",
-                            ConcurrencyStamp = "06f1757e-c895-4ac6-9b8e-167c5ec7a6ac",
+                            Id = "d12773ef-e14c-4ad7-81fa-f173f8eab3eb",
+                            ConcurrencyStamp = "175c2807-2121-445d-9680-6b6d0479397e",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -378,8 +378,8 @@ namespace Rafiq.Persistence.Migrations
                     b.Property<int>("QuestionsNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -644,6 +644,9 @@ namespace Rafiq.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<double>("score")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

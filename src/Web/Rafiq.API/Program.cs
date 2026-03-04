@@ -46,45 +46,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
 
 #endregion
 
-//#region Swagger Configuration 
-//builder.Services.AddSwaggerGen(c =>
-//{
-//    var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
-//    foreach (var xmlFile in xmlFiles)
-//    {
-//        c.IncludeXmlComments(xmlFile);
-//    }
-
-//    c.EnableAnnotations();
-
-//    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-//    {
-//        Title = "Rafiq API",
-//        Version = "v1",
-//        Description = @"
-//Rafiq API is a comprehensive platform for managing care services for children with Down syndrome. 
-//It provides a full set of endpoints to handle all aspects of patient care, family management, appointments, and clinical operations.
-
-//This API is developed as a graduation project aimed at improving care for children with special needs.",
-//        Contact = new Microsoft.OpenApi.Models.OpenApiContact
-//        {
-//            Name = "Support",
-//            Email = "abdulrahmanfikry1@gmail.com",
-//            Url = new Uri("https://yourwebsite.com")
-//        },
-//        License = new Microsoft.OpenApi.Models.OpenApiLicense
-//        {
-//            Name = "MIT License",
-//            Url = new Uri("https://opensource.org/licenses/MIT")
-//        }
-//    });
-
-//});
-
-
-
-//#endregion
-
 #region Jwt Configuration
 
 // Configure JWT settings from appsettings.json
