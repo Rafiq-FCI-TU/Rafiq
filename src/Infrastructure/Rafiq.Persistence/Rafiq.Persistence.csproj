@@ -13,6 +13,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\Seed\categories.json" />
+    <None Remove="Data\Seed\questions.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\Seed\questions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\Seed\categories.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Core\Rafiq.Application\Rafiq.Application.csproj" />
   </ItemGroup>
 

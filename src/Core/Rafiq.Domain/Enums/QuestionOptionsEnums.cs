@@ -4,21 +4,22 @@ namespace Rafiq.Domain.Enums;
 public enum Frequency
 {
     [Display(Name = "Not Yet")]
-    NotYet,
-    Sometimes,
-    Often,
-    Always
+    NotYet = 1,
+
+    Sometimes = 2,
+    Often = 3,
+    Always = 4
 }
 
 public enum DifficultyLevel
 {
-    Low,
-    Middle,
-    High
+    Low = 1,
+    Middle = 2,
+    High = 3
 }
 
 public enum AnswerType
 {
-    Frequency,
-    DifficultyLevel
+    Frequency = 1,
+    DifficultyLevel = 2
 }

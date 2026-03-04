@@ -16,9 +16,6 @@ public class AssessmentConfiguration : IEntityTypeConfiguration<Assessment>
               .HasDefaultValueSql("GETUTCDATE()")
             .IsRequired();
 
-        builder.Property(a => a.QuestionsNumber)
-            .HasDefaultValue(40);
-
         // Relationships
         builder.HasOne(a => a.Patient)
             .WithOne(p => p.Assessment)
