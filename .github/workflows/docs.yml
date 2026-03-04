@@ -1,6 +1,7 @@
 name: OpenAPI Specification and Documentation
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   push:
@@ -21,73 +22,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ACTIONS_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-        shell: bash
-
-    
-      - name: Checkout repo via SSH
-        uses: actions/checkout@v6
+      - name: Checkout repo
+        uses: actions/checkout@v4
         with:
-          repository: git@github.com:${{ github.repository }}.git
           ref: ${{ github.event.inputs.branch || github.ref_name }}
-          persist-credentials: false   
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
+      - name: Build project
+        run: dotnet build src/Web/Rafiq.API/Rafiq.API.csproj -c Debug
+
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install -g Swashbuckle.AspNetCore.Cli
+
       - name: Prepare docs folder
         run: rm -rf docs && mkdir docs
 
-      - name: Run API
-        run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://0.0.0.0:5000 &
-
-      - name: Wait for API
+      - name: Generate swagger.json
         run: |
-           for i in {1..12}; do
-             if curl -s http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json; then
-               echo "API is up!"
-               break
-             fi
-             echo "Waiting for API to start..."
-             sleep 5
-           done
+          swagger tofile \
+            --output docs/swagger.json \
+            src/Web/Rafiq.API/bin/Debug/net8.0/Rafiq.API.dll \
+            v1
 
-      - name: Install Redocly CLI
-        run: npm install -g @redocly/openapi-cli
-
-      - name: Generate documentation
+      - name: Generate Redocly HTML
         run: npx @redocly/cli build-docs docs/swagger.json -o docs/index.html
 
-      - name: Commit & push to branch 
-        uses: stefanzweifel/git-auto-commit-action@v7
+      - name: Commit & push to branch
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           file_pattern: docs/**
           commit_user_name: GitHub Actions
           commit_user_email: actions@github.com
-          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          commit_options: "--signoff"
           commit_message: "[Docs] Update API documentation"
           create_branch: true
           branch: docs-auto-update-${{ github.run_id }}
           push_options: '--set-upstream'
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "[Docs] Update API documentation"
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: docs-auto-update-${{ github.run_id }}
           base: main
           title: "[Docs] Update API documentation"
           body: "Automated update of Swagger docs"
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          signoff: false
           draft: false
-          delete-branch: false
