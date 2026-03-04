@@ -178,6 +178,9 @@ try
 {
     // Migrate StoreContext
     await rafiqContext.Database.MigrateAsync();
+
+    // Seed Data To StoreContext
+    await RafiqDbContextSeed.SeedAsync(rafiqContext);
 }
 catch (Exception ex)
 {
@@ -211,3 +214,4 @@ app.MapControllers();
 #endregion
 
 app.Run();
+
