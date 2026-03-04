@@ -1,6 +1,7 @@
 name: OpenAPI Specification and Documentation
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   push:
