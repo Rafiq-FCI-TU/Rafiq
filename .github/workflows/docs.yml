@@ -70,15 +70,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          commit-message: "[Docs] Update API documentation"
-          branch: docs-auto-update-${{ github.run_id }}
-          base: main
-          title: "[Docs] Update API documentation"
-          body: "Automated update of Swagger docs"
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          signoff: false
-          draft: false
-          delete-branch: false
+        run: |
+          gh pr create \
+            --title "[Docs] Update API documentation" \
+            --body "Automated update of Swagger docs" \
+            --base main \
+            --head docs-auto-update-${{ github.run_id }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
