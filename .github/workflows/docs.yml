@@ -23,10 +23,9 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
-          persist-credentials: true 
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -62,15 +61,14 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          # git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git checkout -b docs-auto-update-${{ github.run_id }}
           git add docs/
           git diff --staged --quiet || git commit -m "[Docs] Update API documentation"
           git push origin docs-auto-update-${{ github.run_id }} --set-upstream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 
       - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           gh pr create \
             --repo ${{ github.repository }} \
@@ -78,5 +76,3 @@ jobs:
             --body "Automated update of Swagger docs" \
             --base main \
             --head docs-auto-update-${{ github.run_id }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
