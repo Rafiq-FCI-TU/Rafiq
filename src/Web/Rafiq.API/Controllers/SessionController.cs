@@ -2,7 +2,9 @@
 using Rafiq.API.Extensions;
 using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Application.Interfaces.Services;
+using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
+using System.Net.NetworkInformation;
 
 namespace Rafiq.API.Controllers
 {
@@ -52,7 +54,7 @@ namespace Rafiq.API.Controllers
         /// <response code="200">Session found.</response>
         /// <response code="404">Session not found.</response>
         /// <response code="500">Internal server error.</response>
-        [HttpGet("{sessionId}")]
+        [HttpGet("SessionDetails/{sessionId}")]
         [ProducesResponseType(typeof(SessionDto), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -70,30 +72,35 @@ namespace Rafiq.API.Controllers
         public async Task<IActionResult> GetSessionsBySpecialist(string specialistId)
             => (await _sessionService.GetSessionsBySpecialistAsync(specialistId)).ToActionResult();
 
-        /// <summary>
-        /// Gets all sessions for a specialist filtered by patient.
-        /// </summary>
-        /// <param name="specialistId">Specialist profile ID.</param>
-        /// <param name="patientId">Patient ID.</param>
-        /// <returns>List of sessions accessible to the patient.</returns>
-        [HttpGet("specialist/{specialistId}/patient/{patientId}")]
-        [ProducesResponseType(typeof(IEnumerable<SessionDto>), 200)]
-        [ProducesResponseType(500)]
-        public async Task<IActionResult> GetSessionsBySpecialistForPatient(string specialistId, int patientId)
-            => (await _sessionService.GetSessionsBySpecialistIdForPatientAsync(specialistId, patientId)).ToActionResult();
+
 
         /// <summary>
-        /// Gets the video URL for a specific session and patient.
+        /// Retrieves sessions for a patient filtered by status.
         /// </summary>
-        /// <param name="sessionId">Session ID.</param>
-        /// <param name="patientId">Patient ID.</param>
-        /// <returns>Video URL of the session.</returns>
-        [HttpGet("{sessionId}/video/{patientId}")]
-        [ProducesResponseType(typeof(string), 200)]
+        /// <param name="patientId">The unique ID of the patient.</param>
+        /// <param name="status">
+        /// Optional query parameter to filter sessions:
+        /// <c>valid</c> - sessions that match the patient's total score level.
+        /// <c>notvalid</c> - sessions above the patient's total score level.
+        /// If not specified, all sessions for the patient will be returned.
+        /// </param>
+        /// <returns>
+        /// Returns a list of <see cref="Sessionfor_Specialist_patientDto"/> representing
+        /// the sessions that match the given criteria for the patient.
+        /// </returns>
+        /// <response code="200">Sessions found matching the status filter.</response>
+        /// <response code="404">No sessions found for the patient or matching the specified status.</response>
+        /// <response code="400">Invalid status value provided.</response>
+        /// <response code="500">An unexpected server error occurred while retrieving sessions.</response>
+        [HttpGet("patient/{patientId}/sessions")]
+        [ProducesResponseType(typeof(IEnumerable<Sessionfor_Specialist_patientDto>), 200)]
         [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetSessionVideoUrl(int sessionId, int patientId)
-            => (await _sessionService.GetSessionVideoUrlAsync(sessionId, patientId)).ToActionResult();
+        public async Task<IActionResult> GetSessionsForPatientByStatus(
+            int patientId,
+            [FromQuery] string? status= "valid")
+            => (await _sessionService.GetSessionsByPatientAndStatusAsync(patientId, status)).ToActionResult();
 
         #endregion
     }
