@@ -3,7 +3,7 @@
 namespace Rafiq.Domain.Entities;
 public class AssessmentCategory: BaseEntity
 {
-    public int Score { get; set; }
+    public double Score { get; set; }
     public int QuestionsNumber { get; set; } = 10;
     public int CurrentQuestion { get; set; } = 1;
 

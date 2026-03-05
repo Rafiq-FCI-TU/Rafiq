@@ -20,6 +20,15 @@ public enum DifficultyLevel
 
 public enum AnswerType
 {
+    [AnswerEnum(typeof(Frequency))]
     Frequency = 1,
+
+    [AnswerEnum(typeof(DifficultyLevel))]
     DifficultyLevel = 2
+}
+
+[AttributeUsage(AttributeTargets.Field)]
+public class AnswerEnumAttribute(Type enumType) : Attribute
+{
+    public Type EnumType { get; } = enumType;
 }
