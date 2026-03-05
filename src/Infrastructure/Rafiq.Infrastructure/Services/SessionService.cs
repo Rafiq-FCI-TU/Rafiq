@@ -24,7 +24,7 @@ public class SessionService : ISessionService
         _mapper = mapper;
 
         var connectionString = configuration["AzureBlobStorage:ConnectionString"];
-        _containerName = configuration["AzureBlobStorage:ContainerName"]!;
+        _containerName = configuration["AzureBlobStorage:ContainerName"];
         _blobServiceClient = new BlobServiceClient(connectionString);
     }
 
@@ -34,13 +34,8 @@ public class SessionService : ISessionService
     {
         try
         {
-            var mediaUrl = await UploadFileToAzureAsync(dto.Media, "videos");
-            if (dto.Media != null && string.IsNullOrEmpty(mediaUrl))
-                return Result.Failure<int>(422, "Failed to upload media. Please try again.");
-
-            var thumbnailUrl = await UploadFileToAzureAsync(dto.Thumbnail, "thumbnails");
-            if (dto.Thumbnail != null && string.IsNullOrEmpty(thumbnailUrl))
-                return Result.Failure<int>(422, "Failed to upload thumbnail. Please try again.");
+            var mediaUrl = await UploadFileAsync(dto.Media, "videos");
+            var thumbnailUrl = await UploadFileAsync(dto.Thumbnail, "thumbnails");
 
             var session = new Session
             {
@@ -66,64 +61,6 @@ public class SessionService : ISessionService
         }
     }
 
-    //private async Task<string> UploadFileToAzureAsync(IFormFile? file, string folder)
-    //{
-    //    if (file == null) return string.Empty;
-
-    //    try
-    //    {
-    //        var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-    //        await containerClient.CreateIfNotExistsAsync();
-
-    //        string blobName = $"{folder}/{Guid.NewGuid()}_{file.FileName}";
-    //        var blobClient = containerClient.GetBlobClient(blobName);
-
-    //        using var stream = file.OpenReadStream();
-    //        await blobClient.UploadAsync(stream, overwrite: true);
-
-    //        return blobClient.Uri.ToString();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        throw new Exception($"Azure upload failed: {ex.Message}");
-    //    }
-    //}
-    private async Task<string> UploadFileToAzureAsync(IFormFile? file, string folder)
-    {
-        if (file == null) return string.Empty;
-
-        try
-        {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-            await containerClient.CreateIfNotExistsAsync();
-
-            string blobName = $"{folder}/{Guid.NewGuid()}_{file.FileName}";
-            var blobClient = containerClient.GetBlobClient(blobName);
-
-            using var stream = file.OpenReadStream();
-            await blobClient.UploadAsync(stream, overwrite: true);
-
-            //  Generate SAS URL (valid for 1 hour)
-            var sasBuilder = new BlobSasBuilder
-            {
-                BlobContainerName = containerClient.Name,
-                BlobName = blobName,
-                Resource = "b",
-                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
-            };
-
-            sasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-            var sasUri = blobClient.GenerateSasUri(sasBuilder);
-
-            return sasUri.ToString();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Azure upload failed: {ex.Message}");
-        }
-    }
-
     #endregion
 
     #region Get Sessions
@@ -132,11 +69,14 @@ public class SessionService : ISessionService
     {
         try
         {
-            var spec = new BaseSpecifications<Session>();
+            var spec = new BaseSpecifications<Session>
+            {
+                WhereCriteria = s => s.Id == sessionId
+            };
 
             spec.AddInclude("Specialist");
 
-            var session = await _unitOfWork.Repository<Session>().GetEntityAsync(sessionId);
+            var session = await _unitOfWork.Repository<Session>().GetEntityAsync(spec);
             if (session == null)
                 return Result.Failure<SessionDto>(404, "Session not found");
 
@@ -152,9 +92,16 @@ public class SessionService : ISessionService
     {
         try
         {
-            var sessions = await _unitOfWork.Repository<Session>().GetAllAsync();
-            var filteredSessions = sessions.Where(s => s.SpecialistProfileId == specialistId);
-            var dtos = _mapper.Map<IEnumerable<SessionDto>>(filteredSessions);
+            var spec = new BaseSpecifications<Session>
+            {
+                WhereCriteria = s => s.SpecialistProfileId == specialistId
+            };
+
+            spec.AddInclude("Specialist");
+
+            var sessions = await _unitOfWork.Repository<Session>().GetAllAsync(spec);
+            var dtos = _mapper.Map<IEnumerable<SessionDto>>(sessions);
+
             return Result.Success(dtos);
         }
         catch (Exception ex)
@@ -162,41 +109,90 @@ public class SessionService : ISessionService
             return Result.Failure<IEnumerable<SessionDto>>(500, $"Failed to get sessions: {ex.Message}");
         }
     }
-    public async Task<Result<IEnumerable<SessionDto>>> GetSessionsBySpecialistIdForPatientAsync(string specialistId, int patientId)
+
+    public async Task<Result<IEnumerable<Sessionfor_Specialist_patientDto>>> GetSessionsByPatientAndStatusAsync(int patientId, string status)
     {
         try
         {
-            // Get all sessions for that specialist
-            var sessions = await _unitOfWork.Repository<Session>().GetAllAsync();
+            var patientSpec = new BaseSpecifications<Patient>
+            {
+                WhereCriteria = p => p.Id == patientId
+            };
+            patientSpec.AddIncludeWithThenInclude(p => p.SpecialistPatients, "Specialist");
 
-            /// TODO: create spafification pattern for this filtering logic and move it to repository layer 
-            var filteredSessions = sessions
-                .Where(s => s.SpecialistProfileId == specialistId
-                            && s.Specialist.SpecialistPatients.Any(sp => sp.PatientId == patientId))
-                .ToList();
+            var patient = await _unitOfWork.Repository<Patient>().GetEntityAsync(patientSpec);
+            if (patient == null)
+                return Result.Failure<IEnumerable<Sessionfor_Specialist_patientDto>>(404, "Patient not found");
 
-            var dtos = _mapper.Map<IEnumerable<SessionDto>>(filteredSessions);
+            var specialist = patient.SpecialistPatients.FirstOrDefault();
+            if (specialist == null)
+                return Result.Failure<IEnumerable<Sessionfor_Specialist_patientDto>>(404, "No sessions found. Please select a specialist first.");
+
+            var sessionSpec = new BaseSpecifications<Session>
+            {
+                WhereCriteria = s => s.SpecialistProfileId == specialist.SpecialistId
+            };
+            sessionSpec.AddInclude("Specialist");
+
+            var sessions = await _unitOfWork.Repository<Session>().GetAllAsync(sessionSpec);
+
+            var filteredSessions = FilterSessionsByStatus(sessions, patient.TotalScore, status).ToList();
+            if (!filteredSessions.Any())
+                return Result.Failure<IEnumerable<Sessionfor_Specialist_patientDto>>(404, "No sessions found");
+
+            var dtos = _mapper.Map<IEnumerable<Sessionfor_Specialist_patientDto>>(
+                filteredSessions,
+                opt => {
+                    opt.Items["PatientId"] = patientId;
+                    opt.Items["PatientName"] = patient.FirstName;
+                }
+            );
+
             return Result.Success(dtos);
         }
         catch (Exception ex)
         {
-            return Result.Failure<IEnumerable<SessionDto>>(500, $"Failed to get sessions for patient: {ex.Message}");
+            return Result.Failure<IEnumerable<Sessionfor_Specialist_patientDto>>(500, $"Failed to get sessions: {ex.Message}");
         }
     }
-    public async Task<Result<string>> GetSessionVideoUrlAsync(int sessionId, int patientId)
-    {
-        try
-        {
-            var session = await _unitOfWork.Repository<Session>().GetEntityAsync(sessionId);
-            if (session == null)
-                return Result.Failure<string>(404, "Session not found");
+    #endregion
 
-            return Result.Success<string>(session.VideoUrl);
-        }
-        catch (Exception ex)
+    #region Helper Methods
+
+    private async Task<string> UploadFileAsync(IFormFile? file, string folder)
+    {
+        if (file == null) return string.Empty;
+
+        var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+        await containerClient.CreateIfNotExistsAsync();
+
+        var blobName = $"{folder}/{Guid.NewGuid()}_{file.FileName}";
+        var blobClient = containerClient.GetBlobClient(blobName);
+
+        await using var stream = file.OpenReadStream();
+        await blobClient.UploadAsync(stream, overwrite: true);
+
+        var sasBuilder = new BlobSasBuilder
         {
-            return Result.Failure<string>(500, $"Failed to get video URL: {ex.Message}");
-        }
+            BlobContainerName = containerClient.Name,
+            BlobName = blobName,
+            Resource = "b",
+            ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+        };
+
+        sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+        return blobClient.GenerateSasUri(sasBuilder).ToString();
+    }
+
+    private IEnumerable<Session> FilterSessionsByStatus(IReadOnlyList<Session> sessions, decimal totalScore, string status)
+    {
+        return status.ToLower() switch
+        {
+            "allowed" => sessions.Where(s => s.Score <= totalScore),
+            "not-allowed" => sessions.Where(s => s.Score > totalScore),
+            _ => []
+        };
     }
 
     #endregion
