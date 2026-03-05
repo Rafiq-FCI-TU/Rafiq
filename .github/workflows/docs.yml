@@ -1,6 +1,7 @@
 name: OpenAPI Specification and Documentation
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   push:
@@ -22,10 +23,9 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.branch || github.ref_name }}
-          persist-credentials: false   
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -33,18 +33,23 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Prepare docs folder
-        run: rm -rf docs && mkdir docs
+        run: |
+          rm -rf docs
+          mkdir docs
 
       - name: Run API
         run: dotnet run --project src/Web/Rafiq.API/Rafiq.API.csproj --urls http://0.0.0.0:5000 &
 
       - name: Wait for API
         run: |
-           for i in {1..12}; do
-             curl http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json && break
-             echo "Waiting for API to start..."
-             sleep 5
-           done
+          for i in {1..12}; do
+            if curl -s http://localhost:5000/swagger/v1/swagger.json -o docs/swagger.json; then
+              echo "API is up!"
+              break
+            fi
+            echo "Waiting for API to start..."
+            sleep 5
+          done
 
       - name: Install Redocly CLI
         run: npm install -g @redocly/openapi-cli
@@ -52,29 +57,22 @@ jobs:
       - name: Generate documentation
         run: npx @redocly/cli build-docs docs/swagger.json -o docs/index.html
 
-      - name: Commit & push to branch 
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          file_pattern: docs/**
-          commit_user_name: GitHub Actions
-          commit_user_email: actions@github.com
-          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          commit_options: "--signoff"
-          commit_message: "[Docs] Update API documentation"
-          create_branch: true
-          branch: docs-auto-update-${{ github.run_id }}
-          push_options: '--set-upstream'
-          
+      - name: Commit & push to branch
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git checkout -b docs-auto-update-${{ github.run_id }}
+          git add docs/
+          git diff --staged --quiet || git commit -m "[Docs] Update API documentation"
+          git push origin docs-auto-update-${{ github.run_id }} --set-upstream
+
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          commit-message: "[Docs] Update API documentation"
-          branch: docs-auto-update-${{ github.run_id }}
-          base: main
-          title: "[Docs] Update API documentation"
-          body: "Automated update of Swagger docs"
-          committer: GitHub <noreply@github.com>
-          author: abdulrahman11a <abdulrahman11a@users.noreply.github.com>
-          signoff: false
-          draft: false
-          delete-branch: false
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          gh pr create \
+            --repo ${{ github.repository }} \
+            --title "[Docs] Update API documentation" \
+            --body "Automated update of Swagger docs" \
+            --base main \
+            --head docs-auto-update-${{ github.run_id }}
