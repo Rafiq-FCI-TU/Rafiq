@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAssessmentService, AssessmentService>();
+        services.AddScoped<IGamingService, GamingService>();
 
         services.AddControllers();
 
