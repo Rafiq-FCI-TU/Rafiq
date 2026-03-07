@@ -1218,7 +1218,7 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "default": "allowed"
+              "default": "valid"
             }
           }
         ],
