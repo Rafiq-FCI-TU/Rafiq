@@ -80,8 +80,8 @@ namespace Rafiq.API.Controllers
         /// <param name="patientId">The unique ID of the patient.</param>
         /// <param name="status">
         /// Optional query parameter to filter sessions:
-        /// <c>valid</c> - sessions that match the patient's total score level.
-        /// <c>notvalid</c> - sessions above the patient's total score level.
+        /// <c>allowed</c> - sessions that match the patient's total score level.
+        /// <c>not-allowed</c> - sessions above the patient's total score level.
         /// If not specified, all sessions for the patient will be returned.
         /// </param>
         /// <returns>
@@ -97,9 +97,7 @@ namespace Rafiq.API.Controllers
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetSessionsForPatientByStatus(
-            int patientId,
-            [FromQuery] string? status= "valid")
+        public async Task<IActionResult> GetSessionsForPatientByStatus(int patientId, [FromQuery] string status= "allowed")
             => (await _sessionService.GetSessionsByPatientAndStatusAsync(patientId, status)).ToActionResult();
 
         #endregion

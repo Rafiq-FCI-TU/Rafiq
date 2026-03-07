@@ -1,7 +1,8 @@
 ﻿using Rafiq.Application.Dtos.AuthDtos;
 using Rafiq.Application.Dtos.StepsDtos;
-using Rafiq.Application.Interfaces.Services;
 using Rafiq.Domain.ErrorHandling;
+
+namespace Rafiq.Application.Interfaces.Services;
 
 public interface ISpecialistRegistrationService
 {
