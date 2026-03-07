@@ -475,7 +475,9 @@
         "tags": [
           "FamilyRegistration"
         ],
+        "summary": "Step 1: Submit family basic information.",
         "requestBody": {
+          "description": "The family information DTO containing Email, Relationship, Name, and EmergencyContact info.",
           "content": {
             "application/json": {
               "schema": {
@@ -496,7 +498,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Step 1 completed successfully, returns token and next step.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -516,7 +518,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Validation failed (e.g., missing Email or invalid Relationship).",
             "content": {
               "text/plain": {
                 "schema": {
@@ -543,7 +545,9 @@
         "tags": [
           "FamilyRegistration"
         ],
+        "summary": "Step 2: Submit patient details.",
         "requestBody": {
+          "description": "The patient details DTO containing FirstName, LastName, DateOfBirth, Gender, and Token.",
           "content": {
             "application/json": {
               "schema": {
@@ -564,7 +568,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Step 2 completed successfully, returns token and next step.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -584,7 +588,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid token or step sequence, or missing patient data.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -604,7 +608,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "Registration session not found or expired.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -631,7 +635,9 @@
         "tags": [
           "FamilyRegistration"
         ],
+        "summary": "Step 3: Complete family registration by setting a password.",
         "requestBody": {
+          "description": "The password DTO containing the registration token and password.",
           "content": {
             "application/json": {
               "schema": {
@@ -652,7 +658,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Registration completed successfully.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -672,7 +678,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid token, incomplete registration data, or invalid step sequence.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -692,7 +698,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "Registration session not found or expired.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -719,10 +725,12 @@
         "tags": [
           "FamilyRegistration"
         ],
+        "summary": "Resume a previously started registration process using the token.",
         "parameters": [
           {
             "name": "token",
             "in": "query",
+            "description": "The registration session token obtained from step 1 or 2.",
             "schema": {
               "type": "string"
             }
@@ -730,7 +738,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Registration session retrieved successfully.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -750,7 +758,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Token is null or empty.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -770,7 +778,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "Registration session not found or expired.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -797,10 +805,12 @@
         "tags": [
           "Gaming"
         ],
+        "summary": "Gets the full gaming overview for a patient, including all categories,\ngames, and levels with locked/unlocked status based on the patient's current score.",
         "parameters": [
           {
             "name": "patientId",
             "in": "path",
+            "description": "The patient's ID.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -810,7 +820,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Overview retrieved successfully.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -830,7 +840,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "Patient or gaming record not found.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -850,7 +860,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error."
           }
         }
       }
@@ -860,10 +870,12 @@
         "tags": [
           "Gaming"
         ],
+        "summary": "Submits a game level completion result. Awards reward points and updates the patient's total score.",
         "parameters": [
           {
             "name": "patientId",
             "in": "path",
+            "description": "The patient's ID.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -872,6 +884,7 @@
           }
         ],
         "requestBody": {
+          "description": "The game level completion data containing the gameLevelId.",
           "content": {
             "application/json": {
               "schema": {
@@ -892,7 +905,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Game result submitted successfully.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -912,7 +925,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Level is locked (insufficient score).",
             "content": {
               "text/plain": {
                 "schema": {
@@ -932,7 +945,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "Patient or game level not found.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -952,7 +965,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error."
           }
         }
       }
@@ -962,6 +975,7 @@
         "tags": [
           "Session"
         ],
+        "summary": "Creates a new session with optional video and thumbnail uploads.",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -972,6 +986,9 @@
                     "type": "string"
                   },
                   "Description": {
+                    "type": "string"
+                  },
+                  "Notes": {
                     "type": "string"
                   },
                   "Media": {
@@ -1009,6 +1026,9 @@
                 "Description": {
                   "style": "form"
                 },
+                "Notes": {
+                  "style": "form"
+                },
                 "Media": {
                   "style": "form"
                 },
@@ -1036,7 +1056,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Session created successfully.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1059,7 +1079,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Media or thumbnail upload failed.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1079,7 +1099,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error during creation."
           }
         }
       }
@@ -1089,10 +1109,12 @@
         "tags": [
           "Session"
         ],
+        "summary": "Gets session details by session ID.",
         "parameters": [
           {
             "name": "sessionId",
             "in": "path",
+            "description": "The session ID.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1102,7 +1124,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Session found.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1122,7 +1144,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "Session not found.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1142,7 +1164,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error."
           }
         }
       }
@@ -1152,10 +1174,12 @@
         "tags": [
           "Session"
         ],
+        "summary": "Gets all sessions for a specific specialist.",
         "parameters": [
           {
             "name": "specialistId",
             "in": "path",
+            "description": "Specialist profile ID.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1203,10 +1227,12 @@
         "tags": [
           "Session"
         ],
+        "summary": "Retrieves sessions for a patient filtered by status.",
         "parameters": [
           {
             "name": "patientId",
             "in": "path",
+            "description": "The unique ID of the patient.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1216,15 +1242,16 @@
           {
             "name": "status",
             "in": "query",
+            "description": "Optional query parameter to filter sessions:\n`allowed` - sessions that match the patient's total score level.\n`not-allowed` - sessions above the patient's total score level.\nIf not specified, all sessions for the patient will be returned.",
             "schema": {
               "type": "string",
-              "default": "valid"
+              "default": "allowed"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Sessions found matching the status filter.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1253,7 +1280,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "No sessions found for the patient or matching the specified status.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1273,7 +1300,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid status value provided.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1293,7 +1320,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An unexpected server error occurred while retrieving sessions."
           }
         }
       }
@@ -1599,7 +1626,8 @@
           },
           "relationship": {
             "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "description": "Allowed values: Father, Mother, Other"
           },
           "address": {
             "maxLength": 100,
@@ -1794,7 +1822,8 @@
           },
           "gender": {
             "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "description": "Allowed values: Male, Female"
           }
         },
         "additionalProperties": false
@@ -1934,6 +1963,10 @@
             "type": "string",
             "nullable": true
           },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
           "videoUrl": {
             "type": "string",
             "nullable": true
@@ -1975,6 +2008,10 @@
           "id": {
             "type": "integer",
             "format": "int32"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
           },
           "title": {
             "type": "string",
@@ -2073,12 +2110,14 @@
           "credentials": {
             "maxLength": 20,
             "minLength": 2,
-            "type": "string"
+            "type": "string",
+            "description": "Examples: MD, PhD, MSc"
           },
           "specialty": {
             "maxLength": 50,
             "minLength": 2,
-            "type": "string"
+            "type": "string",
+            "description": "Examples: Pediatrician, Therapist, Psychologist"
           },
           "organization": {
             "maxLength": 100,
@@ -2092,7 +2131,8 @@
           },
           "gender": {
             "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "description": "Allowed values: Male, Female"
           }
         },
         "additionalProperties": false
