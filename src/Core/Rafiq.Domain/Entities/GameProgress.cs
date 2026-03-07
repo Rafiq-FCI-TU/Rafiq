@@ -1,18 +1,15 @@
-﻿namespace Rafiq.Domain.Entities
+﻿using Rafiq.Domain.Common;
+
+namespace Rafiq.Domain.Entities;
+
+public class GameProgress : BaseEntity
 {
-    public class GameProgress // A class to track progress in each game
-    {
-        public int Id { get; set; }
-        public int GameId { get; set; }
-        public int PatientId { get; set; }
-        public int AchievedPoints { get; set; }
+    public int PatientId { get; set; }
+    public int GameLevelId { get; set; }
+    public int EarnedPoints { get; set; }
+    public DateTime PlayedAt { get; set; } = DateTime.Now;
 
-        public int TimePlayed { get; set; }// Time spent (in minutes)
-        public bool Completed { get; set; } // Is the game over?
-        public DateTime PlayedAt { get; set; } = DateTime.Now; // Playdate
-
-        // Navigation
-        public Game Game { get; set; } = null!;
-        public Patient Patient { get; set; } = null!;
-    }
+    // Navigation properties
+    public Patient Patient { get; set; } = null!;
+    public GameLevel GameLevel { get; set; } = null!;
 }
