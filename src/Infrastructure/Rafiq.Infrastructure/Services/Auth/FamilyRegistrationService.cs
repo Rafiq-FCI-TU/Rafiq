@@ -79,25 +79,25 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
         }
     }
 
-    public async Task<Result> CompleteFamilyRegistrationAsync(PasswordStepDto dto)
+    public async Task<Result<int>> CompleteFamilyRegistrationAsync(PasswordStepDto dto)
     {
         try
         {
-            if (dto is null) return Result.Failure(400, "Password data is required.");
+            if (dto is null) return Result.Failure<int>(400, "Password data is required.");
 
             var registrationCache = await cache.GetAsync<FamilyRegistrationCache>(dto.Token);
 
             var guard = CheckStepCache(registrationCache, expectedStep: 2);
             if (!guard.IsSuccess)
-                return guard;
+                return Result.Failure<int>(guard.StatusCode, guard.Message);
 
             if (registrationCache!.PatientData is null)
-                return Result.Failure(400, "Patient data is missing.");
+                return Result.Failure<int>(400, "Patient data is missing.");
 
             var familyResult = await CreateFamilyProfileAsync(registrationCache.FamilyData, dto.Password);
 
             if (!familyResult.IsSuccess)
-                return familyResult;
+                return Result.Failure<int>(familyResult.StatusCode, familyResult.Message);
 
             Enum.TryParse<Gender>(registrationCache.PatientData.Gender, true, out var gender);
 
@@ -115,11 +115,11 @@ public class FamilyRegistrationService(UserManager<ApplicationUser> userManager,
 
             await cache.RemoveAsync(dto.Token);
 
-            return Result.Success("Registration completed successfully.");
+            return Result.Success(patient.Id,"Registration completed successfully.");
         }
         catch (Exception)
         {
-            return Result.Failure(500, "An unexpected error occurred during registration completion.");
+            return Result.Failure<int>(500, "An unexpected error occurred during registration completion.");
         }
     }
 

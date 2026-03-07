@@ -378,8 +378,8 @@ namespace Rafiq.Persistence.Migrations
                     b.Property<int>("QuestionsNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -657,6 +657,9 @@ namespace Rafiq.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<double>("score")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

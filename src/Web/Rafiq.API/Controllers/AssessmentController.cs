@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rafiq.API.Extensions;
-using Rafiq.Application.Dtos.StepsDtos;
+using Rafiq.Application.Dtos.AssessmentDtos;
 using Rafiq.Application.Interfaces.Services;
-using Rafiq.Infrastructure.Services;
 
 namespace Rafiq.API.Controllers;
 public class AssessmentController(IAssessmentService assessmentService) : BaseController
@@ -26,4 +25,3 @@ public class AssessmentController(IAssessmentService assessmentService) : BaseCo
         return Ok(result);
     }
 }
-

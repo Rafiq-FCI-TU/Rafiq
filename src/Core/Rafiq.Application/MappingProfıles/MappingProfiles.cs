@@ -14,9 +14,7 @@ namespace Rafiq.Application.MappingProfıles
                            opt => opt.MapFrom(src => src.Specialist.FirstName));
 
             // SessionCreateDto => Session
-            CreateMap<SessionCreateDto, Session>()
-                .ForMember(dest => dest.VideoUrl,
-                           opt => opt.MapFrom(src => src.MediaUrl));
+            CreateMap<SessionCreateDto, Session>();
 
             // Session => Sessionfor_Specialist_patientDto
             CreateMap<Session, Sessionfor_Specialist_patientDto>()
