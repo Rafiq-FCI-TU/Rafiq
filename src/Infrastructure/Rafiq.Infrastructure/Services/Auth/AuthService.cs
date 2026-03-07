@@ -4,7 +4,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Rafiq.Application.Dtos;
 using Rafiq.Application.Dtos.AuthDtos;
+using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
+using Rafiq.Application.Specifications;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
 using Rafiq.Domain.Settings;
@@ -14,19 +16,19 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Rafiq.Infrastructure.Services.Auth;
-public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtSettings> jwtSettings) : IAuthService
+public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtSettings> jwtSettings,IUnitOfWork unitOfWork) : IAuthService
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task<Result<ResponseDto>> LoginAsync(LoginRequestDto model)
+    public async Task<Result<ResponseForFamilyRegistrationDto>> LoginAsync(LoginRequestDto model)
     {
         if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Password))
-            return Result.Failure<ResponseDto>(400, "Email and password are required.");
+            return Result.Failure<ResponseForFamilyRegistrationDto>(400, "Email and password are required.");
 
         var user = await userManager.FindByEmailAsync(model.Email);
 
         if (user is null || !await userManager.CheckPasswordAsync(user, model.Password))
-            return Result.Failure<ResponseDto>(400, "The email or password you entered is incorrect.");
+            return Result.Failure<ResponseForFamilyRegistrationDto>(400, "The email or password you entered is incorrect.");
 
         CleanupExpiredRefreshTokens(user);
 
@@ -41,8 +43,37 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
             await userManager.UpdateAsync(user);
         }
 
-        return Result.Success(new ResponseDto
+        if (roles.Contains("Family"))
         {
+            var spec = new BaseSpecifications<Patient>
+            {
+                WhereCriteria = p => p.FamilyProfileId == user.Id
+            };
+
+            var patient = await unitOfWork.Repository<Patient>().GetEntityAsync(spec);
+
+            bool hasAssessment = patient?.AssessmentId > 0;
+            int? assessmentId = hasAssessment ? patient?.AssessmentId : null;
+
+            return Result.Success<ResponseForFamilyRegistrationDto>(new ResponseForFamilyRegistrationDto
+            {
+                id = patient.Id,
+                IsAuthenticated = true,
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                Email = user.Email ?? string.Empty,
+                Username = user.UserName ?? string.Empty,
+                Roles = roles.ToList(),
+                ExpiresOn = jwtToken.ValidTo,
+                RefreshToken = activeRefreshToken.Token,
+                RefreshTokenExpiration = activeRefreshToken.ExpiresOn,
+                HasAssessment = hasAssessment,
+                AssessmentId = assessmentId
+            });
+        }
+
+        return Result.Success(new ResponseForFamilyRegistrationDto
+        {
+            id = null,
             IsAuthenticated = true,
             Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
             Email = user.Email ?? string.Empty,
