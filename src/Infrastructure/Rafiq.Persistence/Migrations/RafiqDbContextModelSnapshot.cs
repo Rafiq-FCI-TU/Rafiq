@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c41c40e8-3b08-410d-a4d8-002db008e48f",
-                            ConcurrencyStamp = "1152f893-44b1-4e0f-a8db-87a98df0be83",
+                            Id = "af135806-4736-4492-a734-07d56f12c272",
+                            ConcurrencyStamp = "0bc71d80-2c8c-4991-95cf-f95664c910ae",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "79825897-a3b8-4fa6-b45b-df2d9ae3dab2",
-                            ConcurrencyStamp = "5a84e56e-e89c-4b51-b3ac-66c30ff9022b",
+                            Id = "3e05496a-fe56-4626-8996-1f8cf23908c3",
+                            ConcurrencyStamp = "5bbfb59d-77f4-460f-bf17-1f0e16c9b91a",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -681,6 +681,10 @@ namespace Rafiq.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Duration")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
