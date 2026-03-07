@@ -832,12 +832,6 @@
                     "type": "string",
                     "format": "date-time"
                   },
-                  "MediaUrl": {
-                    "type": "string"
-                  },
-                  "ThumbnailUrl": {
-                    "type": "string"
-                  },
                   "SpecialistProfileId": {
                     "type": "string"
                   }
@@ -866,12 +860,6 @@
                   "style": "form"
                 },
                 "PublishedAt": {
-                  "style": "form"
-                },
-                "MediaUrl": {
-                  "style": "form"
-                },
-                "ThumbnailUrl": {
                   "style": "form"
                 },
                 "SpecialistProfileId": {
