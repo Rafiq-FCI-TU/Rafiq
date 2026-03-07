@@ -9,4 +9,12 @@ public class ResponseDto
     public DateTime ExpiresOn { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiration { get; set; }
+
+
+}
+public class ResponseForFamilyRegistrationDto : ResponseDto
+{
+    public int?id { get; set; }
+    public bool? HasAssessment { get; set; }
+    public int? AssessmentId { get; set; }
 }
