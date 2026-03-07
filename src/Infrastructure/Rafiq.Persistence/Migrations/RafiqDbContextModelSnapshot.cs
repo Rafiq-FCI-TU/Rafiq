@@ -51,15 +51,15 @@ namespace Rafiq.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fa8017f7-0843-4230-87c1-9c2311f4b638",
-                            ConcurrencyStamp = "c4f86e56-66e0-4da3-a9a8-793c2f4e296f",
+                            Id = "c41c40e8-3b08-410d-a4d8-002db008e48f",
+                            ConcurrencyStamp = "1152f893-44b1-4e0f-a8db-87a98df0be83",
                             Name = "Family",
                             NormalizedName = "FAMILY"
                         },
                         new
                         {
-                            Id = "09c7b2bf-50db-47c7-be43-3c74ac332e26",
-                            ConcurrencyStamp = "06f1757e-c895-4ac6-9b8e-167c5ec7a6ac",
+                            Id = "79825897-a3b8-4fa6-b45b-df2d9ae3dab2",
+                            ConcurrencyStamp = "5a84e56e-e89c-4b51-b3ac-66c30ff9022b",
                             Name = "Specialist",
                             NormalizedName = "SPECIALIST"
                         });
@@ -447,7 +447,7 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Game");
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
@@ -457,9 +457,6 @@ namespace Rafiq.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GamingId")
-                        .HasColumnType("int");
 
                     b.Property<int>("InitialScore")
                         .ValueGeneratedOnAdd()
@@ -473,9 +470,38 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GamingId");
+                    b.ToTable("GameCategories");
+                });
 
-                    b.ToTable("GameCategory");
+            modelBuilder.Entity("Rafiq.Domain.Entities.GameLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DifficultyLevel")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequiredScore")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("RewardPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameLevels");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameProgress", b =>
@@ -486,17 +512,12 @@ namespace Rafiq.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AchievedPoints")
+                    b.Property<int>("EarnedPoints")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<bool>("Completed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("GameId")
+                    b.Property<int>("GameLevelId")
                         .HasColumnType("int");
 
                     b.Property<int>("PatientId")
@@ -507,18 +528,13 @@ namespace Rafiq.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<int>("TimePlayed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.HasKey("Id");
 
-                    b.HasIndex("GameId");
+                    b.HasIndex("GameLevelId");
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("GameProgress");
+                    b.ToTable("GameProgresses");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Gaming", b =>
@@ -537,14 +553,11 @@ namespace Rafiq.Persistence.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TotalScore")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.HasKey("Id");
 
-                    b.ToTable("Gaming");
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Gamings");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.PasswordResetToken", b =>
@@ -925,27 +938,31 @@ namespace Rafiq.Persistence.Migrations
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Game", b =>
                 {
-                    b.HasOne("Rafiq.Domain.Entities.GameCategory", null)
+                    b.HasOne("Rafiq.Domain.Entities.GameCategory", "Category")
                         .WithMany("Games")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
+            modelBuilder.Entity("Rafiq.Domain.Entities.GameLevel", b =>
                 {
-                    b.HasOne("Rafiq.Domain.Entities.Gaming", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("GamingId")
+                    b.HasOne("Rafiq.Domain.Entities.Game", "Game")
+                        .WithMany("Levels")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameProgress", b =>
                 {
-                    b.HasOne("Rafiq.Domain.Entities.Game", "Game")
+                    b.HasOne("Rafiq.Domain.Entities.GameLevel", "GameLevel")
                         .WithMany("ProgressRecords")
-                        .HasForeignKey("GameId")
+                        .HasForeignKey("GameLevelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -955,7 +972,18 @@ namespace Rafiq.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Game");
+                    b.Navigation("GameLevel");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Gaming", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Patient");
                 });
@@ -1034,7 +1062,7 @@ namespace Rafiq.Persistence.Migrations
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Game", b =>
                 {
-                    b.Navigation("ProgressRecords");
+                    b.Navigation("Levels");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
@@ -1042,9 +1070,9 @@ namespace Rafiq.Persistence.Migrations
                     b.Navigation("Games");
                 });
 
-            modelBuilder.Entity("Rafiq.Domain.Entities.Gaming", b =>
+            modelBuilder.Entity("Rafiq.Domain.Entities.GameLevel", b =>
                 {
-                    b.Navigation("Categories");
+                    b.Navigation("ProgressRecords");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>

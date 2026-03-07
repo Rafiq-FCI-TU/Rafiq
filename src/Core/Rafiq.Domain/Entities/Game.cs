@@ -1,26 +1,30 @@
-﻿using Rafiq.Domain.Enums;
+﻿using Rafiq.Domain.Common;
+using Rafiq.Domain.Enums;
 
-namespace Rafiq.Domain.Entities
+namespace Rafiq.Domain.Entities;
+
+public class Game : BaseEntity
 {
-    public class Game
-    {
-        public int Id { get; set; }
-        public int CategoryId { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public int MaxPoints { get; set; }
-        public string Duration { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public GameStatus Status { get; set; } = GameStatus.NotStarted;
-        public List<GameProgress> ProgressRecords { get; set; } = new List<GameProgress>();
+    public int CategoryId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public int MaxPoints { get; set; }
+    public string Duration { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public GameStatus Status { get; set; } = GameStatus.NotStarted;
 
-        public double Progress
+    // Navigation properties
+    public GameCategory Category { get; set; } = null!;
+    public List<GameLevel> Levels { get; set; } = new List<GameLevel>();
+
+    public double Progress
+    {
+        get
         {
-            get
-            {
-                if (!ProgressRecords.Any()) return 0;
-                var totalAchieved = ProgressRecords.Sum(pr => pr.AchievedPoints);
-                return (double)totalAchieved / MaxPoints * 100;
-            }
+            if (!Levels.Any()) return 0;
+            var totalAchieved = Levels
+                .SelectMany(l => l.ProgressRecords)
+                .Sum(pr => pr.EarnedPoints);
+            return (double)totalAchieved / MaxPoints * 100;
         }
     }
 }

@@ -11,12 +11,12 @@ public enum Frequency
     Always = 4
 }
 
-public enum DifficultyLevel
-{
-    Low = 1,
-    Middle = 2,
-    High = 3
-}
+// public enum DifficultyLevel
+// {
+//     Low = 1,
+//     Middle = 2,
+//     High = 3
+// }
 
 public enum AnswerType
 {
