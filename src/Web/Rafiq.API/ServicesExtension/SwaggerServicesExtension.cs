@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi;
+using System.Reflection;
+
 
 namespace Rafiq.API.ServicesExtension;
 
@@ -11,7 +13,6 @@ public static class SwaggerServicesExtension
 
         services.AddSwaggerGen(options =>
         {
-           
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
@@ -30,7 +31,16 @@ public static class SwaggerServicesExtension
                 }
             });
 
-            
+            // 🔹  summaries و <example> في Swagger / Redoc
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath);
+
+            // 🔹[SwaggerSchema], [SwaggerOperation], [SwaggerResponse] annotations
+            options.EnableAnnotations();
+
+
+
             //var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
             //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             //options.IncludeXmlComments(xmlPath);
@@ -43,9 +53,9 @@ public static class SwaggerServicesExtension
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
-
-            
         });
+
+
     }
 
     public static void UseSwaggerAndOpenApiMiddleware(this WebApplication app)
