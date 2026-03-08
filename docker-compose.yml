@@ -1,0 +1,48 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: rafiq-sql
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - rafiq-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S db -U sa -P YourStrong!Passw0rd -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: rafiq-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - rafiq-network
+
+  api:
+    image: rafiqproject4/myapp:latest
+    container_name: rafiq-api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "5000:8080"
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Initial Catalog=rafiqbp;User ID=sa;Password=YourStrong!Passw0rd;Encrypt=False;TrustServerCertificate=True;
+      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=False
+      - AzureBlobStorage__ConnectionString=UseDevelopmentStorage=true
+      - AzureBlobStorage__ContainerName=videos
+    networks:
+      - rafiq-network
+
+networks:
+  rafiq-network:
+    driver: bridge
