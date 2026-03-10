@@ -51,7 +51,7 @@ public static class RafiqDbContextSeed
         ];
     }
 
-    public static async Task SeedAsync(RafiqDbContext context)
+    public static async Task SeedAsync(RafiqDbContext context, RoleManager<IdentityRole> roleManager)
     {
         if (!context.Categories.Any())
         {
@@ -66,6 +66,16 @@ public static class RafiqDbContextSeed
             context.Questions.AddRange(questions);
         }
 
+        if (!roleManager.Roles.Any())
+        {
+            var roles = GetRoles();
+
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);
+            }
+        }
+
         // Seed Gaming data (Categories → Games → Levels)
         if (!context.GameCategories.Any())
         {
@@ -74,17 +84,14 @@ public static class RafiqDbContextSeed
             {
                 var category = new GameCategory
                 {
-                    Name = cat.Name,
-                    InitialScore = cat.InitialScore
+                    Name = cat.Name
                 };
 
                 foreach (var gameSeed in cat.Games)
                 {
                     var game = new Game
                     {
-                        Title = gameSeed.Title,
-                        MaxPoints = gameSeed.MaxPoints,
-                        Duration = gameSeed.Duration
+                        Title = gameSeed.Title
                     };
 
                     foreach (var levelSeed in gameSeed.Levels)
@@ -92,8 +99,7 @@ public static class RafiqDbContextSeed
                         game.Levels.Add(new GameLevel
                         {
                             DifficultyLevel = (DifficultyLevel)levelSeed.DifficultyLevel,
-                            RequiredScore = levelSeed.RequiredScore,
-                            RewardPoints = levelSeed.RewardPoints
+                            RequiredScore = levelSeed.RequiredScore
                         });
                     }
 

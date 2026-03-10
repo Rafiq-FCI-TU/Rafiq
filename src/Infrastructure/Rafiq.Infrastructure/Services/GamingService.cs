@@ -102,18 +102,16 @@ public class GamingService : IGamingService
                     $"Level is locked. Required score: {gameLevel.RequiredScore}, current score: {patient.TotalScore}.");
 
             // 4. Record progress
-            var progress = new GameProgress
+            var progress = new PatientLevel
             {
                 PatientId = patientId,
                 GameLevelId = dto.GameLevelId,
-                EarnedPoints = gameLevel.RewardPoints,
                 PlayedAt = DateTime.Now
             };
 
-            await _unitOfWork.Repository<GameProgress>().AddAsync(progress);
+            await _unitOfWork.Repository<PatientLevel>().AddAsync(progress);
 
             // 5. Update patient's total score
-            patient.TotalScore += gameLevel.RewardPoints;
             _unitOfWork.Repository<Patient>().Update(patient);
 
             await _unitOfWork.CompleteAsync();
@@ -121,7 +119,7 @@ public class GamingService : IGamingService
             // 6. Find newly unlocked levels
             var allLevelsSpec = new BaseSpecifications<GameLevel>
             {
-                WhereCriteria = gl => gl.RequiredScore > (patient.TotalScore - gameLevel.RewardPoints)
+                WhereCriteria = gl => gl.RequiredScore > (patient.TotalScore)
                                    && gl.RequiredScore <= patient.TotalScore
             };
             allLevelsSpec.AddInclude("Game");
@@ -130,7 +128,6 @@ public class GamingService : IGamingService
 
             var response = new GameResultResponseDto
             {
-                EarnedPoints = gameLevel.RewardPoints,
                 NewTotalScore = patient.TotalScore,
                 NewlyUnlockedLevels = newlyUnlocked
                     .Select(l => $"{l.Game.Title} - {l.DifficultyLevel}")

@@ -132,6 +132,8 @@ var services = scope.ServiceProvider;
 
 // --> Bring Object Of StoreContext For Update His Migration
 var rafiqContext = services.GetRequiredService<RafiqDbContext>();
+// --> Bring Object Of RoleManager
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 // --> Bring Object Of ILoggerFactory For Good Show Error In Console
 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
 
@@ -141,7 +143,7 @@ try
     await rafiqContext.Database.MigrateAsync();
 
     // Seed Data To StoreContext
-    await RafiqDbContextSeed.SeedAsync(rafiqContext);
+    await RafiqDbContextSeed.SeedAsync(rafiqContext, roleManager);
 }
 catch (Exception ex)
 {

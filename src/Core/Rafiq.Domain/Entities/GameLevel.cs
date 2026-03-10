@@ -8,9 +8,9 @@ public class GameLevel : BaseEntity
     public int GameId { get; set; }
     public DifficultyLevel DifficultyLevel { get; set; }
     public int RequiredScore { get; set; }
-    public int RewardPoints { get; set; }
+    public int MaxScore { get; set; }
 
     // Navigation properties
     public Game Game { get; set; } = null!;
-    public List<GameProgress> ProgressRecords { get; set; } = new List<GameProgress>();
+    public List<PatientLevel> PatientLevels { get; set; } = [];
 }

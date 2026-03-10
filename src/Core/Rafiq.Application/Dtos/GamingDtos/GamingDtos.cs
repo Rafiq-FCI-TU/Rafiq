@@ -29,7 +29,7 @@ public class GameCategoryDto
 public class PlayerGamingOverviewDto
 {
     public int PatientId { get; set; }
-    public decimal TotalScore { get; set; }
+    public double TotalScore { get; set; }
     public List<GameCategoryDto> Categories { get; set; } = new();
 }
 
@@ -41,6 +41,6 @@ public class SubmitGameResultDto
 public class GameResultResponseDto
 {
     public int EarnedPoints { get; set; }
-    public decimal NewTotalScore { get; set; }
+    public double NewTotalScore { get; set; }
     public List<string> NewlyUnlockedLevels { get; set; } = new();
 }
