@@ -10,9 +10,6 @@ public class GameCategoryConfiguration : IEntityTypeConfiguration<GameCategory>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(gc => gc.InitialScore)
-            .HasDefaultValue(0);
-
         // One Category → Many Games
         builder.HasMany(gc => gc.Games)
             .WithOne(g => g.Category)

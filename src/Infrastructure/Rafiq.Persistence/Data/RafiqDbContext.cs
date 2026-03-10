@@ -15,19 +15,16 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<Answer> Answers { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<AssessmentAnswer> AssessmentAnswers { get; set; }
-    public DbSet<Gaming> Gamings { get; set; }
     public DbSet<Game> Games { get; set; }
     public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameLevel> GameLevels { get; set; }
-    public DbSet<GameProgress> GameProgresses { get; set; }
+    public DbSet<PatientLevel> PatientLevels { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.ApplyConfigurationsFromAssembly(typeof(RafiqDbContext).Assembly);
-
-        builder.Entity<IdentityRole>().HasData(RafiqDbContextSeed.GetRoles());
 
         // TPH configuration
         builder.Entity<ApplicationUser>()

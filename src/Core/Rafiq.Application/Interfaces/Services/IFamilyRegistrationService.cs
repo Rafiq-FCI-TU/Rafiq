@@ -8,6 +8,6 @@ public interface IFamilyRegistrationService
 {
     Task<Result<StepResponseDto>> RegisterFamilyStep1Async(FamilyStep1Dto dto);
     Task<Result<StepResponseDto>> RegisterFamilyStep2Async(PatientStep2Dto dto);
-    Task<Result<int>> CompleteFamilyRegistrationAsync(PasswordStepDto dto);
+    Task<Result<CompleteFamilyRegisterationDto>> CompleteFamilyRegistrationAsync(PasswordStepDto dto);
     Task<Result<FamilyRegistrationCache>> ResumeRegistrationAsync(string token);
 }

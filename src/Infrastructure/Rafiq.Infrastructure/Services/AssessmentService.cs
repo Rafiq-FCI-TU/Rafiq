@@ -72,6 +72,10 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
                 WhereCriteria = a => a.Id == assessment.Id
             };
 
+            patientResponse.AssessmentId = assessment.Id;
+
+            await unitOfWork.CompleteAsync();
+
             currentAssessmentSpec.AddIncludeWithThenInclude(
                 a => a.Categories,
                 "Category"
@@ -153,12 +157,12 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
                     AssessmentCategoryDescription = currentCategory.Category.Description,
                     AssessmentCurrentQuestion = currentCategory.CurrentQuestion,
                     AssessmentTotalQuestions = currentCategory.QuestionsNumber,
+                    Score = currentCategory.Score,
                     Question = question == null ? null : new QuestionDto
                     {
                         QuestionId = question.Id,
                         Text = question.Text,
-                        AnswerType = question.AnswerType,
-                        Options = GetOptionsForAnswerType(question.AnswerType)
+                        Options = GetOptions()
                     }
                 };
             }
@@ -232,13 +236,47 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             if (assessmentCategory != null)
             {
-                assessmentCategory.Score += question.score;
+                AnswerType answerType = (AnswerType)dto.AnswerValue;
+
+                var maxAnswerScore = Enum.GetValues<AnswerType>().Max(e => (int)e);
+                var maxScore = assessmentCategory.QuestionsNumber * maxAnswerScore;
+
+                var first = (double)answerType / (double)maxScore;
+
+                var second = first * 100;
+
+                assessmentCategory.Score += second;
                 assessmentCategory.CurrentQuestion++;
             }
 
             var allDone = assessment.Categories.All(ac => ac.CurrentQuestion > ac.QuestionsNumber);
 
-            if (allDone) assessment.Status = AssessmentStatus.Completed;
+            if (allDone)
+            {
+                assessment.Status = AssessmentStatus.Completed;
+
+                var categoriesCount = assessment.Categories.Count;
+
+                var categoriesScore = 0.0;
+
+                foreach (var category in assessment.Categories) {
+                    categoriesScore += category.Score;
+                }
+
+                var iq = categoriesScore / categoriesCount;
+
+                var patientSpecs = new BaseSpecifications<Patient>()
+                {
+                    WhereCriteria = p => p.Id == assessment.PatientId
+                };
+
+                var patient = await unitOfWork.Repository<Patient>().GetEntityAsync(patientSpecs);
+
+                if(patient is not null)
+                {
+                    patient.TotalScore = iq;
+                }
+            }
 
             await unitOfWork.CompleteAsync();
 
@@ -250,21 +288,14 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
         }
     }
 
-    private static List<AnswerOptionDto> GetOptionsForAnswerType(AnswerType answerType)
+    private static List<AnswerOptionDto> GetOptions()
     {
-        var member = typeof(AnswerType).GetMember(answerType.ToString()).FirstOrDefault();
-
-        var attr = member?.GetCustomAttribute<AnswerEnumAttribute>();
-
-        if (attr == null) return [];
-
-        return Enum.GetValues(attr.EnumType)
-            .Cast<Enum>()
+        return [.. Enum.GetValues(typeof(AnswerType))
+            .Cast<AnswerType>()
             .Select(e => new AnswerOptionDto
             {
-                Value = Convert.ToInt32(e),
+                Value = (int)e,
                 Label = e.GetDisplayName()
-            })
-            .ToList();
+            })];
     }
 }

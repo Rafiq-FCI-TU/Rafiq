@@ -10,17 +10,8 @@ public class GameLevelConfiguration : IEntityTypeConfiguration<GameLevel>
             .IsRequired()
             .HasDefaultValue(0);
 
-        builder.Property(gl => gl.RewardPoints)
-            .IsRequired()
-            .HasDefaultValue(0);
-
         builder.Property(gl => gl.DifficultyLevel)
             .IsRequired();
 
-        // One GameLevel → Many ProgressRecords
-        builder.HasMany(gl => gl.ProgressRecords)
-            .WithOne(gp => gp.GameLevel)
-            .HasForeignKey(gp => gp.GameLevelId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }
