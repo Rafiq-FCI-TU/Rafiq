@@ -185,7 +185,7 @@ public class SessionService : ISessionService
         return blobClient.GenerateSasUri(sasBuilder).ToString();
     }
 
-    private IEnumerable<Session> FilterSessionsByStatus(IReadOnlyList<Session> sessions, decimal totalScore, string status)
+    private IEnumerable<Session> FilterSessionsByStatus(IReadOnlyList<Session> sessions, double totalScore, string status)
     {
         return status.ToLower() switch
         {

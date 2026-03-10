@@ -8,7 +8,7 @@ public class Patient : BaseEntity
     public string LastName { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }
-    public decimal TotalScore { get; set; }
+    public double TotalScore { get; set; }
 
     // Foreign key to FamilyProfile
     public string FamilyProfileId { get; set; } = string.Empty;
