@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
+using MediaToolkit;
+using MediaToolkit.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Rafiq.Application.Dtos.SessionDtos;
@@ -9,23 +11,23 @@ using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Infrastructure.Settings;
 
 namespace Rafiq.Infrastructure.Services;
 public class SessionService : ISessionService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly BlobServiceClient _blobServiceClient;
-    private readonly string _containerName;
     private readonly IMapper _mapper;
+    private readonly AzureBlobSettings azureBlobSettings;
+    private readonly string _containerName;
 
-    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper)
+    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-
-        var connectionString = configuration["AzureBlobStorage:ConnectionString"];
-        _containerName = configuration["AzureBlobStorage:ContainerName"];
-        _blobServiceClient = new BlobServiceClient(connectionString);
+        _blobServiceClient = new BlobServiceClient(azureBlobSettings.ConnectionString);
+        _containerName = azureBlobSettings.ContainerName;
     }
 
     #region Create Session
@@ -36,16 +38,16 @@ public class SessionService : ISessionService
         {
             var mediaUrl = await UploadFileAsync(dto.Media, "videos");
             var thumbnailUrl = await UploadFileAsync(dto.Thumbnail, "thumbnails");
+            var duration =  GetVideoDuration(dto.Media);
 
             var session = new Session
             {
                 Title = dto.Title,
                 Description = dto.Description,
                 VideoUrl = mediaUrl,
-                Duration = dto.Duration,
+                Duration = duration,
                 Sequence = dto.Sequence,
                 Score = dto.Score,
-                PublishedAt = dto.PublishedAt,
                 ThumbnailUrl = thumbnailUrl,
                 SpecialistProfileId = dto.SpecialistProfileId
             };
@@ -177,7 +179,7 @@ public class SessionService : ISessionService
             BlobContainerName = containerClient.Name,
             BlobName = blobName,
             Resource = "b",
-            ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+            ExpiresOn = DateTimeOffset.UtcNow.AddYears(1)
         };
 
         sasBuilder.SetPermissions(BlobSasPermissions.Read);
@@ -185,6 +187,23 @@ public class SessionService : ISessionService
         return blobClient.GenerateSasUri(sasBuilder).ToString();
     }
 
+
+    private TimeSpan GetVideoDuration(IFormFile video)
+    {
+        var tempFile = Path.GetTempFileName();
+
+        using (var stream = File.Create(tempFile))
+        {
+            video.CopyTo(stream);
+        }
+
+        var inputFile = new MediaFile { Filename = tempFile };
+        using var engine = new Engine();
+        engine.GetMetadata(inputFile);
+
+        File.Delete(tempFile); 
+        return inputFile.Metadata.Duration;
+    }
     private IEnumerable<Session> FilterSessionsByStatus(IReadOnlyList<Session> sessions, double totalScore, string status)
     {
         return status.ToLower() switch

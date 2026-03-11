@@ -9,10 +9,10 @@ namespace Rafiq.Domain.Entities
 
         public string Description { get; set; } = string.Empty;
         public string VideoUrl { get; set; } = string.Empty;
-        public string Duration { get; set; } = string.Empty;
+        public TimeSpan Duration { get; set; } 
         public int Sequence { get; set; }
         public int Score { get; set; }
-        public DateTime PublishedAt { get; set; }
+        public DateTime PublishedAt { get; set; }= DateTime.Now;   
         public string ThumbnailUrl { get; set; } = null!;
 
         // Relation with SpecialistProfile
