@@ -13,6 +13,10 @@ namespace Rafiq.Application.MappingProfıles
                 .ForMember(dest => dest.SpecialistName,
                            opt => opt.MapFrom(src => src.Specialist.FirstName));
 
+             CreateMap<Session, SessionDto>().ForMember(
+             dest => dest.Duration,
+             opt => opt.MapFrom(src => $"{src.Duration.TotalMinutes:F0} mins"));
+
             // SessionCreateDto => Session
             CreateMap<SessionCreateDto, Session>();
 

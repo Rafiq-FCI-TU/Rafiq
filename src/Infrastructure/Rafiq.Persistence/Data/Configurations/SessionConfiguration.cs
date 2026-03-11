@@ -15,6 +15,8 @@ public class SessionConfiguration : IEntityTypeConfiguration<Session>
         builder.Property(s => s.Title)
             .IsRequired()
             .HasMaxLength(200);
+        builder.Property(s => s.Duration)
+       .HasConversion<TimeSpan>();
 
         builder.Property(s => s.VideoUrl)
             .IsRequired();
