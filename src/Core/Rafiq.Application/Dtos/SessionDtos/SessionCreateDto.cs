@@ -39,12 +39,6 @@ namespace Rafiq.Application.Dtos.SessionDtos
         public IFormFile? Thumbnail { get; set; } = null;
 
         /// <summary>
-        /// Duration of the session in minutes
-        /// </summary>
-        /// <example>45 mins</example>
-        public string Duration { get; set; } = string.Empty;
-
-        /// <summary>
         /// Sequence order of the session
         /// </summary>
         /// <example>1</example>
@@ -56,11 +50,6 @@ namespace Rafiq.Application.Dtos.SessionDtos
         /// <example>100</example>
         public int Score { get; set; }
 
-        /// <summary>
-        /// Date and time when the session is published
-        /// </summary>
-        /// <example>2026-03-08T14:30:00Z</example>
-        public DateTime PublishedAt { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Specialist profile ID who is creating the session
