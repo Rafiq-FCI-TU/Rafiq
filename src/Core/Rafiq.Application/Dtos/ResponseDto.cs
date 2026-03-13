@@ -14,7 +14,10 @@ public class ResponseDto
 }
 public class ResponseForFamilyRegistrationDto : ResponseDto
 {
-    public int?id { get; set; }
+    public string Id { get; set; }
+
+    public int? Patientid { get; set; }
+
     public bool? HasAssessment { get; set; }
     public int? AssessmentId { get; set; }
 }
