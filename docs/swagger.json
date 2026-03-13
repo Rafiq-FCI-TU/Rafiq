@@ -999,20 +999,9 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "Duration": {
-                    "type": "string"
-                  },
-                  "Sequence": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
                   "Score": {
                     "type": "integer",
                     "format": "int32"
-                  },
-                  "PublishedAt": {
-                    "type": "string",
-                    "format": "date-time"
                   },
                   "SpecialistProfileId": {
                     "type": "string"
@@ -1035,16 +1024,7 @@
                 "Thumbnail": {
                   "style": "form"
                 },
-                "Duration": {
-                  "style": "form"
-                },
-                "Sequence": {
-                  "style": "form"
-                },
                 "Score": {
-                  "style": "form"
-                },
-                "PublishedAt": {
                   "style": "form"
                 },
                 "SpecialistProfileId": {
@@ -1975,10 +1955,6 @@
             "type": "string",
             "nullable": true
           },
-          "sequence": {
-            "type": "integer",
-            "format": "int32"
-          },
           "score": {
             "type": "integer",
             "format": "int32"
@@ -2029,10 +2005,6 @@
             "type": "string",
             "nullable": true
           },
-          "sequence": {
-            "type": "integer",
-            "format": "int32"
-          },
           "score": {
             "type": "integer",
             "format": "int32"
@@ -2075,7 +2047,6 @@
       },
       "SpecialistStep1Dto": {
         "required": [
-          "credentials",
           "email",
           "firstName",
           "gender",
@@ -2108,10 +2079,8 @@
             "type": "string"
           },
           "credentials": {
-            "maxLength": 20,
-            "minLength": 2,
             "type": "string",
-            "description": "Examples: MD, PhD, MSc"
+            "nullable": true
           },
           "specialty": {
             "maxLength": 50,
