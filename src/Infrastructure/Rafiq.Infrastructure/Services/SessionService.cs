@@ -46,8 +46,9 @@ public class SessionService : ISessionService
                 Description = dto.Description,
                 VideoUrl = mediaUrl,
                 Duration = duration,
-                Sequence = dto.Sequence,
+                Sequence = 0,
                 Score = dto.Score,
+                Notes= dto.Notes,
                 ThumbnailUrl = thumbnailUrl,
                 SpecialistProfileId = dto.SpecialistProfileId
             };
@@ -62,6 +63,11 @@ public class SessionService : ISessionService
             return Result.Failure<int>(500, $"Failed to create session: {ex.Message}");
         }
     }
+
+    //public async Task<Result<int>> SubmitSessionForPatientReviewAsync(SessionCreateReviewPatientDto )
+    //{
+    //    new NotImplementedException();
+    //}
 
     #endregion
 
@@ -90,7 +96,7 @@ public class SessionService : ISessionService
         }
     }
 
-    public async Task<Result<IEnumerable<SessionDto>>> GetSessionsBySpecialistAsync(string specialistId)
+    public async Task<Result<IEnumerable<SessionsBySpecialistDto>>> GetSessionsBySpecialistAsync(string specialistId)
     {
         try
         {
@@ -102,13 +108,13 @@ public class SessionService : ISessionService
             spec.AddInclude("Specialist");
 
             var sessions = await _unitOfWork.Repository<Session>().GetAllAsync(spec);
-            var dtos = _mapper.Map<IEnumerable<SessionDto>>(sessions);
+            var dtos = _mapper.Map<IEnumerable<SessionsBySpecialistDto>>(sessions);
 
             return Result.Success(dtos);
         }
         catch (Exception ex)
         {
-            return Result.Failure<IEnumerable<SessionDto>>(500, $"Failed to get sessions: {ex.Message}");
+            return Result.Failure<IEnumerable<SessionsBySpecialistDto>>(500, $"Failed to get sessions: {ex.Message}");
         }
     }
 
@@ -213,6 +219,8 @@ public class SessionService : ISessionService
             _ => []
         };
     }
+
+
 
     #endregion
 }
