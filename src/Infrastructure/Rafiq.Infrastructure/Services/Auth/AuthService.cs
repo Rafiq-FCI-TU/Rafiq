@@ -57,7 +57,8 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
 
             return Result.Success<ResponseForFamilyRegistrationDto>(new ResponseForFamilyRegistrationDto
             {
-                id = patient.Id,
+                Id= user.Id,
+                Patientid = patient.Id,
                 IsAuthenticated = true,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
                 Email = user.Email ?? string.Empty,
@@ -73,7 +74,8 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
 
         return Result.Success(new ResponseForFamilyRegistrationDto
         {
-            id = null,
+            Id = user.Id,
+            Patientid= null,
             IsAuthenticated = true,
             Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
             Email = user.Email ?? string.Empty,
