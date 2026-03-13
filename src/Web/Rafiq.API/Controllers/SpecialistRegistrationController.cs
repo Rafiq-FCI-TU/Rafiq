@@ -4,9 +4,6 @@ using Rafiq.Application.Dtos.StepsDtos;
 using Rafiq.Application.Interfaces.Services;
 
 namespace Rafiq.API.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
 public class SpecialistRegistrationController(ISpecialistRegistrationService registrationService) : BaseController
 {
     [HttpPost("step1")]

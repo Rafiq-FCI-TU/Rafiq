@@ -1,5 +1,6 @@
 ﻿using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Infrastructure.Services;
 using System.Collections.Generic;
 
 
@@ -22,7 +23,7 @@ namespace Rafiq.Application.Interfaces.Services
         /// </summary>
         /// <param name="specialistId">Specialist identifier</param>
         /// <returns>List of sessions</returns>
-        Task<Result<IEnumerable<SessionDto>>> GetSessionsBySpecialistAsync(string specialistId);
+        Task<Result<IEnumerable<SessionsBySpecialistDto>>> GetSessionsBySpecialistAsync(string specialistId);
 
         #endregion
 
@@ -49,6 +50,11 @@ namespace Rafiq.Application.Interfaces.Services
         /// Get details of a single session by sessionId
         /// </summary>
         Task<Result<SessionDto>> GetSessionDetailsAsync(int sessionId);
+
+
+      // Task<Result<int>> SubmitSessionForPatientReviewAsync(SessionCreateReviewPatientDto createReviewPatientDto);
+
+
 
     }
 }

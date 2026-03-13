@@ -42,7 +42,7 @@ namespace Rafiq.Application.Dtos.SessionDtos
         /// Sequence order of the session
         /// </summary>
         /// <example>1</example>
-        public int Sequence { get; set; }
+        //public int Sequence { get; set; }
 
         /// <summary>
         /// Score or rating associated with the session
