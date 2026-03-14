@@ -5,6 +5,7 @@ using Rafiq.Application.Interfaces.Services;
 using Rafiq.Domain.Entities;
 using Rafiq.Infrastructure.Services;
 using Rafiq.Infrastructure.Services.Auth;
+using Rafiq.Infrastructure.Services.Sessiones;
 using Rafiq.Infrastructure.Settings;
 using Rafiq.Persistence;
 
@@ -25,6 +26,10 @@ public static class DependencyInjection
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAssessmentService, AssessmentService>();
         services.AddScoped<IGamingService, GamingService>();
+        services.AddScoped<IPatientSessionAttemptService, PatientSessionAttemptService>();
+
+        builder.Services.AddSingleton<BlobHelperService>();
+
 
         builder.Services.Configure<AzureBlobSettings>(
     builder.Configuration.GetSection("AzureBlobStorage"));
