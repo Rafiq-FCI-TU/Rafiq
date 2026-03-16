@@ -9,21 +9,20 @@ public class GameLevelSeed
 {
     public int DifficultyLevel { get; set; }
     public int RequiredScore { get; set; }
-    public int RewardPoints { get; set; }
+    public int MaxScore { get; set; }
 }
 
 public class GameSeed
 {
     public string Title { get; set; } = string.Empty;
-    public int MaxPoints { get; set; }
-    public string Duration { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
     public List<GameLevelSeed> Levels { get; set; } = new();
 }
 
 public class GameCategorySeed
 {
     public string Name { get; set; } = string.Empty;
-    public int InitialScore { get; set; }
+    public string Description { get; set; } = string.Empty;
     public List<GameSeed> Games { get; set; } = new();
 }
 
@@ -84,14 +83,16 @@ public static class RafiqDbContextSeed
             {
                 var category = new GameCategory
                 {
-                    Name = cat.Name
+                    Name = cat.Name,
+                    Description = cat.Description
                 };
 
                 foreach (var gameSeed in cat.Games)
                 {
                     var game = new Game
                     {
-                        Title = gameSeed.Title
+                        Title = gameSeed.Title,
+                        Description = gameSeed.Description
                     };
 
                     foreach (var levelSeed in gameSeed.Levels)
@@ -99,7 +100,8 @@ public static class RafiqDbContextSeed
                         game.Levels.Add(new GameLevel
                         {
                             DifficultyLevel = (DifficultyLevel)levelSeed.DifficultyLevel,
-                            RequiredScore = levelSeed.RequiredScore
+                            RequiredScore = levelSeed.RequiredScore,
+                            MaxScore = levelSeed.MaxScore
                         });
                     }
 
