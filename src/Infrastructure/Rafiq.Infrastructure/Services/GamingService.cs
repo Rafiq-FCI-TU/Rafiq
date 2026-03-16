@@ -163,6 +163,23 @@ public class GamingService : IGamingService
 
             await _unitOfWork.CompleteAsync();
 
+            var allPatientLevelsSpec = new BaseSpecifications<PatientLevel>
+            {
+                WhereCriteria = patientLevel => patientLevel.PatientId == dto.PatientId
+            };
+            var allPatientLevels = await _unitOfWork.Repository<PatientLevel>().GetAllAsync(allPatientLevelsSpec);
+
+            var recalculatedTotalScore = allPatientLevels
+                .GroupBy(patientLevel => patientLevel.GameLevelId)
+                .Sum(group => group.Max(patientLevel => patientLevel.EarnedPoints));
+
+            if (Math.Abs(patient.TotalScore - recalculatedTotalScore) > double.Epsilon)
+            {
+                patient.TotalScore = recalculatedTotalScore;
+                _unitOfWork.Repository<Patient>().Update(patient);
+                await _unitOfWork.CompleteAsync();
+            }
+
             bestScoresByLevelId[dto.GameLevelId] = Math.Max(
                 bestScoresByLevelId.GetValueOrDefault(dto.GameLevelId),
                 normalizedScore);
