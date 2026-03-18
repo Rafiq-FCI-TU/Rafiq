@@ -585,6 +585,55 @@ namespace Rafiq.Persistence.Migrations
                     b.ToTable("PatientLevels");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.PatientSessionAttempt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DoctorFeedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ScoreAwarded")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("PendingReview");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("PatientId", "SessionId");
+
+                    b.ToTable("PatientSessionAttempts");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -947,6 +996,25 @@ namespace Rafiq.Persistence.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.PatientSessionAttempt", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.Patient", "Patient")
+                        .WithMany("SessionAttempts")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rafiq.Domain.Entities.Session", "Session")
+                        .WithMany("PatientAttempts")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Session");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Question", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.Category", null)
@@ -1021,7 +1089,14 @@ namespace Rafiq.Persistence.Migrations
                     b.Navigation("Assessment")
                         .IsRequired();
 
+                    b.Navigation("SessionAttempts");
+
                     b.Navigation("SpecialistPatients");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Session", b =>
+                {
+                    b.Navigation("PatientAttempts");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.FamilyProfile", b =>

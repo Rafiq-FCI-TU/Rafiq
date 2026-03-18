@@ -9,25 +9,21 @@ using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
-using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
 using Rafiq.Infrastructure.Settings;
+using Rafiq.Domain.Entities;
 
-namespace Rafiq.Infrastructure.Services;
+namespace Rafiq.Infrastructure.Services.Sessiones;
 public class SessionService : ISessionService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly BlobServiceClient _blobServiceClient;
     private readonly IMapper _mapper;
-    private readonly AzureBlobSettings azureBlobSettings;
-    private readonly string _containerName;
-
-    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings)
+    private readonly BlobHelperService _blobHelper;
+    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings, BlobHelperService blobHelper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _blobServiceClient = new BlobServiceClient(azureBlobSettings.ConnectionString);
-        _containerName = azureBlobSettings.ContainerName;
+        _blobHelper=blobHelper;
     }
 
     #region Create Session
@@ -36,9 +32,9 @@ public class SessionService : ISessionService
     {
         try
         {
-            var mediaUrl = await UploadFileAsync(dto.Media, "videos");
-            var thumbnailUrl = await UploadFileAsync(dto.Thumbnail, "thumbnails");
-            var duration =  GetVideoDuration(dto.Media);
+            var mediaUrl = await _blobHelper.UploadFileAsync(dto.Media, "videos");
+            var thumbnailUrl = await _blobHelper.UploadFileAsync(dto.Thumbnail, "thumbnails");
+            var duration =  _blobHelper.GetVideoDuration(dto.Media);
 
             var session = new Session
             {
@@ -64,10 +60,7 @@ public class SessionService : ISessionService
         }
     }
 
-    //public async Task<Result<int>> SubmitSessionForPatientReviewAsync(SessionCreateReviewPatientDto )
-    //{
-    //    new NotImplementedException();
-    //}
+
 
     #endregion
 
@@ -166,50 +159,6 @@ public class SessionService : ISessionService
     #endregion
 
     #region Helper Methods
-
-    private async Task<string> UploadFileAsync(IFormFile? file, string folder)
-    {
-        if (file == null) return string.Empty;
-
-        var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-        await containerClient.CreateIfNotExistsAsync();
-
-        var blobName = $"{folder}/{Guid.NewGuid()}_{file.FileName}";
-        var blobClient = containerClient.GetBlobClient(blobName);
-
-        await using var stream = file.OpenReadStream();
-        await blobClient.UploadAsync(stream, overwrite: true);
-
-        var sasBuilder = new BlobSasBuilder
-        {
-            BlobContainerName = containerClient.Name,
-            BlobName = blobName,
-            Resource = "b",
-            ExpiresOn = DateTimeOffset.UtcNow.AddYears(1)
-        };
-
-        sasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-        return blobClient.GenerateSasUri(sasBuilder).ToString();
-    }
-
-
-    private TimeSpan GetVideoDuration(IFormFile video)
-    {
-        var tempFile = Path.GetTempFileName();
-
-        using (var stream = File.Create(tempFile))
-        {
-            video.CopyTo(stream);
-        }
-
-        var inputFile = new MediaFile { Filename = tempFile };
-        using var engine = new Engine();
-        engine.GetMetadata(inputFile);
-
-        File.Delete(tempFile); 
-        return inputFile.Metadata.Duration;
-    }
     private IEnumerable<Session> FilterSessionsByStatus(IReadOnlyList<Session> sessions, double totalScore, string status)
     {
         return status.ToLower() switch
@@ -219,8 +168,6 @@ public class SessionService : ISessionService
             _ => []
         };
     }
-
-
 
     #endregion
 }
