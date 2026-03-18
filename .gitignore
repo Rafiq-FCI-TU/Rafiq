@@ -427,3 +427,6 @@ project.assets.json
 # Build artifacts
 bin/
 obj/
+ffmpeg.exe
+ffprobe.exe
+src/Web/Rafiq.API/ffmpeg/
