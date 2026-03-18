@@ -1,9 +1,9 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
-using MediaToolkit;
-using MediaToolkit.Model;
 using Microsoft.AspNetCore.Http;
+using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Infrastructure.Settings;
+using System.Diagnostics;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader;
 
@@ -46,24 +46,20 @@ public class BlobHelperService
     }
 
 
-    public TimeSpan GetVideoDuration(IFormFile video)
+    public async Task<TimeSpan> GetVideoDuration(IFormFile media)
     {
-        var tempFile = Path.GetTempFileName();
+        var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{Path.GetExtension(media.FileName)}");
 
-        using (var stream = File.Create(tempFile))
-        {
-            video.CopyTo(stream);
-        }
+        await using (var stream = File.Create(tempPath))
+            await media.CopyToAsync(stream);
 
-        var inputFile = new MediaFile { Filename = tempFile };
-        using var engine = new Engine();
-        engine.GetMetadata(inputFile);
+        using var tagFile = TagLib.File.Create(tempPath);
+        var duration = tagFile.Properties.Duration;
 
-        File.Delete(tempFile);
-        return inputFile.Metadata.Duration;
+        File.Delete(tempPath);
+
+
+        return duration;
     }
-
-
-
 
 }

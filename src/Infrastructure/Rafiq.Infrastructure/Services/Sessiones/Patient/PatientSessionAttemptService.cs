@@ -117,7 +117,7 @@ public class PatientSessionAttemptService : IPatientSessionAttemptService
     private async Task<PatientSessionAttempt> BuildAttemptAsync(SubmitAttemptDto dto)
     {
         var videoUrl = await _blobHelper.UploadFileAsync(dto.Video, "patient-attempts");
-        var duration =  _blobHelper.GetVideoDuration(dto.Video);
+        var duration = await _blobHelper.GetVideoDuration(dto.Video);
 
         return new PatientSessionAttempt
         {
