@@ -48,15 +48,22 @@ namespace Rafiq.Persistence.Migrations
                 name: "PK_Game",
                 table: "Game");
 
-            migrationBuilder.DeleteData(
-                table: "AspNetRoles",
-                keyColumn: "Id",
-                keyValue: "09c7b2bf-50db-47c7-be43-3c74ac332e26");
+            migrationBuilder.Sql(@"
+                DELETE FROM AspNetUserRoles
+                WHERE RoleId IN (
+                    SELECT Id FROM AspNetRoles
+                    WHERE NormalizedName IN ('SPECIALIST','FAMILY')
+                );
 
-            migrationBuilder.DeleteData(
-                table: "AspNetRoles",
-                keyColumn: "Id",
-                keyValue: "fa8017f7-0843-4230-87c1-9c2311f4b638");
+                DELETE FROM AspNetRoleClaims
+                WHERE RoleId IN (
+                    SELECT Id FROM AspNetRoles
+                    WHERE NormalizedName IN ('SPECIALIST','FAMILY')
+                );
+
+                DELETE FROM AspNetRoles
+                WHERE NormalizedName IN ('SPECIALIST','FAMILY');
+                ");
 
             migrationBuilder.DropColumn(
                 name: "TotalScore",

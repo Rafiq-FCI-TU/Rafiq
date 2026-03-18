@@ -10,5 +10,5 @@ public class PatientLevel : BaseEntity
     
     // Navigation properties
     public Patient Patient { get; set; } = null!;
-    public List<GameLevel> GameLevel { get; set; } = null!;
+    public GameLevel GameLevel { get; set; } = null!;
 }

@@ -1,205 +1,98 @@
 [
-    {
-        "Id": 1,
-        "Name": "Cognitive Skills",
-        "InitialScore": 0,
-        "Games": [
-            {
-                "Id": 1,
-                "Title": "Memory Match",
-                "MaxPoints": 120,
-                "Duration": "5 min",
-                "Levels": [
-                    {
-                        "Id": 1,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 0,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 2,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 40,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 3,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 80,
-                        "RewardPoints": 60
-                    }
-                ]
-            },
-            {
-                "Id": 2,
-                "Title": "Pattern Recognition",
-                "MaxPoints": 120,
-                "Duration": "6 min",
-                "Levels": [
-                    {
-                        "Id": 4,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 20,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 5,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 60,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 6,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 100,
-                        "RewardPoints": 60
-                    }
-                ]
-            },
-            {
-                "Id": 3,
-                "Title": "Word Puzzle",
-                "MaxPoints": 120,
-                "Duration": "7 min",
-                "Levels": [
-                    {
-                        "Id": 7,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 40,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 8,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 80,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 9,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 120,
-                        "RewardPoints": 60
-                    }
-                ]
-            }
+  {
+    "Name": "Cognitive Skills",
+    "Description": "Focus, memory, and attention training games.",
+    "Games": [
+      {
+        "Title": "Memory Match",
+        "Description": "Match pairs of cards in limited attempts.",
+        "Levels": [
+          {
+            "DifficultyLevel": 0,
+            "RequiredScore": 6,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 1,
+            "RequiredScore": 8,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 2,
+            "RequiredScore": 9,
+            "MaxScore": 10
+          }
         ]
-    },
-    {
-        "Id": 2,
-        "Name": "Motor Skills",
-        "InitialScore": 0,
-        "Games": [
-            {
-                "Id": 4,
-                "Title": "Tap Speed",
-                "MaxPoints": 120,
-                "Duration": "4 min",
-                "Levels": [
-                    {
-                        "Id": 10,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 0,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 11,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 40,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 12,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 80,
-                        "RewardPoints": 60
-                    }
-                ]
-            },
-            {
-                "Id": 5,
-                "Title": "Drag & Drop",
-                "MaxPoints": 120,
-                "Duration": "5 min",
-                "Levels": [
-                    {
-                        "Id": 13,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 20,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 14,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 60,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 15,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 100,
-                        "RewardPoints": 60
-                    }
-                ]
-            }
+      },
+      {
+        "Title": "Pattern Recognition",
+        "Description": "Identify the missing visual pattern.",
+        "Levels": [
+          {
+            "DifficultyLevel": 0,
+            "RequiredScore": 5,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 1,
+            "RequiredScore": 7,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 2,
+            "RequiredScore": 9,
+            "MaxScore": 10
+          }
         ]
-    },
-    {
-        "Id": 3,
-        "Name": "Social Skills",
-        "InitialScore": 0,
-        "Games": [
-            {
-                "Id": 6,
-                "Title": "Emotion Recognition",
-                "MaxPoints": 120,
-                "Duration": "5 min",
-                "Levels": [
-                    {
-                        "Id": 16,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 0,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 17,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 40,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 18,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 80,
-                        "RewardPoints": 60
-                    }
-                ]
-            },
-            {
-                "Id": 7,
-                "Title": "Story Builder",
-                "MaxPoints": 120,
-                "Duration": "8 min",
-                "Levels": [
-                    {
-                        "Id": 19,
-                        "DifficultyLevel": 0,
-                        "RequiredScore": 40,
-                        "RewardPoints": 20
-                    },
-                    {
-                        "Id": 20,
-                        "DifficultyLevel": 1,
-                        "RequiredScore": 80,
-                        "RewardPoints": 40
-                    },
-                    {
-                        "Id": 21,
-                        "DifficultyLevel": 2,
-                        "RequiredScore": 120,
-                        "RewardPoints": 60
-                    }
-                ]
-            }
+      }
+    ]
+  },
+  {
+    "Name": "Motor Skills",
+    "Description": "Coordination and reaction-based practice.",
+    "Games": [
+      {
+        "Title": "Tap Speed",
+        "Description": "Tap moving targets quickly and accurately.",
+        "Levels": [
+          {
+            "DifficultyLevel": 0,
+            "RequiredScore": 4,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 1,
+            "RequiredScore": 7,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 2,
+            "RequiredScore": 9,
+            "MaxScore": 10
+          }
         ]
-    }
+      },
+      {
+        "Title": "Drag and Drop",
+        "Description": "Place objects into their correct zones.",
+        "Levels": [
+          {
+            "DifficultyLevel": 0,
+            "RequiredScore": 5,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 1,
+            "RequiredScore": 7,
+            "MaxScore": 10
+          },
+          {
+            "DifficultyLevel": 2,
+            "RequiredScore": 8,
+            "MaxScore": 10
+          }
+        ]
+      }
+    ]
+  }
 ]

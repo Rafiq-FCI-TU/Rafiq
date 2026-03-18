@@ -22,21 +22,6 @@ namespace Rafiq.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GameLevelPatientLevel", b =>
-                {
-                    b.Property<int>("GameLevelId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PatientLevelsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GameLevelId", "PatientLevelsId");
-
-                    b.HasIndex("PatientLevelsId");
-
-                    b.ToTable("GameLevelPatientLevel");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -593,6 +578,8 @@ namespace Rafiq.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GameLevelId");
+
                     b.HasIndex("PatientId");
 
                     b.ToTable("PatientLevels");
@@ -751,21 +738,6 @@ namespace Rafiq.Persistence.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasDiscriminator().HasValue("SpecialistProfile");
-                });
-
-            modelBuilder.Entity("GameLevelPatientLevel", b =>
-                {
-                    b.HasOne("Rafiq.Domain.Entities.GameLevel", null)
-                        .WithMany()
-                        .HasForeignKey("GameLevelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Rafiq.Domain.Entities.PatientLevel", null)
-                        .WithMany()
-                        .HasForeignKey("PatientLevelsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -958,11 +930,19 @@ namespace Rafiq.Persistence.Migrations
 
             modelBuilder.Entity("Rafiq.Domain.Entities.PatientLevel", b =>
                 {
+                    b.HasOne("Rafiq.Domain.Entities.GameLevel", "GameLevel")
+                        .WithMany("PatientLevels")
+                        .HasForeignKey("GameLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Rafiq.Domain.Entities.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("GameLevel");
 
                     b.Navigation("Patient");
                 });
@@ -1029,6 +1009,11 @@ namespace Rafiq.Persistence.Migrations
             modelBuilder.Entity("Rafiq.Domain.Entities.GameCategory", b =>
                 {
                     b.Navigation("Games");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.GameLevel", b =>
+                {
+                    b.Navigation("PatientLevels");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Patient", b =>

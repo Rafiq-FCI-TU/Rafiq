@@ -1,9 +1,9 @@
-using AutoMapper;
 using Rafiq.Application.Dtos.GamingDtos;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
 using Rafiq.Domain.Entities;
+using Rafiq.Domain.Enums;
 using Rafiq.Domain.ErrorHandling;
 
 namespace Rafiq.Infrastructure.Services;
@@ -11,136 +11,252 @@ namespace Rafiq.Infrastructure.Services;
 public class GamingService : IGamingService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public GamingService(IUnitOfWork unitOfWork, IMapper mapper)
+    public GamingService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
-    #region Get Player Overview
-
-    public async Task<Result<PlayerGamingOverviewDto>> GetPlayerOverviewAsync(int patientId)
+    public async Task<Result<IReadOnlyList<GamingOverviewCategoryDto>>> GetGamingOverviewAsync(int patientId)
     {
         try
         {
-            // 1. Load patient to get TotalScore
             var patient = await _unitOfWork.Repository<Patient>().GetEntityAsync(patientId);
             if (patient == null)
-                return Result.Failure<PlayerGamingOverviewDto>(404, "Patient not found.");
-
-            // 2. Load all global categories with Games → Levels in a single query
-            var categorySpec = new BaseSpecifications<GameCategory>();
-            categorySpec.AddIncludeWithThenInclude(c => c.Games, "Levels");
-
-            var categories = await _unitOfWork.Repository<GameCategory>().GetAllAsync(categorySpec);
-            if (!categories.Any())
-                return Result.Failure<PlayerGamingOverviewDto>(404, "No game categories found.");
-
-            // 3. Map to DTOs and compute IsUnlocked for each level
-            var overview = new PlayerGamingOverviewDto
             {
-                PatientId = patientId,
-                TotalScore = patient.TotalScore,
-                Categories = new List<GameCategoryDto>()
-            };
-
-            foreach (var category in categories)
-            {
-                var categoryDto = _mapper.Map<GameCategoryDto>(category);
-
-                foreach (var gameDto in categoryDto.Games)
-                {
-                    var game = category.Games.First(g => g.Id == gameDto.Id);
-
-                    for (int i = 0; i < gameDto.Levels.Count; i++)
-                    {
-                        var level = game.Levels.First(l => l.Id == gameDto.Levels[i].Id);
-                        gameDto.Levels[i].IsUnlocked = patient.TotalScore >= level.RequiredScore;
-                    }
-                }
-
-                overview.Categories.Add(categoryDto);
+                return Result.Failure<IReadOnlyList<GamingOverviewCategoryDto>>(404, "Patient not found.");
             }
 
-            return Result.Success(overview);
+            var categoriesSpec = new BaseSpecifications<GameCategory>();
+            categoriesSpec.AddIncludeWithThenInclude(category => category.Games, "Levels");
+
+            var categories = await _unitOfWork.Repository<GameCategory>().GetAllAsync(categoriesSpec);
+            var levels = categories
+                .SelectMany(category => category.Games)
+                .SelectMany(game => game.Levels)
+                .ToList();
+            var levelIds = levels.Select(level => level.Id).ToList();
+
+            if (levels.Count == 0)
+            {
+                return Result.Success<IReadOnlyList<GamingOverviewCategoryDto>>(Array.Empty<GamingOverviewCategoryDto>());
+            }
+
+            var patientLevelSpec = new BaseSpecifications<PatientLevel>
+            {
+                WhereCriteria = patientLevel =>
+                    patientLevel.PatientId == patientId &&
+                    levelIds.Contains(patientLevel.GameLevelId)
+            };
+
+            var patientLevels = await _unitOfWork.Repository<PatientLevel>().GetAllAsync(patientLevelSpec);
+            var bestScoresByLevelId = patientLevels
+                .GroupBy(patientLevel => patientLevel.GameLevelId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Max(patientLevel => patientLevel.EarnedPoints));
+
+            var overview = categories
+                .Select(category => new GamingOverviewCategoryDto
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    Description = category.Description,
+                    Games = category.Games
+                        .OrderBy(game => game.Id)
+                        .Select(game => new GamingOverviewGameDto
+                        {
+                            Id = game.Id,
+                            Title = game.Title,
+                            Description = game.Description,
+                            Levels = game.Levels
+                                .OrderBy(level => level.DifficultyLevel)
+                                .Select(level => new GamingOverviewLevelDto
+                                {
+                                    Id = level.Id,
+                                    DifficultyLevel = level.DifficultyLevel,
+                                    RequiredScore = level.RequiredScore,
+                                    MaxScore = level.MaxScore,
+                                    BestScore = bestScoresByLevelId.GetValueOrDefault(level.Id),
+                                    IsUnlocked = IsLevelUnlocked(level, game.Levels, bestScoresByLevelId)
+                                })
+                                .ToList()
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            return Result.Success<IReadOnlyList<GamingOverviewCategoryDto>>(overview);
         }
         catch (Exception ex)
         {
-            return Result.Failure<PlayerGamingOverviewDto>(500, $"Failed to get player overview: {ex.Message}");
+            return Result.Failure<IReadOnlyList<GamingOverviewCategoryDto>>(500, $"Failed to get gaming overview: {ex.Message}");
         }
     }
 
-    #endregion
-
-    #region Submit Game Result
-
-    public async Task<Result<GameResultResponseDto>> SubmitGameResultAsync(int patientId, SubmitGameResultDto dto)
+    public async Task<Result<SubmitGamePlayResponseDto>> SubmitGameResultAsync(SubmitGamePlayRequestDto dto)
     {
         try
         {
-            // 1. Load patient
-            var patient = await _unitOfWork.Repository<Patient>().GetEntityAsync(patientId);
+            var patient = await _unitOfWork.Repository<Patient>().GetEntityAsync(dto.PatientId);
             if (patient == null)
-                return Result.Failure<GameResultResponseDto>(404, "Patient not found.");
+            {
+                return Result.Failure<SubmitGamePlayResponseDto>(404, "Patient not found.");
+            }
 
-            // 2. Load the GameLevel
             var gameLevelSpec = new BaseSpecifications<GameLevel>
             {
-                WhereCriteria = gl => gl.Id == dto.GameLevelId
+                WhereCriteria = level => level.Id == dto.GameLevelId
             };
-            gameLevelSpec.AddInclude("Game");
+            gameLevelSpec.AddIncludeWithThenInclude(level => level.Game, "Levels");
 
             var gameLevel = await _unitOfWork.Repository<GameLevel>().GetEntityAsync(gameLevelSpec);
             if (gameLevel == null)
-                return Result.Failure<GameResultResponseDto>(404, "Game level not found.");
-
-            // 3. Check if level is unlocked
-            if (patient.TotalScore < gameLevel.RequiredScore)
-                return Result.Failure<GameResultResponseDto>(400,
-                    $"Level is locked. Required score: {gameLevel.RequiredScore}, current score: {patient.TotalScore}.");
-
-            // 4. Record progress
-            var progress = new PatientLevel
             {
-                PatientId = patientId,
-                GameLevelId = dto.GameLevelId,
-                PlayedAt = DateTime.Now
+                return Result.Failure<SubmitGamePlayResponseDto>(404, "Game level not found.");
+            }
+
+            var gameLevels = gameLevel.Game.Levels.OrderBy(level => level.DifficultyLevel).ToList();
+            var sameGameLevelIds = gameLevels.Select(level => level.Id).ToList();
+
+            var patientLevelSpec = new BaseSpecifications<PatientLevel>
+            {
+                WhereCriteria = patientLevel =>
+                    patientLevel.PatientId == dto.PatientId &&
+                    sameGameLevelIds.Contains(patientLevel.GameLevelId)
             };
 
-            await _unitOfWork.Repository<PatientLevel>().AddAsync(progress);
+            var patientLevels = await _unitOfWork.Repository<PatientLevel>().GetAllAsync(patientLevelSpec);
+            var bestScoresByLevelId = patientLevels
+                .GroupBy(patientLevel => patientLevel.GameLevelId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Max(patientLevel => patientLevel.EarnedPoints));
 
-            // 5. Update patient's total score
-            _unitOfWork.Repository<Patient>().Update(patient);
+            if (!IsLevelUnlocked(gameLevel, gameLevels, bestScoresByLevelId))
+            {
+                return Result.Failure<SubmitGamePlayResponseDto>(400, "Level is locked for this patient.");
+            }
+
+            var normalizedScore = Math.Min(dto.Score, gameLevel.MaxScore);
+            var currentRecord = patientLevels
+                .FirstOrDefault(patientLevel => patientLevel.GameLevelId == dto.GameLevelId);
+
+            if (currentRecord == null)
+            {
+                currentRecord = new PatientLevel
+                {
+                    PatientId = dto.PatientId,
+                    GameLevelId = dto.GameLevelId,
+                    EarnedPoints = normalizedScore,
+                    PlayedAt = DateTime.UtcNow
+                };
+
+                await _unitOfWork.Repository<PatientLevel>().AddAsync(currentRecord);
+            }
+            else if (normalizedScore > currentRecord.EarnedPoints)
+            {
+                currentRecord.EarnedPoints = normalizedScore;
+                currentRecord.PlayedAt = DateTime.UtcNow;
+                _unitOfWork.Repository<PatientLevel>().Update(currentRecord);
+            }
 
             await _unitOfWork.CompleteAsync();
 
-            // 6. Find newly unlocked levels
-            var allLevelsSpec = new BaseSpecifications<GameLevel>
+            var allPatientLevelsSpec = new BaseSpecifications<PatientLevel>
             {
-                WhereCriteria = gl => gl.RequiredScore > (patient.TotalScore)
-                                   && gl.RequiredScore <= patient.TotalScore
+                WhereCriteria = patientLevel => patientLevel.PatientId == dto.PatientId
             };
-            allLevelsSpec.AddInclude("Game");
+            var allPatientLevels = await _unitOfWork.Repository<PatientLevel>().GetAllAsync(allPatientLevelsSpec);
 
-            var newlyUnlocked = await _unitOfWork.Repository<GameLevel>().GetAllAsync(allLevelsSpec);
+            var recalculatedTotalScore = allPatientLevels
+                .GroupBy(patientLevel => patientLevel.GameLevelId)
+                .Sum(group => group.Max(patientLevel => patientLevel.EarnedPoints));
 
-            var response = new GameResultResponseDto
+            if (Math.Abs(patient.TotalScore - recalculatedTotalScore) > double.Epsilon)
             {
-                NewTotalScore = patient.TotalScore,
-                NewlyUnlockedLevels = newlyUnlocked
-                    .Select(l => $"{l.Game.Title} - {l.DifficultyLevel}")
-                    .ToList()
+                patient.TotalScore = recalculatedTotalScore;
+                _unitOfWork.Repository<Patient>().Update(patient);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            bestScoresByLevelId[dto.GameLevelId] = Math.Max(
+                bestScoresByLevelId.GetValueOrDefault(dto.GameLevelId),
+                normalizedScore);
+
+            var response = new SubmitGamePlayResponseDto
+            {
+                LevelId = gameLevel.Id,
+                Score = normalizedScore,
+                Passed = normalizedScore >= gameLevel.RequiredScore,
+                RequiredScore = gameLevel.RequiredScore,
+                MaxScore = gameLevel.MaxScore,
+                NewBestScore = bestScoresByLevelId[dto.GameLevelId],
+                NextLevelUnlocked = IsNextLevelUnlocked(gameLevel, gameLevels, bestScoresByLevelId)
             };
 
             return Result.Success(response);
         }
         catch (Exception ex)
         {
-            return Result.Failure<GameResultResponseDto>(500, $"Failed to submit game result: {ex.Message}");
+            return Result.Failure<SubmitGamePlayResponseDto>(500, $"Failed to submit game result: {ex.Message}");
         }
     }
 
-    #endregion
+    private static bool IsLevelUnlocked(
+        GameLevel level,
+        IEnumerable<GameLevel> gameLevels,
+        IReadOnlyDictionary<int, int> bestScoresByLevelId)
+    {
+        if (level.DifficultyLevel == DifficultyLevel.Easy)
+        {
+            return true;
+        }
+
+        var previousLevel = GetPreviousLevel(level, gameLevels);
+        if (previousLevel == null)
+        {
+            return false;
+        }
+
+        return bestScoresByLevelId.TryGetValue(previousLevel.Id, out var bestScore) &&
+               bestScore >= previousLevel.RequiredScore;
+    }
+
+    private static bool IsNextLevelUnlocked(
+        GameLevel currentLevel,
+        IReadOnlyList<GameLevel> gameLevels,
+        IReadOnlyDictionary<int, int> bestScoresByLevelId)
+    {
+        var nextLevel = GetNextLevel(currentLevel, gameLevels);
+        return nextLevel != null && IsLevelUnlocked(nextLevel, gameLevels, bestScoresByLevelId);
+    }
+
+    private static GameLevel? GetPreviousLevel(GameLevel level, IEnumerable<GameLevel> gameLevels)
+    {
+        var previousDifficulty = level.DifficultyLevel switch
+        {
+            DifficultyLevel.Medium => DifficultyLevel.Easy,
+            DifficultyLevel.Hard => DifficultyLevel.Medium,
+            _ => (DifficultyLevel?)null
+        };
+
+        return previousDifficulty == null
+            ? null
+            : gameLevels.FirstOrDefault(gameLevel => gameLevel.DifficultyLevel == previousDifficulty);
+    }
+
+    private static GameLevel? GetNextLevel(GameLevel level, IEnumerable<GameLevel> gameLevels)
+    {
+        var nextDifficulty = level.DifficultyLevel switch
+        {
+            DifficultyLevel.Easy => DifficultyLevel.Medium,
+            DifficultyLevel.Medium => DifficultyLevel.Hard,
+            _ => (DifficultyLevel?)null
+        };
+
+        return nextDifficulty == null
+            ? null
+            : gameLevels.FirstOrDefault(gameLevel => gameLevel.DifficultyLevel == nextDifficulty);
+    }
 }
