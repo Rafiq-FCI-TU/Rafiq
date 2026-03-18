@@ -19,8 +19,6 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameLevel> GameLevels { get; set; }
     public DbSet<PatientLevel> PatientLevels { get; set; }
-
-    public DbSet<PatientSessionAttempt> PatientSessionAttempts{ get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {

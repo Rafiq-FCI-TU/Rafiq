@@ -1,5 +1,6 @@
 ﻿using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Domain.ErrorHandling;
+using Rafiq.Infrastructure.Services;
 using System.Collections.Generic;
 
 
