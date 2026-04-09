@@ -1,17 +1,12 @@
 ﻿using AutoMapper;
-using Azure.Storage.Blobs;
-using Azure.Storage.Sas;
-using MediaToolkit;
-using MediaToolkit.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
+using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
 using Rafiq.Infrastructure.Settings;
-using Rafiq.Domain.Entities;
 
 namespace Rafiq.Infrastructure.Services.Sessiones;
 public class SessionService : ISessionService
@@ -34,7 +29,7 @@ public class SessionService : ISessionService
         {
             var mediaUrl = await _blobHelper.UploadFileAsync(dto.Media, "videos");
             var thumbnailUrl = await _blobHelper.UploadFileAsync(dto.Thumbnail, "thumbnails");
-            var duration =  _blobHelper.GetVideoDuration(dto.Media);
+            var duration = await _blobHelper.GetVideoDuration(dto.Media);
 
             var session = new Session
             {

@@ -3,7 +3,6 @@ using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
 using Rafiq.Domain.Entities;
-using Rafiq.Domain.Enums;
 using Rafiq.Domain.ErrorHandling;
 
 namespace Rafiq.Infrastructure.Services;
@@ -78,7 +77,7 @@ public class GamingService : IGamingService
                                     RequiredScore = level.RequiredScore,
                                     MaxScore = level.MaxScore,
                                     BestScore = bestScoresByLevelId.GetValueOrDefault(level.Id),
-                                    IsUnlocked = IsLevelUnlocked(level, game.Levels, bestScoresByLevelId)
+                                    IsUnlocked = IsLevelUnlocked(level, patient.TotalScore) // ✅
                                 })
                                 .ToList()
                         })
@@ -108,7 +107,6 @@ public class GamingService : IGamingService
             {
                 WhereCriteria = level => level.Id == dto.GameLevelId
             };
-            gameLevelSpec.AddIncludeWithThenInclude(level => level.Game, "Levels");
 
             var gameLevel = await _unitOfWork.Repository<GameLevel>().GetEntityAsync(gameLevelSpec);
             if (gameLevel == null)
@@ -116,31 +114,23 @@ public class GamingService : IGamingService
                 return Result.Failure<SubmitGamePlayResponseDto>(404, "Game level not found.");
             }
 
-            var gameLevels = gameLevel.Game.Levels.OrderBy(level => level.DifficultyLevel).ToList();
-            var sameGameLevelIds = gameLevels.Select(level => level.Id).ToList();
+            // ✅ التحقق من الـ lock بناءً على TotalScore فقط
+            if (!IsLevelUnlocked(gameLevel, patient.TotalScore))
+            {
+                return Result.Failure<SubmitGamePlayResponseDto>(400, "Level is locked for this patient.");
+            }
 
             var patientLevelSpec = new BaseSpecifications<PatientLevel>
             {
                 WhereCriteria = patientLevel =>
                     patientLevel.PatientId == dto.PatientId &&
-                    sameGameLevelIds.Contains(patientLevel.GameLevelId)
+                    patientLevel.GameLevelId == dto.GameLevelId
             };
 
             var patientLevels = await _unitOfWork.Repository<PatientLevel>().GetAllAsync(patientLevelSpec);
-            var bestScoresByLevelId = patientLevels
-                .GroupBy(patientLevel => patientLevel.GameLevelId)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.Max(patientLevel => patientLevel.EarnedPoints));
-
-            if (!IsLevelUnlocked(gameLevel, gameLevels, bestScoresByLevelId))
-            {
-                return Result.Failure<SubmitGamePlayResponseDto>(400, "Level is locked for this patient.");
-            }
+            var currentRecord = patientLevels.FirstOrDefault();
 
             var normalizedScore = Math.Min(dto.Score, gameLevel.MaxScore);
-            var currentRecord = patientLevels
-                .FirstOrDefault(patientLevel => patientLevel.GameLevelId == dto.GameLevelId);
 
             if (currentRecord == null)
             {
@@ -180,9 +170,7 @@ public class GamingService : IGamingService
                 await _unitOfWork.CompleteAsync();
             }
 
-            bestScoresByLevelId[dto.GameLevelId] = Math.Max(
-                bestScoresByLevelId.GetValueOrDefault(dto.GameLevelId),
-                normalizedScore);
+            var newBestScore = Math.Max(currentRecord.EarnedPoints, normalizedScore);
 
             var response = new SubmitGamePlayResponseDto
             {
@@ -191,8 +179,7 @@ public class GamingService : IGamingService
                 Passed = normalizedScore >= gameLevel.RequiredScore,
                 RequiredScore = gameLevel.RequiredScore,
                 MaxScore = gameLevel.MaxScore,
-                NewBestScore = bestScoresByLevelId[dto.GameLevelId],
-                NextLevelUnlocked = IsNextLevelUnlocked(gameLevel, gameLevels, bestScoresByLevelId)
+                NewBestScore = newBestScore,
             };
 
             return Result.Success(response);
@@ -203,60 +190,9 @@ public class GamingService : IGamingService
         }
     }
 
-    private static bool IsLevelUnlocked(
-        GameLevel level,
-        IEnumerable<GameLevel> gameLevels,
-        IReadOnlyDictionary<int, int> bestScoresByLevelId)
+    // ✅ منطق بسيط ونظيف — TotalScore >= RequiredScore بس
+    private static bool IsLevelUnlocked(GameLevel level, double patientTotalScore)
     {
-        if (level.DifficultyLevel == DifficultyLevel.Easy)
-        {
-            return true;
-        }
-
-        var previousLevel = GetPreviousLevel(level, gameLevels);
-        if (previousLevel == null)
-        {
-            return false;
-        }
-
-        return bestScoresByLevelId.TryGetValue(previousLevel.Id, out var bestScore) &&
-               bestScore >= previousLevel.RequiredScore;
-    }
-
-    private static bool IsNextLevelUnlocked(
-        GameLevel currentLevel,
-        IReadOnlyList<GameLevel> gameLevels,
-        IReadOnlyDictionary<int, int> bestScoresByLevelId)
-    {
-        var nextLevel = GetNextLevel(currentLevel, gameLevels);
-        return nextLevel != null && IsLevelUnlocked(nextLevel, gameLevels, bestScoresByLevelId);
-    }
-
-    private static GameLevel? GetPreviousLevel(GameLevel level, IEnumerable<GameLevel> gameLevels)
-    {
-        var previousDifficulty = level.DifficultyLevel switch
-        {
-            DifficultyLevel.Medium => DifficultyLevel.Easy,
-            DifficultyLevel.Hard => DifficultyLevel.Medium,
-            _ => (DifficultyLevel?)null
-        };
-
-        return previousDifficulty == null
-            ? null
-            : gameLevels.FirstOrDefault(gameLevel => gameLevel.DifficultyLevel == previousDifficulty);
-    }
-
-    private static GameLevel? GetNextLevel(GameLevel level, IEnumerable<GameLevel> gameLevels)
-    {
-        var nextDifficulty = level.DifficultyLevel switch
-        {
-            DifficultyLevel.Easy => DifficultyLevel.Medium,
-            DifficultyLevel.Medium => DifficultyLevel.Hard,
-            _ => (DifficultyLevel?)null
-        };
-
-        return nextDifficulty == null
-            ? null
-            : gameLevels.FirstOrDefault(gameLevel => gameLevel.DifficultyLevel == nextDifficulty);
+        return patientTotalScore >= level.RequiredScore;
     }
 }
