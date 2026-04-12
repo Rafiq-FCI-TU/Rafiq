@@ -6,6 +6,7 @@ using Rafiq.Domain.Entities;
 using Rafiq.Infrastructure.Services;
 using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Infrastructure.Services.Sessiones;
+using Rafiq.Infrastructure.Services.Specialists;
 using Rafiq.Infrastructure.Settings;
 using Rafiq.Persistence;
 
@@ -27,6 +28,9 @@ public static class DependencyInjection
         services.AddScoped<IAssessmentService, AssessmentService>();
         services.AddScoped<IGamingService, GamingService>();
         services.AddScoped<IPatientSessionAttemptService, PatientSessionAttemptService>();
+
+        builder.Services.AddScoped<ISpecialistRepository, SpecialistRepository>();
+        builder.Services.AddScoped<ISpecialistService, SpecialistService>();
 
         builder.Services.AddSingleton<BlobHelperService>();
 
