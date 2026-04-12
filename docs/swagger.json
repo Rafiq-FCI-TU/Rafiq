@@ -800,17 +800,15 @@
         }
       }
     },
-    "/api/Gaming/overview/{patientId}": {
+    "/api/gaming/overview/{patientId}": {
       "get": {
         "tags": [
           "Gaming"
         ],
-        "summary": "Gets the full gaming overview for a patient, including all categories,\ngames, and levels with locked/unlocked status based on the patient's current score.",
         "parameters": [
           {
             "name": "patientId",
             "in": "path",
-            "description": "The patient's ID.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -820,27 +818,36 @@
         ],
         "responses": {
           "200": {
-            "description": "Overview retrieved successfully.",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerGamingOverviewDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GamingOverviewCategoryDto"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerGamingOverviewDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GamingOverviewCategoryDto"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerGamingOverviewDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GamingOverviewCategoryDto"
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "Patient or gaming record not found.",
+            "description": "Not Found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -860,72 +867,58 @@
             }
           },
           "500": {
-            "description": "Internal server error."
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/api/Gaming/submit/{patientId}": {
+    "/api/gaming/play": {
       "post": {
         "tags": [
           "Gaming"
         ],
-        "summary": "Submits a game level completion result. Awards reward points and updates the patient's total score.",
-        "parameters": [
-          {
-            "name": "patientId",
-            "in": "path",
-            "description": "The patient's ID.",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "requestBody": {
-          "description": "The game level completion data containing the gameLevelId.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitGameResultDto"
+                "$ref": "#/components/schemas/SubmitGamePlayRequestDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitGameResultDto"
+                "$ref": "#/components/schemas/SubmitGamePlayRequestDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitGameResultDto"
+                "$ref": "#/components/schemas/SubmitGamePlayRequestDto"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Game result submitted successfully.",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResultResponseDto"
+                  "$ref": "#/components/schemas/SubmitGamePlayResponseDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResultResponseDto"
+                  "$ref": "#/components/schemas/SubmitGamePlayResponseDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResultResponseDto"
+                  "$ref": "#/components/schemas/SubmitGamePlayResponseDto"
                 }
               }
             }
           },
           "400": {
-            "description": "Level is locked (insufficient score).",
+            "description": "Bad Request",
             "content": {
               "text/plain": {
                 "schema": {
@@ -945,7 +938,7 @@
             }
           },
           "404": {
-            "description": "Patient or game level not found.",
+            "description": "Not Found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -965,7 +958,136 @@
             }
           },
           "500": {
-            "description": "Internal server error."
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/PatientAttempts/submit": {
+      "post": {
+        "tags": [
+          "PatientAttempts"
+        ],
+        "summary": "Submit a new attempt for a session by uploading a video.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "SessionId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "PatientId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Video": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "SessionId": {
+                  "style": "form"
+                },
+                "PatientId": {
+                  "style": "form"
+                },
+                "Video": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PatientAttempts/review": {
+      "put": {
+        "tags": [
+          "PatientAttempts"
+        ],
+        "summary": "Review a patient's attempt by approving or rejecting it.\nSpecialists can also provide feedback and assign a score.",
+        "requestBody": {
+          "description": "Review details including status, feedback, and optional score.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAttemptDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAttemptDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAttemptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PatientAttempts/pending/{specialistId}": {
+      "get": {
+        "tags": [
+          "PatientAttempts"
+        ],
+        "summary": "Get all pending attempts that require review by a specific specialist.",
+        "parameters": [
+          {
+            "name": "specialistId",
+            "in": "path",
+            "description": "The specialist profile identifier.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PatientAttempts/patient/{patientId}": {
+      "get": {
+        "tags": [
+          "PatientAttempts"
+        ],
+        "summary": "Retrieve all attempts submitted by a specific patient.",
+        "parameters": [
+          {
+            "name": "patientId",
+            "in": "path",
+            "description": "The patient identifier.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -999,20 +1121,9 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "Duration": {
-                    "type": "string"
-                  },
-                  "Sequence": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
                   "Score": {
                     "type": "integer",
                     "format": "int32"
-                  },
-                  "PublishedAt": {
-                    "type": "string",
-                    "format": "date-time"
                   },
                   "SpecialistProfileId": {
                     "type": "string"
@@ -1035,16 +1146,7 @@
                 "Thumbnail": {
                   "style": "form"
                 },
-                "Duration": {
-                  "style": "form"
-                },
-                "Sequence": {
-                  "style": "form"
-                },
                 "Score": {
-                  "style": "form"
-                },
-                "PublishedAt": {
                   "style": "form"
                 },
                 "SpecialistProfileId": {
@@ -1321,6 +1423,297 @@
           },
           "500": {
             "description": "An unexpected server error occurred while retrieving sessions."
+          }
+        }
+      }
+    },
+    "/api/Specialist": {
+      "get": {
+        "tags": [
+          "Specialist"
+        ],
+        "summary": "Gets all registered specialists.",
+        "responses": {
+          "200": {
+            "description": "Specialists retrieved successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialistResponseDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialistResponseDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialistResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/api/Specialist/{id}": {
+      "get": {
+        "tags": [
+          "Specialist"
+        ],
+        "summary": "Gets a specific specialist by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The specialist profile ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Specialist found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecialistResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecialistResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpecialistResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Specialist not found.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/api/Specialist/{id}/patients": {
+      "get": {
+        "tags": [
+          "Specialist"
+        ],
+        "summary": "Gets all patients assigned to a specific specialist.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The specialist profile ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patients retrieved successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialistPatientDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialistPatientDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SpecialistPatientDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Specialist not found or has no patients.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/api/Specialist/{specialistId}/patients/{patientId}": {
+      "post": {
+        "tags": [
+          "Specialist"
+        ],
+        "summary": "Assigns a patient to a specialist.",
+        "parameters": [
+          {
+            "name": "specialistId",
+            "in": "path",
+            "description": "The specialist profile ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "patientId",
+            "in": "path",
+            "description": "The patient ID.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient assigned successfully."
+          },
+          "409": {
+            "description": "Patient is already assigned to this specialist.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Specialist"
+        ],
+        "summary": "Unassigns a patient from a specialist.",
+        "parameters": [
+          {
+            "name": "specialistId",
+            "in": "path",
+            "description": "The specialist profile ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "patientId",
+            "in": "path",
+            "description": "The patient ID.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patient unassigned successfully."
+          },
+          "404": {
+            "description": "Patient is not assigned to this specialist.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
           }
         }
       }
@@ -1657,7 +2050,7 @@
         },
         "additionalProperties": false
       },
-      "GameCategoryDto": {
+      "GamingOverviewCategoryDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1668,17 +2061,21 @@
             "type": "string",
             "nullable": true
           },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
           "games": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GameDto"
+              "$ref": "#/components/schemas/GamingOverviewGameDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "GameDto": {
+      "GamingOverviewGameDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1689,21 +2086,21 @@
             "type": "string",
             "nullable": true
           },
-          "duration": {
+          "description": {
             "type": "string",
             "nullable": true
           },
           "levels": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GameLevelDto"
+              "$ref": "#/components/schemas/GamingOverviewLevelDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "GameLevelDto": {
+      "GamingOverviewLevelDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1717,33 +2114,16 @@
             "type": "integer",
             "format": "int32"
           },
-          "rewardPoints": {
+          "maxScore": {
             "type": "integer",
             "format": "int32"
           },
           "isUnlocked": {
             "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "GameResultResponseDto": {
-        "type": "object",
-        "properties": {
-          "earnedPoints": {
+          },
+          "bestScore": {
             "type": "integer",
             "format": "int32"
-          },
-          "newTotalScore": {
-            "type": "number",
-            "format": "double"
-          },
-          "newlyUnlockedLevels": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1824,27 +2204,6 @@
             "minLength": 1,
             "type": "string",
             "description": "Allowed values: Male, Female"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlayerGamingOverviewDto": {
-        "type": "object",
-        "properties": {
-          "patientId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalScore": {
-            "type": "number",
-            "format": "double"
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameCategoryDto"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1948,6 +2307,29 @@
         },
         "additionalProperties": false
       },
+      "ReviewAttemptDto": {
+        "type": "object",
+        "properties": {
+          "attemptId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "doctorFeedback": {
+            "type": "string",
+            "nullable": true
+          },
+          "scoreAwarded": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SessionDto": {
         "type": "object",
         "properties": {
@@ -1974,10 +2356,6 @@
           "duration": {
             "type": "string",
             "nullable": true
-          },
-          "sequence": {
-            "type": "integer",
-            "format": "int32"
           },
           "score": {
             "type": "integer",
@@ -2029,10 +2407,6 @@
             "type": "string",
             "nullable": true
           },
-          "sequence": {
-            "type": "integer",
-            "format": "int32"
-          },
           "score": {
             "type": "integer",
             "format": "int32"
@@ -2056,6 +2430,45 @@
         },
         "additionalProperties": false
       },
+      "SpecialistPatientDto": {
+        "type": "object",
+        "properties": {
+          "patientId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalScore": {
+            "type": "number",
+            "format": "double"
+          },
+          "assignedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "familyEmail": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "SpecialistRegistrationCache": {
         "type": "object",
         "properties": {
@@ -2067,6 +2480,48 @@
             "$ref": "#/components/schemas/SpecialistStep1Dto"
           },
           "currentStep": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SpecialistResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "credentials": {
+            "type": "string",
+            "nullable": true
+          },
+          "specialty": {
+            "type": "string",
+            "nullable": true
+          },
+          "organization": {
+            "type": "string",
+            "nullable": true
+          },
+          "professionalBio": {
+            "type": "string",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "patientsCount": {
             "type": "integer",
             "format": "int32"
           }
@@ -2159,12 +2614,52 @@
         },
         "additionalProperties": false
       },
-      "SubmitGameResultDto": {
+      "SubmitGamePlayRequestDto": {
         "type": "object",
         "properties": {
+          "patientId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "gameLevelId": {
             "type": "integer",
             "format": "int32"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubmitGamePlayResponseDto": {
+        "type": "object",
+        "properties": {
+          "levelId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "requiredScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newBestScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextLevelUnlocked": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2207,7 +2702,13 @@
       "name": "Gaming"
     },
     {
+      "name": "PatientAttempts"
+    },
+    {
       "name": "Session"
+    },
+    {
+      "name": "Specialist"
     },
     {
       "name": "SpecialistRegistration"
