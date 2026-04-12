@@ -49,16 +49,20 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
             {
                 WhereCriteria = p => p.FamilyProfileId == user.Id
             };
+            spec.AddInclude(nameof(Patient.SpecialistPatients)); 
 
             var patient = await unitOfWork.Repository<Patient>().GetEntityAsync(spec);
 
             bool hasAssessment = patient?.AssessmentId > 0;
             int? assessmentId = hasAssessment ? patient?.AssessmentId : null;
 
-            return Result.Success<ResponseForFamilyRegistrationDto>(new ResponseForFamilyRegistrationDto
+            string? hasSpecialist = patient?.SpecialistPatients
+                .FirstOrDefault()?.SpecialistId;
+            return Result.Success(new ResponseForFamilyRegistrationDto
             {
-                Id= user.Id,
-                Patientid = patient.Id,
+                Id = user.Id,
+                Specialistid = hasSpecialist,     
+                Patientid = patient?.Id,
                 IsAuthenticated = true,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
                 Email = user.Email ?? string.Empty,
