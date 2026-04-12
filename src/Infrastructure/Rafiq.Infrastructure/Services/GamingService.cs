@@ -77,7 +77,7 @@ public class GamingService : IGamingService
                                     RequiredScore = level.RequiredScore,
                                     MaxScore = level.MaxScore,
                                     BestScore = bestScoresByLevelId.GetValueOrDefault(level.Id),
-                                    IsUnlocked = IsLevelUnlocked(level, patient.TotalScore) // ✅
+                                    IsUnlocked = IsLevelUnlocked(level, patient.TotalScore)
                                 })
                                 .ToList()
                         })
@@ -114,7 +114,6 @@ public class GamingService : IGamingService
                 return Result.Failure<SubmitGamePlayResponseDto>(404, "Game level not found.");
             }
 
-            // ✅ التحقق من الـ lock بناءً على TotalScore فقط
             if (!IsLevelUnlocked(gameLevel, patient.TotalScore))
             {
                 return Result.Failure<SubmitGamePlayResponseDto>(400, "Level is locked for this patient.");
@@ -131,6 +130,10 @@ public class GamingService : IGamingService
             var currentRecord = patientLevels.FirstOrDefault();
 
             var normalizedScore = Math.Min(dto.Score, gameLevel.MaxScore);
+            var previousBestScore = currentRecord?.EarnedPoints ?? 0;
+            var wasPreviouslyPassed = previousBestScore >= gameLevel.RequiredScore;
+            var isCurrentlyPassed = normalizedScore >= gameLevel.RequiredScore;
+            var newBestScore = Math.Max(previousBestScore, normalizedScore);
 
             if (currentRecord == null)
             {
@@ -151,35 +154,23 @@ public class GamingService : IGamingService
                 _unitOfWork.Repository<PatientLevel>().Update(currentRecord);
             }
 
-            await _unitOfWork.CompleteAsync();
-
-            var allPatientLevelsSpec = new BaseSpecifications<PatientLevel>
+            if (isCurrentlyPassed && !wasPreviouslyPassed)
             {
-                WhereCriteria = patientLevel => patientLevel.PatientId == dto.PatientId
-            };
-            var allPatientLevels = await _unitOfWork.Repository<PatientLevel>().GetAllAsync(allPatientLevelsSpec);
-
-            var recalculatedTotalScore = allPatientLevels
-                .GroupBy(patientLevel => patientLevel.GameLevelId)
-                .Sum(group => group.Max(patientLevel => patientLevel.EarnedPoints));
-
-            if (Math.Abs(patient.TotalScore - recalculatedTotalScore) > double.Epsilon)
-            {
-                patient.TotalScore = recalculatedTotalScore;
+                patient.TotalScore += normalizedScore;
                 _unitOfWork.Repository<Patient>().Update(patient);
-                await _unitOfWork.CompleteAsync();
             }
 
-            var newBestScore = Math.Max(currentRecord.EarnedPoints, normalizedScore);
+            await _unitOfWork.CompleteAsync();
 
             var response = new SubmitGamePlayResponseDto
             {
                 LevelId = gameLevel.Id,
                 Score = normalizedScore,
-                Passed = normalizedScore >= gameLevel.RequiredScore,
+                Passed = isCurrentlyPassed,
                 RequiredScore = gameLevel.RequiredScore,
                 MaxScore = gameLevel.MaxScore,
                 NewBestScore = newBestScore,
+                NewTotalScore = patient.TotalScore
             };
 
             return Result.Success(response);
@@ -190,7 +181,6 @@ public class GamingService : IGamingService
         }
     }
 
-    // ✅ منطق بسيط ونظيف — TotalScore >= RequiredScore بس
     private static bool IsLevelUnlocked(GameLevel level, double patientTotalScore)
     {
         return patientTotalScore >= level.RequiredScore;

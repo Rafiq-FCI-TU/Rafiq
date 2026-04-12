@@ -43,5 +43,5 @@ public class SubmitGamePlayResponseDto
     public int RequiredScore { get; set; }
     public int MaxScore { get; set; }
     public int NewBestScore { get; set; }
-    public bool NextLevelUnlocked { get; set; }
+    public double NewTotalScore { get; set; }
 }

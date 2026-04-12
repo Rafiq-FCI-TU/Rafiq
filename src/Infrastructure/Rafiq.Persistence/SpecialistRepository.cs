@@ -57,6 +57,18 @@ public class SpecialistRepository : ISpecialistRepository
 
     #endregion
 
+    #region Get Patient Specialist
+
+    public async Task<SpecialistPatient?> GetPatientSpecialistAsync(int patientId)
+    {
+        return await _dbContext.Set<SpecialistPatient>()
+            .AsNoTracking()
+            .Include(sp => sp.Specialist)
+            .FirstOrDefaultAsync(sp => sp.PatientId == patientId);
+    }
+
+    #endregion
+
     #region Check Assignment
 
     public async Task<bool> IsPatientAssignedToSpecialistAsync(string specialistId, int patientId)
