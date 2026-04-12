@@ -28,4 +28,11 @@ public class PatientController : BaseController
     [ProducesResponseType(500)]
     public async Task<IActionResult> GetPatientById(int id)
         => (await _patientService.GetPatientByIdAsync(id)).ToActionResult();
+
+    [HttpGet("{id}/doctor")]
+    [ProducesResponseType(typeof(PatientDoctorDto), 200)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
+    public async Task<IActionResult> GetPatientDoctor(int id)
+        => (await _patientService.GetPatientDoctorAsync(id)).ToActionResult();
 }
