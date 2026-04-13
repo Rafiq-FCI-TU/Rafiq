@@ -95,7 +95,7 @@ public class SpecialistService : ISpecialistService
                 .IsPatientAssignedToSpecialistAsync(specialistId, patientId);
 
             if (alreadyAssigned)
-                return Result.Failure<bool>(409, "Patient is already assigned to this specialist");
+                return Result.Failure<bool>(409, "Patient is already assigned");
 
             await _specialistRepository.AssignPatientAsync(specialistId, patientId);
 

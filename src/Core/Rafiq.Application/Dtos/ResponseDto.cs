@@ -18,6 +18,7 @@ public class ResponseForFamilyRegistrationDto : ResponseDto
 
     public string ?Specialistid { get; set; }
 
+    public double? score{ get; set; } 
     public int? Patientid { get; set; }
 
     public bool? HasAssessment { get; set; }

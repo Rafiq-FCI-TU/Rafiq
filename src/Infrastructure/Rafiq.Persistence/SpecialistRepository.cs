@@ -74,7 +74,7 @@ public class SpecialistRepository : ISpecialistRepository
     public async Task<bool> IsPatientAssignedToSpecialistAsync(string specialistId, int patientId)
     {
         return await _dbContext.Set<SpecialistPatient>()
-            .AnyAsync(sp => sp.SpecialistId == specialistId && sp.PatientId == patientId);
+            .AnyAsync(sp => sp.PatientId == patientId);
     }
 
     #endregion

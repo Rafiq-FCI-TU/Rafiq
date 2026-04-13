@@ -61,6 +61,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
             return Result.Success(new ResponseForFamilyRegistrationDto
             {
                 Id = user.Id,
+                score = patient.TotalScore,
                 Specialistid = hasSpecialist,     
                 Patientid = patient?.Id,
                 IsAuthenticated = true,
