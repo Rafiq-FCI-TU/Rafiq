@@ -158,19 +158,26 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
     {
         var userClaims = await userManager.GetClaimsAsync(user);
         var roles = await userManager.GetRolesAsync(user);
+        var signingKey = !string.IsNullOrWhiteSpace(_jwtSettings.Key)
+            ? _jwtSettings.Key
+            : _jwtSettings.SecretKey;
 
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.Name, user.UserName ?? string.Empty),
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
             new("uid", user.Id)
         };
 
         claims.AddRange(userClaims);
         claims.AddRange(roles.Select(r => new Claim("roles", r)));
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         return new JwtSecurityToken(
