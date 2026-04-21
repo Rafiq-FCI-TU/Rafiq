@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Rafiq.Application\Rafiq.Application.csproj" />
+    <ProjectReference Include="..\Rafiq.Persistence\Rafiq.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

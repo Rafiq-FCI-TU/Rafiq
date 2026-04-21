@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Rafiq.Domain.Common;
 
 namespace Rafiq.Domain.Entities.Community;
-public class CommunityPost
-{
-    public int Id { get; set; }
 
+public class CommunityPost : BaseEntity
+{
     [Required]
     [MaxLength(5000)]
     public string Content { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    [MaxLength(500)]
-    public List<string>? Tags { get; set; }
-
-    public int LikesCount { get; set; }
+    public int TotalReactionsCount { get; set; }
     public int CommentsCount { get; set; }
 
     [NotMapped]
@@ -33,6 +25,7 @@ public class CommunityPost
     public ApplicationUser Author { get; set; } = null!;
 
     // Navigation
-    public ICollection<Comment> Comments { get; set; } = [];
-    public ICollection<PostReaction> Reactions { get; set; } = [];
+    public ICollection<PostTag> Tags { get; set; } = new List<PostTag>();
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<PostReaction> Reactions { get; set; } = new List<PostReaction>();
 }
