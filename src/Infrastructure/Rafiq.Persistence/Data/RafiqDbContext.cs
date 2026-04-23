@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Rafiq.Domain.Entities.Community;
+using Rafiq.Domain.Entities.Resources;
 
 
 namespace Rafiq.Persistence.Data;
@@ -29,6 +30,8 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<PostReaction> PostReactions { get; set; }
     public DbSet<CommentReaction> CommentReactions { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
+    public DbSet<Resource> Resources { get; set; }
+    public DbSet<ResourceTag> ResourceTags { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
