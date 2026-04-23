@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Rafiq.Domain.Entities.Community;
 
 
 namespace Rafiq.Persistence.Data;
@@ -21,6 +22,13 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<PatientLevel> PatientLevels { get; set; }
 
     public DbSet<PatientSessionAttempt> PatientSessionAttempts{ get; set; }
+
+    // Community
+    public DbSet<CommunityPost> CommunityPosts { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<PostReaction> PostReactions { get; set; }
+    public DbSet<CommentReaction> CommentReactions { get; set; }
+    public DbSet<PostTag> PostTags { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {

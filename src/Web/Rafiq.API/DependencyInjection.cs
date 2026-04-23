@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Rafiq.API.ServicesExtension;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAssessmentService, AssessmentService>();
         services.AddScoped<IGamingService, GamingService>();
+        services.AddScoped<ICommunityService, CommunityService>();
         services.AddScoped<IPatientSessionAttemptService, PatientSessionAttemptService>();
         services.AddScoped<IPatientService, PatientService>();
 

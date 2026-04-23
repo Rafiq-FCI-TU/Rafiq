@@ -395,6 +395,161 @@ namespace Rafiq.Persistence.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CommunityPostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("TotalReactionsCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("CommunityPostId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.CommentReaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("AppUserId", "CommentId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CommentReaction_User_Comment");
+
+                    b.ToTable("CommentReactions");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.CommunityPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CommentsCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("TotalReactionsCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("CommunityPosts");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.PostReaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CommunityPostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommunityPostId");
+
+                    b.HasIndex("AppUserId", "CommunityPostId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PostReaction_User_Post");
+
+                    b.ToTable("PostReactions");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.PostTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommunityPostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommunityPostId", "Value")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PostTag_Post_Value");
+
+                    b.ToTable("PostTags");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -937,6 +1092,85 @@ namespace Rafiq.Persistence.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.Comment", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rafiq.Domain.Entities.Community.CommunityPost", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("CommunityPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.CommentReaction", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rafiq.Domain.Entities.Community.Comment", "Comment")
+                        .WithMany("Reactions")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.CommunityPost", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.PostReaction", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rafiq.Domain.Entities.Community.CommunityPost", "Post")
+                        .WithMany("Reactions")
+                        .HasForeignKey("CommunityPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.PostTag", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.Community.CommunityPost", "Post")
+                        .WithMany("Tags")
+                        .HasForeignKey("CommunityPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Game", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.GameCategory", "Category")
@@ -1067,6 +1301,20 @@ namespace Rafiq.Persistence.Data.Migrations
             modelBuilder.Entity("Rafiq.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.Comment", b =>
+                {
+                    b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Community.CommunityPost", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Reactions");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Game", b =>
