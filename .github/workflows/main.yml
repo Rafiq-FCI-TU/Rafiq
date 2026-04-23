@@ -83,7 +83,7 @@ jobs:
           ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
         run: |
           dotnet tool install --global dotnet-ef
-          dotnet ef database update --project rafiq-fci-tu/rafiq --no-build
+          dotnet ef database update --project src/Web/Rafiq.API/Rafiq.API.csproj --no-build
 
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
