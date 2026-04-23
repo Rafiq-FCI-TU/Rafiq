@@ -818,6 +818,69 @@ namespace Rafiq.Persistence.Data.Migrations
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.Resources.Resource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Resources");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Resources.ResourceTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResourceId", "Value")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ResourceTag_Resource_Value");
+
+                    b.ToTable("ResourceTags");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Session", b =>
                 {
                     b.Property<int>("Id")
@@ -1258,6 +1321,28 @@ namespace Rafiq.Persistence.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.Resources.Resource", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Resources.ResourceTag", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.Resources.Resource", "Resource")
+                        .WithMany("Tags")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resource");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Session", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.SpecialistProfile", "Specialist")
@@ -1340,6 +1425,11 @@ namespace Rafiq.Persistence.Data.Migrations
                     b.Navigation("SessionAttempts");
 
                     b.Navigation("SpecialistPatients");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Resources.Resource", b =>
+                {
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.Session", b =>
