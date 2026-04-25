@@ -50,7 +50,7 @@ public static class SwaggerServicesExtension
                 Name = "Authorization",
                 Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer token\"",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
+                Type = SecuritySchemeType.Http,
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
 
