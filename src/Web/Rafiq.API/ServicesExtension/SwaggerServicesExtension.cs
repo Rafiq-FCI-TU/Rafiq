@@ -50,9 +50,10 @@ public static class SwaggerServicesExtension
                 Name = "Authorization",
                 Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer token\"",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
+                Type = SecuritySchemeType.Http,
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
+
         });
 
 
@@ -64,8 +65,9 @@ public static class SwaggerServicesExtension
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Rafiq API");
-            options.InjectStylesheet("/swagger-ui/SwaggerDark.css"); 
+            options.InjectStylesheet("/swagger-ui/SwaggerDark.css");
             options.RoutePrefix = string.Empty;
+            options.ConfigObject.AdditionalItems["persistAuthorization"] = true;
         });
     }
 }

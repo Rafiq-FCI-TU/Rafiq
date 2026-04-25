@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Rafiq.Domain.Settings;
 using System.Security.Claims;
 using System.Text;
 
 namespace Rafiq.API.ServicesExtension;
+
 public static class JwtServicesExtension
 {
     public static void AddJwtSettings(this IServiceCollection services, IConfiguration configuration)
@@ -15,7 +16,6 @@ public static class JwtServicesExtension
             ? jwtSettings.Key
             : jwtSettings.SecretKey;
 
-        // Add JWT authentication
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,9 +33,26 @@ public static class JwtServicesExtension
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
                 ValidateLifetime = true,
-                NameClaimType = ClaimTypes.NameIdentifier,
+                NameClaimType = "uid",
                 RoleClaimType = ClaimTypes.Role,
                 ClockSkew = TimeSpan.Zero
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+
+                    if (!string.IsNullOrWhiteSpace(accessToken) &&
+                        path.StartsWithSegments(new PathString("/hub")))
+                    {
+                        context.Token = accessToken;
+                    }
+
+                    return Task.CompletedTask;
+                }
             };
         });
     }

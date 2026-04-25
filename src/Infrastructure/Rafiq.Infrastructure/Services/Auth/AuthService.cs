@@ -164,7 +164,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtS
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
+            new(JwtRegisteredClaimNames.Sub, user.Id),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new(ClaimTypes.NameIdentifier, user.Id),
