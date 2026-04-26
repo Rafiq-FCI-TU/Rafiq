@@ -3,6 +3,7 @@ using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
 using Rafiq.Domain.Entities;
+using Rafiq.Domain.Enums;
 using Rafiq.Domain.ErrorHandling;
 
 namespace Rafiq.Infrastructure.Services.Sessiones;

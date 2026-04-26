@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Rafiq.API;
 using Rafiq.API.Middlewares;
 using Rafiq.API.ServicesExtension;
+using Rafiq.Application.Hubs;
 using Rafiq.Application.MappingProfıles;
 using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
@@ -104,7 +105,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyPolicy", corsPolicyBuilder =>
     {
-        corsPolicyBuilder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+        corsPolicyBuilder
+            .WithOrigins("http://localhost:3000", "https://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -119,6 +124,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexe
 #endregion
 
 var app = builder.Build();
+
 
 #region Update Database With Using Way And Seeding Data
 
@@ -169,6 +175,8 @@ app.UseCors("MyPolicy");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<AppHub>("/hub");
 
 app.UseStatusCodePagesWithReExecute("/error/{0}");
 

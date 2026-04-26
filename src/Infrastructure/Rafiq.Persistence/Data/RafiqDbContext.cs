@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Rafiq.Application.Interfaces;
 using Rafiq.Domain.Entities.Community;
 using Rafiq.Domain.Entities.Resources;
 
 
 namespace Rafiq.Persistence.Data;
-public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+
+public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : IdentityDbContext<ApplicationUser>(options), IApplicationDbContext
 {
     // DbSets
     public DbSet<FamilyProfile> FamilyProfiles { get; set; }
@@ -21,6 +23,8 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameLevel> GameLevels { get; set; }
     public DbSet<PatientLevel> PatientLevels { get; set; }
+
+    public DbSet<ChatMessage> ChatMessages { get; set; }
 
     public DbSet<PatientSessionAttempt> PatientSessionAttempts{ get; set; }
 

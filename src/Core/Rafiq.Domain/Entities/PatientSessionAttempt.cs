@@ -1,5 +1,5 @@
 using Rafiq.Domain.Common;
-using Rafiq.Domain.Entities;
+using Rafiq.Domain.Enums;
 namespace Rafiq.Domain.Entities;
 
 public class PatientSessionAttempt : BaseEntity
