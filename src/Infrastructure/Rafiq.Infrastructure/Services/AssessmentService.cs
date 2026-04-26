@@ -27,7 +27,8 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             var patientResponse = await unitOfWork.Repository<Patient>().GetEntityAsync(patientSpec);
 
-            if(patientResponse == null)
+            // Check if patient exists
+            if (patientResponse == null)
             {
                 return Result.Failure<AssessmentResponseDto>(404, "Patient not found");
             }
@@ -37,6 +38,7 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
                 WhereCriteria = a => a.PatientId == patientId
             };
 
+            // Check if an assessment already exists for the patient
             var assessmentResponse = await unitOfWork.Repository<Assessment>().GetEntityAsync(assessmentSpec);
 
             if(assessmentResponse != null)
@@ -48,17 +50,20 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             categoriesSpecifications.AddIncludeWithThenInclude(a => a.Questions);
 
+            // Get all categories with their questions to create the assessment categories
             var categories = await unitOfWork.Repository<Category>().GetAllAsync(categoriesSpecifications);
 
             var assessment = new Assessment
             {
                 PatientId = patientId,
                 Status = AssessmentStatus.InProgress,
-                Categories = categories.Select(category => new AssessmentCategory
+                Categories = categories.Select(category => new PracticeCategory
                 {
                     CategoryId = category.Id,
                     QuestionsNumber = category.QuestionsNumber,
                     CurrentQuestion = 1,
+                    QuestionsEarnedPoints = 0,
+                    QuestionsMaxPoints = 0,
                     Score = 0
                 }).ToList()
             };
@@ -83,7 +88,8 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             var currentAssessment = await unitOfWork.Repository<Assessment>().GetEntityAsync(currentAssessmentSpec);
 
-            if(currentAssessment == null)
+            // Check if the assessment was created successfully
+            if (currentAssessment == null)
             {
                 return Result.Failure<AssessmentResponseDto>(404, "Assessment not found after creation");
             }
@@ -100,6 +106,9 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
                     AssessmentCategoryDescription = c.Category.Description,
                     AssessmentCurrentQuestion = c.CurrentQuestion,
                     AssessmentTotalQuestions = c.QuestionsNumber,
+                    QuestionsEarnedPoints = c.QuestionsEarnedPoints,
+                    QuestionsMaxPoints = c.QuestionsMaxPoints,
+                    Score = c.Score
                 }).ToList()
             };
 
@@ -129,6 +138,7 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             var assessment = await unitOfWork.Repository<Assessment>().GetEntityAsync(spec);
 
+            // Check if the assessment exists
             if (assessment == null)
             {
                 return Result.Failure<AssessmentStatusDto>(404, "Assessment not found");
@@ -139,7 +149,8 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
             var currentCategory = assessment.Categories.OrderBy(ac => ac.CategoryId)
                 .FirstOrDefault(ac => ac.CurrentQuestion <= ac.QuestionsNumber);
 
-            if(currentCategory == null && assessment.Status != AssessmentStatus.Completed)
+            // If there is no current category and the assessment is not completed, it means the assessment is in an invalid state
+            if (currentCategory == null && assessment.Status != AssessmentStatus.Completed)
             {
                 return Result.Failure<AssessmentStatusDto>(400, "Assessment is in an invalid state");
             }
@@ -157,11 +168,14 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
                     AssessmentCategoryDescription = currentCategory.Category.Description,
                     AssessmentCurrentQuestion = currentCategory.CurrentQuestion,
                     AssessmentTotalQuestions = currentCategory.QuestionsNumber,
+                    QuestionsEarnedPoints = currentCategory.QuestionsEarnedPoints,
+                    QuestionsMaxPoints = currentCategory.QuestionsMaxPoints,
                     Score = currentCategory.Score,
                     Question = question == null ? null : new QuestionDto
                     {
                         QuestionId = question.Id,
                         Text = question.Text,
+                        MaxPoints = question.MaxPoints,
                         Options = GetOptions()
                     }
                 };
@@ -194,11 +208,13 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             var assessment = await unitOfWork.Repository<Assessment>().GetEntityAsync(spec);
 
+            // Check if the assessment exists
             if (assessment == null)
             {
                 return Result.Failure<AssessmentStatusDto>(404, "Assessment not found");
             }
 
+            // Check if the assessment is already completed
             if (assessment.Status == AssessmentStatus.Completed)
             {
                 return Result.Failure<AssessmentStatusDto>(400, "Assessment already completed");
@@ -206,6 +222,7 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             var question = await unitOfWork.Repository<Question>().GetEntityAsync(dto.QuestionId);
 
+            // Check if the question exists
             if (question == null)
             {
                 return Result.Failure<AssessmentStatusDto>(404, "Question not found");
@@ -218,6 +235,7 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             var existingAnswer = await unitOfWork.Repository<AssessmentAnswer>().GetEntityAsync(assessmentAnswerSpec);
 
+            // Check if the question has already been answered for this assessment
             if (existingAnswer != null)
             {
                 return Result.Failure<AssessmentStatusDto>(400, "Question already answered");
@@ -232,20 +250,17 @@ public class AssessmentService(IUnitOfWork unitOfWork) : IAssessmentService
 
             await unitOfWork.Repository<AssessmentAnswer>().AddAsync(answer);
 
+            // Update the assessment category score and current question
             var assessmentCategory = assessment.Categories.FirstOrDefault(ac => ac.CategoryId == question.CategoryId);
 
             if (assessmentCategory != null)
             {
                 AnswerType answerType = (AnswerType)dto.AnswerValue;
 
-                var maxAnswerScore = Enum.GetValues<AnswerType>().Max(e => (int)e);
-                var maxScore = assessmentCategory.QuestionsNumber * maxAnswerScore;
+                assessmentCategory.QuestionsEarnedPoints += dto.AnswerValue * 5; // 0 -> 0 points, 1 -> 5 points, 2 -> 10 points
+                assessmentCategory.QuestionsMaxPoints = assessmentCategory.CurrentQuestion * 10; // Each question is worth 10 points
+                assessmentCategory.Score = (double)assessmentCategory.QuestionsEarnedPoints / (double)assessmentCategory.QuestionsMaxPoints * 100; // Calculate the score as a percentage
 
-                var first = (double)answerType / (double)maxScore;
-
-                var second = first * 100;
-
-                assessmentCategory.Score += second;
                 assessmentCategory.CurrentQuestion++;
             }
 

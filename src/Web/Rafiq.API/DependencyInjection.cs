@@ -32,7 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAssessmentService, AssessmentService>();
-        services.AddScoped<IGamingService, GamingService>();
+        //services.AddScoped<IGamingService, GamingService>();
         services.AddScoped<ICommunityService, CommunityService>();
         services.AddScoped<IResourceService, ResourceService>();
         services.AddScoped<IPatientSessionAttemptService, PatientSessionAttemptService>();
