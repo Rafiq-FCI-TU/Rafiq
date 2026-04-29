@@ -25,7 +25,9 @@ public sealed record AttemptReviewedDto(
     string SessionTitle,
     int Score,
     string Feedback,
-    string Message);
+    string status,
+    string Message
+    );
 
 public sealed record NewSessionNotificationDto(
     int SessionId,
@@ -33,3 +35,13 @@ public sealed record NewSessionNotificationDto(
     string ThumbnailUrl,
     string Message,
     DateTime PublishedAt);
+
+
+public sealed record AttemptSubmittedDto(
+    int AttemptId,
+    int PatientId,
+    string PatientName,
+    int SessionId,
+    string SessionTitle,
+    string Message
+);

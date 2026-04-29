@@ -34,6 +34,9 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<PostReaction> PostReactions { get; set; }
     public DbSet<CommentReaction> CommentReactions { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
+
+    public DbSet<Notification> Notifications {  get; set; }
+
     public DbSet<Resource> Resources { get; set; }
     public DbSet<ResourceTag> ResourceTags { get; set; }
     

@@ -13,12 +13,14 @@ public class PatientSessionAttemptService : IPatientSessionAttemptService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly BlobHelperService _blobHelper;
+    private readonly IRealtimeSessionService _realtimeSessionService;
 
-    public PatientSessionAttemptService(IUnitOfWork unitOfWork,IMapper mapper,BlobHelperService blobHelper)
+    public PatientSessionAttemptService(IUnitOfWork unitOfWork,IMapper mapper,BlobHelperService blobHelper, IRealtimeSessionService realtimeSessionService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _blobHelper = blobHelper;
+        _realtimeSessionService=realtimeSessionService;
     }
 
     #region Patient Session Attempt Operations
@@ -33,6 +35,19 @@ public class PatientSessionAttemptService : IPatientSessionAttemptService
 
         await _unitOfWork.Repository<PatientSessionAttempt>().AddAsync(attempt);
         await _unitOfWork.CompleteAsync();
+
+        var spec = new BaseSpecifications<PatientSessionAttempt>
+        {
+            WhereCriteria = a => a.Id == attempt.Id
+        };
+        spec.AddInclude("Patient");
+        spec.AddInclude("Session");
+
+        var attemptWithDetails = await _unitOfWork
+            .Repository<PatientSessionAttempt>()
+            .GetEntityAsync(spec);
+
+        await _realtimeSessionService.NotifyAttemptSubmittedAsync(attemptWithDetails!);
 
         return Result.Success(attempt.Id);
     }
@@ -52,6 +67,7 @@ public class PatientSessionAttemptService : IPatientSessionAttemptService
 
         _unitOfWork.Repository<PatientSessionAttempt>().Update(attempt);
         await _unitOfWork.CompleteAsync();
+        await  _realtimeSessionService.ReviewAttemptAsync(attempt.Id, dto.DoctorFeedback ?? string.Empty, dto.ScoreAwarded ?? 0);
 
         return Result.Success(true);
     }
