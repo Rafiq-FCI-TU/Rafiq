@@ -34,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<IAssessmentService, AssessmentService>();
         services.AddScoped<IGamingService, GamingService>();
         services.AddScoped<ICommunityService, CommunityService>();
+        services.AddScoped<IResourceService, ResourceService>();
         services.AddScoped<IPatientSessionAttemptService, PatientSessionAttemptService>();
         services.AddScoped<IPatientService, PatientService>();
         builder.Services.AddSignalR();

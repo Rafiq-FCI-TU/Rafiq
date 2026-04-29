@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Rafiq.Application.Interfaces;
 using Rafiq.Domain.Entities.Community;
+using Rafiq.Domain.Entities.Resources;
 
 
 namespace Rafiq.Persistence.Data;
@@ -36,6 +37,9 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
 
     public DbSet<Notification> Notifications {  get; set; }
 
+    public DbSet<Resource> Resources { get; set; }
+    public DbSet<ResourceTag> ResourceTags { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
