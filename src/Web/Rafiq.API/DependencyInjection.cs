@@ -46,6 +46,8 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<ISpecialistRepository, SpecialistRepository>();
         builder.Services.AddScoped<ISpecialistService, SpecialistService>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<IRealtimeSessionService, RealtimeSessionService>();
 
         builder.Services.AddSingleton<BlobHelperService>();
 

@@ -14,11 +14,14 @@ public class SessionService : ISessionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly BlobHelperService _blobHelper;
-    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings, BlobHelperService blobHelper)
+    private readonly IRealtimeSessionService _realtimeSessionService;
+
+    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings, BlobHelperService blobHelper, IRealtimeSessionService realtimeSessionService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _blobHelper=blobHelper;
+        _realtimeSessionService=realtimeSessionService;
     }
 
     #region Create Session
@@ -46,6 +49,8 @@ public class SessionService : ISessionService
 
             await _unitOfWork.Repository<Session>().AddAsync(session);
             await _unitOfWork.CompleteAsync();
+
+             await _realtimeSessionService.PublishSessionAsync(session);
 
             return Result.Success(session.Id);
         }

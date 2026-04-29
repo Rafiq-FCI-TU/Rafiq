@@ -33,7 +33,9 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<PostReaction> PostReactions { get; set; }
     public DbSet<CommentReaction> CommentReactions { get; set; }
     public DbSet<PostTag> PostTags { get; set; }
-    
+
+    public DbSet<Notification> Notifications {  get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
