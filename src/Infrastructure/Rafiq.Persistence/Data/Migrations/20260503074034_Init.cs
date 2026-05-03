@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Rafiq.Persistence.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,6 +187,36 @@ namespace Rafiq.Persistence.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    ReadAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessages_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChatMessages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommunityPosts",
                 columns: table => new
                 {
@@ -207,6 +237,31 @@ namespace Rafiq.Persistence.Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TypeofNotification = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Payload = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -658,7 +713,6 @@ namespace Rafiq.Persistence.Data.Migrations
                     QuestionsMaxPoints = table.Column<double>(type: "float", nullable: false),
                     QuestionsNumber = table.Column<int>(type: "int", nullable: false),
                     CurrentQuestion = table.Column<int>(type: "int", nullable: false),
-                    CategoryType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AssessmentId = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -680,7 +734,7 @@ namespace Rafiq.Persistence.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameQuestion",
+                name: "GameQuestions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -693,9 +747,9 @@ namespace Rafiq.Persistence.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameQuestion", x => x.Id);
+                    table.PrimaryKey("PK_GameQuestions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameQuestion_GameLevels_GameLevelId",
+                        name: "FK_GameQuestions_GameLevels_GameLevelId",
                         column: x => x.GameLevelId,
                         principalTable: "GameLevels",
                         principalColumn: "Id",
@@ -710,7 +764,9 @@ namespace Rafiq.Persistence.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PatientId = table.Column<int>(type: "int", nullable: false),
                     GameLevelId = table.Column<int>(type: "int", nullable: false),
-                    EarnedPoints = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    EarnedPoints = table.Column<double>(type: "float", nullable: false, defaultValue: 0.0),
+                    MaxPoints = table.Column<double>(type: "float", nullable: false),
+                    Score = table.Column<double>(type: "float", nullable: false),
                     PlayedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
@@ -730,7 +786,7 @@ namespace Rafiq.Persistence.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameOption",
+                name: "GameOptions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -743,11 +799,11 @@ namespace Rafiq.Persistence.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameOption", x => x.Id);
+                    table.PrimaryKey("PK_GameOptions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameOption_GameQuestion_GameQuestionId",
+                        name: "FK_GameOptions_GameQuestions_GameQuestionId",
                         column: x => x.GameQuestionId,
-                        principalTable: "GameQuestion",
+                        principalTable: "GameQuestions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -814,6 +870,16 @@ namespace Rafiq.Persistence.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_ReceiverId",
+                table: "ChatMessages",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_SenderId_ReceiverId_SentAt",
+                table: "ChatMessages",
+                columns: new[] { "SenderId", "ReceiverId", "SentAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CommentReaction_User_Comment",
                 table: "CommentReactions",
                 columns: new[] { "AppUserId", "CommentId" },
@@ -845,19 +911,24 @@ namespace Rafiq.Persistence.Data.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameOption_GameQuestionId",
-                table: "GameOption",
+                name: "IX_GameOptions_GameQuestionId",
+                table: "GameOptions",
                 column: "GameQuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameQuestion_GameLevelId",
-                table: "GameQuestion",
+                name: "IX_GameQuestions_GameLevelId",
+                table: "GameQuestions",
                 column: "GameLevelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_CategoryId",
                 table: "Games",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PasswordResetToken_ApplicationUserId",
@@ -978,10 +1049,16 @@ namespace Rafiq.Persistence.Data.Migrations
                 name: "AssessmentAnswers");
 
             migrationBuilder.DropTable(
+                name: "ChatMessages");
+
+            migrationBuilder.DropTable(
                 name: "CommentReactions");
 
             migrationBuilder.DropTable(
-                name: "GameOption");
+                name: "GameOptions");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "PasswordResetToken");
@@ -1020,7 +1097,7 @@ namespace Rafiq.Persistence.Data.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "GameQuestion");
+                name: "GameQuestions");
 
             migrationBuilder.DropTable(
                 name: "Session");

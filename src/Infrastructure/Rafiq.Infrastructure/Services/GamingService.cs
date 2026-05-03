@@ -1,18 +1,18 @@
-using Rafiq.Application.Dtos.GamingDtos;
-using Rafiq.Application.Interfaces.Services;
-using Rafiq.Domain.ErrorHandling;
+//using Rafiq.Application.Dtos.GamingDtos;
+//using Rafiq.Application.Interfaces.Services;
+//using Rafiq.Domain.ErrorHandling;
 
-namespace Rafiq.Infrastructure.Services;
+//namespace Rafiq.Infrastructure.Services;
 
-public class GamingService : IGamingService
-{
-    public Task<Result<IReadOnlyList<GamingOverviewCategoryDto>>> GetGamingOverviewAsync(int patientId)
-    {
+//public class GamingService : IGamingService
+//{
+//    public Task<Result<IReadOnlyList<GamingOverviewCategoryDto>>> GetGamingOverviewAsync(int patientId)
+//    {
       
-    }
+//    }
 
-    public Task<Result<SubmitGamePlayResponseDto>> SubmitGameResultAsync(SubmitGamePlayRequestDto dto)
-    {
-        throw new NotImplementedException();
-    }
-}
+//    public Task<Result<SubmitGamePlayResponseDto>> SubmitGameResultAsync(SubmitGamePlayRequestDto dto)
+//    {
+//        throw new NotImplementedException();
+//    }
+//}

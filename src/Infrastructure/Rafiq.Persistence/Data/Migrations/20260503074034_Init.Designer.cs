@@ -12,8 +12,8 @@ using Rafiq.Persistence.Data;
 namespace Rafiq.Persistence.Data.Migrations
 {
     [DbContext(typeof(RafiqDbContext))]
-    [Migration("20260424210247_init")]
-    partial class init
+    [Migration("20260503074034_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -366,6 +366,45 @@ namespace Rafiq.Persistence.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId", "ReceiverId", "SentAt");
+
+                    b.ToTable("ChatMessages");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Community.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -628,7 +667,7 @@ namespace Rafiq.Persistence.Data.Migrations
 
                     b.HasIndex("GameQuestionId");
 
-                    b.ToTable("GameOption");
+                    b.ToTable("GameOptions");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.GameQuestion", b =>
@@ -659,7 +698,47 @@ namespace Rafiq.Persistence.Data.Migrations
 
                     b.HasIndex("GameLevelId");
 
-                    b.ToTable("GameQuestion");
+                    b.ToTable("GameQuestions");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TypeofNotification")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.PasswordResetToken", b =>
@@ -744,13 +823,16 @@ namespace Rafiq.Persistence.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EarnedPoints")
+                    b.Property<double>("EarnedPoints")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("float")
+                        .HasDefaultValue(0.0);
 
                     b.Property<int>("GameLevelId")
                         .HasColumnType("int");
+
+                    b.Property<double>("MaxPoints")
+                        .HasColumnType("float");
 
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
@@ -759,6 +841,9 @@ namespace Rafiq.Persistence.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -831,10 +916,6 @@ namespace Rafiq.Persistence.Data.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
-
-                    b.Property<string>("CategoryType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CurrentQuestion")
                         .HasColumnType("int");
@@ -1207,6 +1288,25 @@ namespace Rafiq.Persistence.Data.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("Rafiq.Domain.Entities.ChatMessage", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("Rafiq.Domain.Entities.Community.Comment", b =>
                 {
                     b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "Author")
@@ -1328,6 +1428,17 @@ namespace Rafiq.Persistence.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("GameLevel");
+                });
+
+            modelBuilder.Entity("Rafiq.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Rafiq.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Rafiq.Domain.Entities.PasswordResetToken", b =>
