@@ -999,9 +999,6 @@
                     "type": "string",
                     "format": "binary"
                   },
-                  "Duration": {
-                    "type": "string"
-                  },
                   "Sequence": {
                     "type": "integer",
                     "format": "int32"
@@ -1009,10 +1006,6 @@
                   "Score": {
                     "type": "integer",
                     "format": "int32"
-                  },
-                  "PublishedAt": {
-                    "type": "string",
-                    "format": "date-time"
                   },
                   "SpecialistProfileId": {
                     "type": "string"
@@ -1035,16 +1028,10 @@
                 "Thumbnail": {
                   "style": "form"
                 },
-                "Duration": {
-                  "style": "form"
-                },
                 "Sequence": {
                   "style": "form"
                 },
                 "Score": {
-                  "style": "form"
-                },
-                "PublishedAt": {
                   "style": "form"
                 },
                 "SpecialistProfileId": {
