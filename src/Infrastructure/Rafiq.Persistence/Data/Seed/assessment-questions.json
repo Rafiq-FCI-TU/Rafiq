@@ -1,0 +1,122 @@
+[
+    {
+        "Text": "Can the child say at least 5 single words clearly?",
+        "Order": 1,
+        "CategoryId": 1,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child name common objects when shown a picture?",
+        "Order": 2,
+        "CategoryId": 1,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child form a 2-word phrase (e.g. \"more milk\", \"go outside\")?",
+        "Order": 3,
+        "CategoryId": 1,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child answer a simple question like \"What is your name?\" or \"How old are you?\"",
+        "Order": 4,
+        "CategoryId": 1,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child describe what is happening in a picture using a sentence?",
+        "Order": 5,
+        "CategoryId": 1,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child recognize familiar people like parents and siblings?",
+        "Order": 1,
+        "CategoryId": 2,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child match objects by color or shape?",
+        "Order": 2,
+        "CategoryId": 2,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child follow a 2-step instruction (e.g. pick up the ball and put it on the table)?",
+        "Order": 3,
+        "CategoryId": 2,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child count objects up to 10?",
+        "Order": 4,
+        "CategoryId": 2,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child solve a simple problem independently (e.g. figure out how to reach a toy)?",
+        "Order": 5,
+        "CategoryId": 2,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Does the child make eye contact during conversation?",
+        "Order": 1,
+        "CategoryId": 3,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Does the child play alongside other children without conflict?",
+        "Order": 2,
+        "CategoryId": 3,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child take turns in a simple game or activity?",
+        "Order": 3,
+        "CategoryId": 3,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child recognize and name basic emotions (happy, sad, angry) in others?",
+        "Order": 4,
+        "CategoryId": 3,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child initiate a conversation or activity with another child on their own?",
+        "Order": 5,
+        "CategoryId": 3,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child walk up and down stairs?",
+        "Order": 1,
+        "CategoryId": 4,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child kick or throw a ball with direction?",
+        "Order": 2,
+        "CategoryId": 4,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child hold a pencil or crayon and draw a line?",
+        "Order": 3,
+        "CategoryId": 4,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child button or unbutton clothing independently?",
+        "Order": 4,
+        "CategoryId": 4,
+        "MaxPoints": 10
+    },
+    {
+        "Text": "Can the child ride a tricycle or balance on one foot for 3 seconds?",
+        "Order": 5,
+        "CategoryId": 4,
+        "MaxPoints": 10
+    }
+]

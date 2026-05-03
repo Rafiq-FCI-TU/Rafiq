@@ -19,9 +19,12 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<Answer> Answers { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<AssessmentAnswer> AssessmentAnswers { get; set; }
+    public DbSet<PracticeCategory> PracticeCategories { get; set; }
     public DbSet<Game> Games { get; set; }
-    public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameLevel> GameLevels { get; set; }
+    public DbSet<GameQuestion> GameQuestions { get; set; }
+    public DbSet<GameOption> GameOptions { get; set; }
+    
     public DbSet<PatientLevel> PatientLevels { get; set; }
 
     public DbSet<ChatMessage> ChatMessages { get; set; }

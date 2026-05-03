@@ -1,9 +1,11 @@
 ﻿using Rafiq.Domain.Common;
 
 namespace Rafiq.Domain.Entities;
-public class AssessmentCategory: BaseEntity
+public class PracticeCategory: BaseEntity
 {
     public double Score { get; set; }
+    public double QuestionsEarnedPoints { get; set; }
+    public double QuestionsMaxPoints { get; set; } // dynamic: Current question * 10 (question points - static)
     public int QuestionsNumber { get; set; } = 10;
     public int CurrentQuestion { get; set; } = 1;
 
@@ -12,3 +14,5 @@ public class AssessmentCategory: BaseEntity
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
 }
+
+

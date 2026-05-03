@@ -7,6 +7,7 @@ using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Services;
 using Rafiq.Domain.Entities;
+using Rafiq.Infrastructure;
 using Rafiq.Infrastructure.Services;
 using Rafiq.Infrastructure.Services.Auth;
 using Rafiq.Infrastructure.Services.Patients;
@@ -32,7 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IAssessmentService, AssessmentService>();
-        services.AddScoped<IGamingService, GamingService>();
+        services.AddInfrastructure();
         services.AddScoped<ICommunityService, CommunityService>();
         services.AddScoped<IResourceService, ResourceService>();
         services.AddScoped<IPatientSessionAttemptService, PatientSessionAttemptService>();

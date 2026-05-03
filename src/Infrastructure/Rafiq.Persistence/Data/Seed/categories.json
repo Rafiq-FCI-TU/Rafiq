@@ -1,10 +1,18 @@
 [
     {
-        "Name": "Language Skills",
-        "Description": "Child language and communication abilities"
+        "Name": "Speech",
+        "Description": "Helping improve speaking, understanding, and communication skills."
     },
     {
-        "Name": "Social Skills",
-        "Description": "Child interaction with others"
+        "Name": "Cognitive",
+        "Description": "Building thinking, learning, and problem-solving abilities."
+    },
+    {
+        "Name": "Social",
+        "Description": "Supporting interaction with others and developing social skills."
+    },
+    {
+        "Name": "Motor",
+        "Description": "Improving movement, coordination, and physical abilities."
     }
 ]
