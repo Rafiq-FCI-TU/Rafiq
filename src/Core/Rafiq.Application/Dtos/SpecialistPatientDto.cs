@@ -15,6 +15,10 @@ public class SpecialistPatientDto
     public double TotalScore { get; set; }
     public DateTime AssignedAt { get; set; }
     public string FamilyEmail { get; set; } = string.Empty;
+    public string FamilyName { get; set; } = string.Empty;
+    public string FamilyId { get; set; } = string.Empty;
+
+
 }
 public class SpecialistResponseDto
 {
