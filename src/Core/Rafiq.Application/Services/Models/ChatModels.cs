@@ -21,7 +21,7 @@ public sealed record ChatHistoryDto(
     IReadOnlyList<ChatMessageDto> Messages,
     int PageNumber,
     int PageSize,
-    int TotalCount, string parterName)
+    int TotalCount, string partnerName)
 {
     public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
     public bool HasNextPage => PageNumber < TotalPages;
