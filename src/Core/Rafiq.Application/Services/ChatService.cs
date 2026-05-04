@@ -118,7 +118,7 @@ public class ChatService : IChatService
             .Select(u => $"{u.FirstName} {u.LastName}".Trim())
             .FirstOrDefaultAsync(cancellationToken); 
 
-        return Result.Success(new ChatHistoryDto(messageDtos, pageNumber, pageSize, totalCount, PartnerName));
+        return Result.Success(new ChatHistoryDto(messageDtos, pageNumber, pageSize, totalCount, partnerName));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
