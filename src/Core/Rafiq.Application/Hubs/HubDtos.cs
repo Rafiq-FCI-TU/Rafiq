@@ -5,10 +5,11 @@ public sealed record ChatMessageDto(
     string SenderId,
     string SenderName,
     string ReceiverId,
+    string ReceiverName,
     string Content,
-    DateTime SentAt,
+    DateTimeOffset SentAt,
     bool IsRead,
-    DateTime? ReadAt);
+    DateTimeOffset? ReadAt);
 
 public sealed record AttemptNotificationDto(
     int AttemptId,

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Rafiq.Application.Hubs;
@@ -13,11 +14,13 @@ public class ChatService : IChatService
 {
     private readonly IApplicationDbContext _db;
     private readonly IHubContext<AppHub> _hub;
+    private readonly IMapper _mapper;
 
-    public ChatService(IApplicationDbContext db, IHubContext<AppHub> hub)
+    public ChatService(IApplicationDbContext db, IHubContext<AppHub> hub, IMapper mapper)
     {
-        _db = db;
-        _hub = hub;
+        _db     = db;
+        _hub    = hub;
+        _mapper = mapper;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -28,35 +31,24 @@ public class ChatService : IChatService
         SendChatMessageRequest request,
         CancellationToken cancellationToken = default)
     {
-
-        if (string.IsNullOrWhiteSpace(request.Content))
-            return Result.Failure<ChatMessageDto>(400, "Message content is required.");
-
-        var sender = await _db.Users
-            .FirstOrDefaultAsync(u =>
-                u.Id == request.SenderId ||
-                u.UserName == request.SenderId ||
-                u.Email == request.SenderId,
-                cancellationToken);
-
-        if (sender is null)
-            return Result.Failure<ChatMessageDto>(404, "Sender not found.");
-
         if (string.IsNullOrWhiteSpace(request.Content))
             return Result.Failure<ChatMessageDto>(400, "Message content is required.");
 
         if (request.SenderId == request.ReceiverId)
             return Result.Failure<ChatMessageDto>(400, "Cannot send a message to yourself.");
 
-        // Load both users in one query
-        var users = await _db.Users
-            .Where(u => u.Id == request.SenderId || u.Id == request.ReceiverId)
-            .ToListAsync(cancellationToken);
-
-        var receiver = users.FirstOrDefault(u => u.Id == request.ReceiverId);
+        var sender = await _db.Users
+            .FirstOrDefaultAsync(u =>
+                u.Id       == request.SenderId ||
+                u.UserName == request.SenderId ||
+                u.Email    == request.SenderId,
+                cancellationToken);
 
         if (sender is null)
             return Result.Failure<ChatMessageDto>(404, "Sender not found.");
+
+        var receiver = await _db.Users
+            .FirstOrDefaultAsync(u => u.Id == request.ReceiverId, cancellationToken);
 
         if (receiver is null)
             return Result.Failure<ChatMessageDto>(404, "Receiver not found.");
@@ -66,19 +58,21 @@ public class ChatService : IChatService
 
         var message = new ChatMessage
         {
-            SenderId   = request.SenderId,
+            SenderId   = sender.Id,        
             ReceiverId = request.ReceiverId,
             Content    = request.Content.Trim(),
             SentAt     = DateTime.UtcNow,
-            IsRead     = false
+            IsRead     = false,
+            Sender     = sender,           
+            Receiver   = receiver          
         };
 
         _db.ChatMessages.Add(message);
         await _db.SaveChangesAsync(cancellationToken);
 
-        var dto = MapToDto(message, sender);
+       
+        var dto = _mapper.Map<ChatMessageDto>(message);
 
-        // Push to receiver via SignalR (fire-and-forget — don't block on delivery)
         _ = _hub.Clients.User(request.ReceiverId)
             .SendAsync(HubEvents.NewMessage, dto, cancellationToken);
 
@@ -102,7 +96,6 @@ public class ChatService : IChatService
         if (!await HasChatAccessAsync(currentUserId, otherUserId, cancellationToken))
             return Result.Failure<ChatHistoryDto>(403, "Messaging is only allowed between linked specialists and families.");
 
-        // Base filter — reused for count and fetch
         var baseQuery = _db.ChatMessages
             .Where(m =>
                 (m.SenderId == currentUserId && m.ReceiverId == otherUserId) ||
@@ -110,42 +103,28 @@ public class ChatService : IChatService
 
         var totalCount = await baseQuery.CountAsync(cancellationToken);
 
-        // Resolve display names in one query
-        var nameMap = await _db.Users
-            .Where(u => u.Id == currentUserId || u.Id == otherUserId)
-            .ToDictionaryAsync(
-                u => u.Id,
-                u => $"{u.FirstName} {u.LastName}".Trim(),
-                cancellationToken);
-
         var messages = await baseQuery
             .AsNoTracking()
+            .Include(m => m.Sender)
+            .Include(m => m.Receiver)
             .OrderByDescending(m => m.SentAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(m => new ChatMessageDto(
-                m.Id,
-                m.SenderId,
-                nameMap.GetValueOrDefault(m.SenderId, m.SenderId),
-                m.ReceiverId,
-                m.Content,
-                m.SentAt,
-                m.IsRead,
-                m.ReadAt))
             .ToListAsync(cancellationToken);
 
-        return Result.Success(new ChatHistoryDto(messages, pageNumber, pageSize, totalCount));
+        var messageDtos = _mapper.Map<List<ChatMessageDto>>(messages);
+
+        return Result.Success(new ChatHistoryDto(messageDtos, pageNumber, pageSize, totalCount));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Conversations list  (fixed N+1)
+    // Conversations list
     // ─────────────────────────────────────────────────────────────────────────
 
     public async Task<Result<IReadOnlyList<ConversationDto>>> GetConversationsAsync(
         string currentUserId,
         CancellationToken cancellationToken = default)
     {
-        // Step 1 — find all partner IDs
         var partnerIds = await _db.ChatMessages
             .AsNoTracking()
             .Where(m => m.SenderId == currentUserId || m.ReceiverId == currentUserId)
@@ -156,7 +135,6 @@ public class ChatService : IChatService
         if (partnerIds.Count == 0)
             return Result.Success<IReadOnlyList<ConversationDto>>(Array.Empty<ConversationDto>());
 
-        // Step 2 — resolve all display names in ONE query
         var allUserIds = partnerIds.Append(currentUserId).Distinct().ToList();
         var nameMap = await _db.Users
             .Where(u => allUserIds.Contains(u.Id))
@@ -165,8 +143,6 @@ public class ChatService : IChatService
                 u => $"{u.FirstName} {u.LastName}".Trim(),
                 cancellationToken);
 
-        // Step 3 — fetch the latest message per conversation in ONE query using
-        //          a subquery so EF can translate it to SQL MAX + JOIN
         var latestMessageIds = await _db.ChatMessages
             .AsNoTracking()
             .Where(m => m.SenderId == currentUserId || m.ReceiverId == currentUserId)
@@ -176,13 +152,14 @@ public class ChatService : IChatService
 
         var latestMessages = await _db.ChatMessages
             .AsNoTracking()
+            .Include(m => m.Sender)      
+            .Include(m => m.Receiver)    
             .Where(m => latestMessageIds.Contains(m.Id))
             .ToListAsync(cancellationToken);
 
         var latestByPartner = latestMessages
             .ToDictionary(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId);
 
-        // Step 4 — unread counts per partner in ONE query
         var unreadCounts = await _db.ChatMessages
             .AsNoTracking()
             .Where(m => m.ReceiverId == currentUserId && !m.IsRead && partnerIds.Contains(m.SenderId))
@@ -190,22 +167,13 @@ public class ChatService : IChatService
             .Select(g => new { PartnerId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.PartnerId, x => x.Count, cancellationToken);
 
-        // Step 5 — assemble result
         var conversations = partnerIds
             .Select(partnerId =>
             {
                 latestByPartner.TryGetValue(partnerId, out var last);
                 var unread = unreadCounts.GetValueOrDefault(partnerId, 0);
 
-                ChatMessageDto? lastDto = last is null ? null : new ChatMessageDto(
-                    last.Id,
-                    last.SenderId,
-                    nameMap.GetValueOrDefault(last.SenderId, last.SenderId),
-                    last.ReceiverId,
-                    last.Content,
-                    last.SentAt,
-                    last.IsRead,
-                    last.ReadAt);
+                var lastDto = last is null ? null : _mapper.Map<ChatMessageDto>(last);
 
                 return new ConversationDto(
                     partnerId,
@@ -253,10 +221,6 @@ public class ChatService : IChatService
     // Private helpers
     // ─────────────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Checks access in 2 queries instead of 4:
-    /// one to identify sender role, one to verify the specialist-family link.
-    /// </summary>
     private async Task<bool> HasChatAccessAsync(
         string senderId,
         string receiverId,
@@ -265,7 +229,6 @@ public class ChatService : IChatService
         var senderIsSpecialist = await _db.SpecialistProfiles
             .AnyAsync(u => u.Id == senderId, cancellationToken);
 
-        // Specialist → Family
         if (senderIsSpecialist)
         {
             return await _db.SpecialistPatients
@@ -276,7 +239,6 @@ public class ChatService : IChatService
                     cancellationToken);
         }
 
-        // Family → Specialist (sender must be a family member)
         var senderIsFamily = await _db.FamilyProfiles
             .AnyAsync(u => u.Id == senderId, cancellationToken);
 
@@ -290,15 +252,4 @@ public class ChatService : IChatService
                 sp.Patient.FamilyProfileId == senderId,
                 cancellationToken);
     }
-
-    private static ChatMessageDto MapToDto(ChatMessage message, ApplicationUser sender)
-        => new(
-            message.Id,
-            message.SenderId,
-            $"{sender.FirstName} {sender.LastName}".Trim(),
-            message.ReceiverId,
-            message.Content,
-            message.SentAt,
-            message.IsRead,
-            message.ReadAt);
 }

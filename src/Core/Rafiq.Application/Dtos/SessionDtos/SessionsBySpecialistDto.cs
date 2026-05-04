@@ -73,5 +73,7 @@
             /// </summary>
             /// <example>Dr. Ahmed Ali</example>
             public string SpecialistName { get; set; } = string.Empty;
-        }
+
+            public int NumberOfSessions { get; set; } = 0;
+    }
     }

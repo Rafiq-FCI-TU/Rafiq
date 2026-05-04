@@ -64,6 +64,10 @@ public class AppHub : Hub
             Content = req.Content.Trim(),
             SentAt = DateTime.UtcNow
         };
+        
+        var receiver = await _db.Users.FindAsync(req.ReceiverId);
+        if (receiver is null)
+            return;
 
         _db.ChatMessages.Add(message);
         await _db.SaveChangesAsync();
@@ -73,6 +77,7 @@ public class AppHub : Hub
             senderId,
             $"{sender.FirstName} {sender.LastName}".Trim(),
             req.ReceiverId,
+            $"{receiver.FirstName} {receiver.LastName}".Trim(),
             message.Content,
             message.SentAt,
             message.IsRead,
