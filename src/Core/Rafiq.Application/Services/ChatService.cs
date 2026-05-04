@@ -113,8 +113,12 @@ public class ChatService : IChatService
             .ToListAsync(cancellationToken);
 
         var messageDtos = _mapper.Map<List<ChatMessageDto>>(messages);
+        var parterName = await _db.Users
+            .Where(u => u.Id == otherUserId)
+            .Select(u => $"{u.FirstName} {u.LastName}".Trim())
+            .FirstOrDefaultAsync(cancellationToken);    
 
-        return Result.Success(new ChatHistoryDto(messageDtos, pageNumber, pageSize, totalCount));
+        return Result.Success(new ChatHistoryDto(messageDtos, pageNumber, pageSize, totalCount, parterName));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
