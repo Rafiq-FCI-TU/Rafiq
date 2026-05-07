@@ -78,11 +78,12 @@ namespace Rafiq.Application.MappingProfiles
                            }));
 
             // Session => SessionsBySpecialistDto
-            CreateMap<Session, SessionsBySpecialistDto>()
-                .ForMember(dest => dest.SpecialistName,
-                           opt => opt.MapFrom(src => src.Specialist.FirstName))
-                .ForMember(dest => dest.NumberOfSessions,
-                           opt => opt.MapFrom(src => src.Specialist.Sessions.Count));
+          CreateMap<Session, SessionsBySpecialistDto>()
+         .ForMember(dest => dest.SpecialistName,
+             opt => opt.MapFrom(src => src.Specialist.FirstName))
+         .ForMember(dest => dest.NumberOfSessions,
+             opt => opt.MapFrom((src, dest, _, context) =>
+                 context.Items["NumberOfSessions"]));
 
             // PatientSessionAttempt => AttemptDto
             CreateMap<PatientSessionAttempt, AttemptDto>()

@@ -101,13 +101,24 @@ public class SessionService : ISessionService
             spec.AddInclude("Specialist");
 
             var sessions = await _unitOfWork.Repository<Session>().GetAllAsync(spec);
-            var dtos = _mapper.Map<IEnumerable<SessionsBySpecialistDto>>(sessions);
+
+            if (!sessions.Any())
+                return Result.Success(Enumerable.Empty<SessionsBySpecialistDto>());
+
+            var count = sessions.Count();
+
+            var dtos = _mapper.Map<IEnumerable<SessionsBySpecialistDto>>(
+                sessions,
+                opt => opt.Items["NumberOfSessions"] = count
+            );
 
             return Result.Success(dtos);
         }
         catch (Exception ex)
         {
-            return Result.Failure<IEnumerable<SessionsBySpecialistDto>>(500, $"Failed to get sessions: {ex.Message}");
+            return Result.Failure<IEnumerable<SessionsBySpecialistDto>>(
+                500,
+                $"Failed to get sessions: {ex.Message}");
         }
     }
 
