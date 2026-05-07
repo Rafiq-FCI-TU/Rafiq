@@ -1,6 +1,7 @@
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using Rafiq.Application.Common;
+using Rafiq.Application.Dtos.PracticeCategoryDtos;
 using Rafiq.Application.Games;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Specifications;
@@ -86,6 +87,58 @@ public class CategoryService : ICategoryService
         catch (Exception ex)
         {
             return Result.Failure<CategoryWithGamesDto>(500, ex.Message);
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<PracticeCategoryResponse>>> GetPatientProgressCategoriesAsync(int patientId)
+    {
+        try
+        {
+            var patientSpec = new BaseSpecifications<Patient>()
+            {
+                WhereCriteria = patient => patient.Id == patientId
+            };
+
+            var patient = await _unitOfWork.Repository<Patient>().GetEntityAsync(patientSpec);
+
+            if (patient is null)
+            {
+                return Result.Failure<IReadOnlyList<PracticeCategoryResponse>>(404, "Patient not found.");
+            }
+
+            var assessmentId = patient.AssessmentId;
+
+            var spec = new BaseSpecifications<PracticeCategory>()
+            {
+                WhereCriteria = practiceCategory => practiceCategory.AssessmentId == assessmentId
+            };
+
+            spec.AddIncludeWithThenInclude(a => a.Category);
+
+            var practiceCategories = await _unitOfWork.Repository<PracticeCategory>().GetAllAsync(spec);
+            if (!practiceCategories.Any())
+            {
+                return Result.Failure<IReadOnlyList<PracticeCategoryResponse>>(404, "No categories found for the given assessment.");
+            }
+
+            var response = practiceCategories.Select(pc => new PracticeCategoryResponse
+            {
+                // limit the score to 2 decimal places
+                Score = pc.Score == 0 ? 0 : Math.Round(pc.Score, 2),
+                QuestionsEarnedPoints = pc.QuestionsEarnedPoints,
+                QuestionsMaxPoints = pc.QuestionsMaxPoints,
+                QuestionsNumber = pc.QuestionsNumber,
+                CurrentQuestion = pc.CurrentQuestion,
+                AssessmentId = pc.AssessmentId,
+                CategoryId = pc.CategoryId,
+                CategoryName = pc.Category.Name
+            }).ToList();
+
+            return Result.Success<IReadOnlyList<PracticeCategoryResponse>>(response);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<IReadOnlyList<PracticeCategoryResponse>>(500, ex.Message);
         }
     }
 }

@@ -36,6 +36,17 @@ public class CategoriesController : ControllerBase
         return HandleResult(result);
     }
 
+    // get patient progress categories
+    /// <summary>
+    /// Retrieves categories relevant to patient progress.
+    /// </summary>
+    [HttpGet("patient-progress")]
+    public async Task<IActionResult> GetPatientProgressCategoriesAsync(int patientId)
+    {
+        var result = await _categoryService.GetPatientProgressCategoriesAsync(patientId);
+        return HandleResult(result);
+    }
+
     private IActionResult HandleResult<T>(Result<T> result)
     {
         if (result.IsSuccess)
