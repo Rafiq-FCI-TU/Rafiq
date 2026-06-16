@@ -3,32 +3,68 @@ using Rafiq.Domain.Enums;
 using System.Text.Json;
 
 namespace Rafiq.Persistence.Data;
-
-// Seed models for JSON deserialization
-public class GameLevelSeed
-{
-    public int DifficultyLevel { get; set; }
-    public int RequiredScore { get; set; }
-    public int RewardPoints { get; set; }
-}
-
-public class GameSeed
-{
-    public string Title { get; set; } = string.Empty;
-    public int MaxPoints { get; set; }
-    public string Duration { get; set; } = string.Empty;
-    public List<GameLevelSeed> Levels { get; set; } = new();
-}
-
-public class GameCategorySeed
-{
-    public string Name { get; set; } = string.Empty;
-    public int InitialScore { get; set; }
-    public List<GameSeed> Games { get; set; } = new();
-}
-
 public static class RafiqDbContextSeed
 {
+    public static async Task SeedAsync(RafiqDbContext context, RoleManager<IdentityRole> roleManager)
+    {
+        if (!context.Categories.Any())
+        {
+            var categories = ReadJson<Category>("categories.json");
+            context.Categories.AddRange(categories);
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.Questions.Any())
+        {
+            var questions = ReadJson<Question>("assessment-questions.json");
+            context.Questions.AddRange(questions);
+        }
+
+        if (!roleManager.Roles.Any())
+        {
+            var roles = GetRoles();
+
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);
+            }
+        }
+
+        if (!context.Games.Any())
+        {
+            var games = ReadJson<Game>("games.json");
+
+            context.Games.AddRange(games);
+
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.GameLevels.Any() && context.Games.Any())
+        {
+            var gameLevels = ReadJson<GameLevel>("game-levels.json");
+
+            context.GameLevels.AddRange(gameLevels);
+
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.GameQuestions.Any() && context.GameLevels.Any())
+        {
+            var gameQuestions = ReadJson<GameQuestion>("game-questions.json");
+            context.GameQuestions.AddRange(gameQuestions);
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.GameOptions.Any() && context.GameQuestions.Any())
+        {
+            var gameOptions = ReadJson<GameOption>("game-options.json");
+            context.GameOptions.AddRange(gameOptions);
+            await context.SaveChangesAsync();
+        }
+
+        await context.SaveChangesAsync();
+    }
+
     public static List<IdentityRole> GetRoles()
     {
         return
@@ -49,68 +85,6 @@ public static class RafiqDbContextSeed
                 ConcurrencyStamp = Guid.NewGuid().ToString()
             }
         ];
-    }
-
-    public static async Task SeedAsync(RafiqDbContext context, RoleManager<IdentityRole> roleManager)
-    {
-        if (!context.Categories.Any())
-        {
-            var categories = ReadJson<Category>("categories.json");
-            context.Categories.AddRange(categories);
-            await context.SaveChangesAsync();
-        }
-
-        if (!context.Questions.Any())
-        {
-            var questions = ReadJson<Question>("questions.json");
-            context.Questions.AddRange(questions);
-        }
-
-        if (!roleManager.Roles.Any())
-        {
-            var roles = GetRoles();
-
-            foreach (var role in roles)
-            {
-                await roleManager.CreateAsync(role);
-            }
-        }
-
-        // Seed Gaming data (Categories → Games → Levels)
-        if (!context.GameCategories.Any())
-        {
-            var seedCategories = ReadJson<GameCategorySeed>("gaming-seed.json");
-            foreach (var cat in seedCategories)
-            {
-                var category = new GameCategory
-                {
-                    Name = cat.Name
-                };
-
-                foreach (var gameSeed in cat.Games)
-                {
-                    var game = new Game
-                    {
-                        Title = gameSeed.Title
-                    };
-
-                    foreach (var levelSeed in gameSeed.Levels)
-                    {
-                        game.Levels.Add(new GameLevel
-                        {
-                            DifficultyLevel = (DifficultyLevel)levelSeed.DifficultyLevel,
-                            RequiredScore = levelSeed.RequiredScore
-                        });
-                    }
-
-                    category.Games.Add(game);
-                }
-
-                context.GameCategories.Add(category);
-            }
-        }
-
-        await context.SaveChangesAsync();
     }
 
     private static List<T> ReadJson<T>(string fileName)

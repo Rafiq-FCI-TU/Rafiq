@@ -20,5 +20,10 @@ public class GameProgressConfiguration : IEntityTypeConfiguration<PatientLevel>
             .WithMany()
             .HasForeignKey(gp => gp.PatientId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(gp => gp.GameLevel)
+            .WithMany(gl => gl.PatientLevels)
+            .HasForeignKey(gp => gp.GameLevelId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

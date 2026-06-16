@@ -53,6 +53,7 @@ public static class SwaggerServicesExtension
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
+
         });
 
 
@@ -64,8 +65,9 @@ public static class SwaggerServicesExtension
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Rafiq API");
-            options.InjectStylesheet("/swagger-ui/SwaggerDark.css"); 
+            options.InjectStylesheet("/swagger-ui/SwaggerDark.css");
             options.RoutePrefix = string.Empty;
+            options.ConfigObject.AdditionalItems["persistAuthorization"] = true;
         });
     }
 }

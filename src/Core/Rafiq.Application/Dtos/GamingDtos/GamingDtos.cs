@@ -2,45 +2,46 @@ using Rafiq.Domain.Enums;
 
 namespace Rafiq.Application.Dtos.GamingDtos;
 
-public class GameLevelDto
+public class GamingOverviewLevelDto
 {
     public int Id { get; set; }
     public DifficultyLevel DifficultyLevel { get; set; }
     public int RequiredScore { get; set; }
-    public int RewardPoints { get; set; }
+    public int MaxScore { get; set; }
     public bool IsUnlocked { get; set; }
+    public int BestScore { get; set; }
 }
 
-public class GameDto
+public class GamingOverviewGameDto
 {
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
-    public string Duration { get; set; } = string.Empty;
-    public List<GameLevelDto> Levels { get; set; } = new();
+    public string Description { get; set; } = string.Empty;
+    public List<GamingOverviewLevelDto> Levels { get; set; } = [];
 }
 
-public class GameCategoryDto
+public class GamingOverviewCategoryDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public List<GameDto> Games { get; set; } = new();
+    public string Description { get; set; } = string.Empty;
+    public List<GamingOverviewGameDto> Games { get; set; } = [];
 }
 
-public class PlayerGamingOverviewDto
+public class SubmitGamePlayRequestDto
 {
     public int PatientId { get; set; }
-    public double TotalScore { get; set; }
-    public List<GameCategoryDto> Categories { get; set; } = new();
-}
-
-public class SubmitGameResultDto
-{
     public int GameLevelId { get; set; }
+    public int Score { get; set; }
 }
 
-public class GameResultResponseDto
+public class SubmitGamePlayResponseDto
 {
-    public int EarnedPoints { get; set; }
+    public int LevelId { get; set; }
+    public int Score { get; set; }
+    public bool Passed { get; set; }
+    public int RequiredScore { get; set; }
+    public int MaxScore { get; set; }
+    public int NewBestScore { get; set; }
     public double NewTotalScore { get; set; }
-    public List<string> NewlyUnlockedLevels { get; set; } = new();
 }

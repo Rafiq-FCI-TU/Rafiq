@@ -26,7 +26,6 @@ public class AuthController(IAuthService authService, IForgotPasswordService for
     }
 
     [HttpPost("revoke-token")]
-    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

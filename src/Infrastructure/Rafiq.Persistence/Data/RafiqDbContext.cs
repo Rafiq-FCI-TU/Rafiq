@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Rafiq.Application.Interfaces;
+using Rafiq.Domain.Entities.Community;
+using Rafiq.Domain.Entities.Resources;
 
 
 namespace Rafiq.Persistence.Data;
-public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+
+public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : IdentityDbContext<ApplicationUser>(options), IApplicationDbContext
 {
     // DbSets
     public DbSet<FamilyProfile> FamilyProfiles { get; set; }
@@ -15,10 +19,29 @@ public class RafiqDbContext(DbContextOptions<RafiqDbContext> options) : Identity
     public DbSet<Answer> Answers { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<AssessmentAnswer> AssessmentAnswers { get; set; }
+    public DbSet<PracticeCategory> PracticeCategories { get; set; }
     public DbSet<Game> Games { get; set; }
-    public DbSet<GameCategory> GameCategories { get; set; }
     public DbSet<GameLevel> GameLevels { get; set; }
+    public DbSet<GameQuestion> GameQuestions { get; set; }
+    public DbSet<GameOption> GameOptions { get; set; }
+    
     public DbSet<PatientLevel> PatientLevels { get; set; }
+
+    public DbSet<ChatMessage> ChatMessages { get; set; }
+
+    public DbSet<PatientSessionAttempt> PatientSessionAttempts{ get; set; }
+
+    // Community
+    public DbSet<CommunityPost> CommunityPosts { get; set; }
+    public DbSet<Comment> Comments { get; set; }
+    public DbSet<PostReaction> PostReactions { get; set; }
+    public DbSet<CommentReaction> CommentReactions { get; set; }
+    public DbSet<PostTag> PostTags { get; set; }
+
+    public DbSet<Notification> Notifications {  get; set; }
+
+    public DbSet<Resource> Resources { get; set; }
+    public DbSet<ResourceTag> ResourceTags { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
