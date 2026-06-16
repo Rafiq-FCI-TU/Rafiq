@@ -6,12 +6,12 @@ public class GameLevelConfiguration : IEntityTypeConfiguration<GameLevel>
     {
         builder.HasKey(gl => gl.Id);
 
-        builder.Property(gl => gl.RequiredScore)
-            .IsRequired()
-            .HasDefaultValue(0);
+        //builder.Property(gl => gl.RequiredScore)
+        //    .IsRequired()
+        //    .HasDefaultValue(0);
 
-        builder.Property(gl => gl.DifficultyLevel)
-            .IsRequired();
+        //builder.Property(gl => gl.DifficultyLevel)
+        //    .IsRequired();
 
     }
 }

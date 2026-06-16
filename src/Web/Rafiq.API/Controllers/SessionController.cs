@@ -67,7 +67,7 @@ namespace Rafiq.API.Controllers
         /// <param name="specialistId">Specialist profile ID.</param>
         /// <returns>List of sessions for that specialist.</returns>
         [HttpGet("specialist/{specialistId}")]
-        [ProducesResponseType(typeof(IEnumerable<SessionDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<SessionsBySpecialistDto>), 200)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> GetSessionsBySpecialist(string specialistId)
             => (await _sessionService.GetSessionsBySpecialistAsync(specialistId)).ToActionResult();

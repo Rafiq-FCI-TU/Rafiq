@@ -1,9 +1,9 @@
 ﻿using Rafiq.Domain.Common;
 using Rafiq.Domain.Enums;
 
-namespace Rafiq.Domain.Entities;
-public class Patient : BaseEntity
-{
+namespace Rafiq.Domain.Entities
+{    
+    public class Patient : BaseEntity{
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
@@ -18,4 +18,6 @@ public class Patient : BaseEntity
     public ICollection<SpecialistPatient> SpecialistPatients { get; set; } = new List<SpecialistPatient>();
     public int AssessmentId { get; set; }   // FK
     public Assessment Assessment { get; set; } = null!; // One-to-One with Assessment 
+    public ICollection<PatientSessionAttempt> SessionAttempts { get; set; } = new List<PatientSessionAttempt>();
+    }
 }

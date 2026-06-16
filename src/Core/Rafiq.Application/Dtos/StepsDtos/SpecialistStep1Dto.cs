@@ -22,10 +22,10 @@ public class SpecialistStep1Dto
     [RegularExpression(@"^(\+?\d{10,15})$", ErrorMessage = "Invalid phone number format.")]
     public string Phone { get; init; } = null!;
 
-    //[Required(ErrorMessage = "Credentials are required.")]
-    //[MinLength(2, ErrorMessage = "Credentials must be at least 2 characters.")]
-    //[MaxLength(20, ErrorMessage = "Credentials must not exceed 20 characters.")]
-    //[SwaggerSchema(Description = "Examples: MD, PhD, MSc")]
+    [Required(ErrorMessage = "Credentials are required.")]
+    [MinLength(2, ErrorMessage = "Credentials must be at least 2 characters.")]
+    [MaxLength(20, ErrorMessage = "Credentials must not exceed 20 characters.")]
+    [SwaggerSchema(Description = "Examples: MD, PhD, MSc")]
     public string Credentials { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Specialty is required.")]

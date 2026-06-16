@@ -992,6 +992,10 @@
                     "type": "string",
                     "format": "binary"
                   },
+                  "Sequence": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
                   "Score": {
                     "type": "integer",
                     "format": "int32"
@@ -1015,6 +1019,9 @@
                   "style": "form"
                 },
                 "Thumbnail": {
+                  "style": "form"
+                },
+                "Sequence": {
                   "style": "form"
                 },
                 "Score": {

@@ -1,0 +1,58 @@
+[
+    {
+        "Code": "object-matching",
+        "Title": "Object Matching",
+        "Description": "Visual matching of animals and everyday objects to build vocabulary.",
+        "CategoryId": 1,
+        "QuestionType": "Match",
+        "FeedbackCorrect": "Perfect match!",
+        "FeedbackWrong": "It was: {Emoji} {name}"
+    },
+    {
+        "Code": "functional-use",
+        "Title": "Functional Use of Objects",
+        "Description": "Match everyday objects to their correct use to support functional language.",
+        "CategoryId": 1,
+        "QuestionType": "MultipleChoice",
+        "FeedbackCorrect": "Exactly right!",
+        "FeedbackWrong": "Correct: {correct}"
+    },
+    {
+        "Code": "emotional-recognition",
+        "Title": "Emotional Recognition",
+        "Description": "Identify facial emotions to build empathy and emotional awareness.",
+        "CategoryId": 2,
+        "QuestionType": "MultipleChoice",
+        "FeedbackCorrect": "Yes — {name}!",
+        "FeedbackWrong": "It was: {name}"
+    },
+    {
+        "Code": "behavioral-awareness",
+        "Title": "Behavioral Awareness",
+        "Description": "Decide whether each behaviour is right or wrong to build social awareness.",
+        "CategoryId": 2,
+        "QuestionType": "RightWrong",
+        "FeedbackCorrectRight": "Yes, that's a kind behavior!",
+        "FeedbackCorrectWrong": "Right — that's not okay.",
+        "FeedbackIncorrectRight": "Actually, this is a good behavior.",
+        "FeedbackIncorrectWrong": "Actually, this behavior is wrong."
+    },
+    {
+        "Code": "color-discrimination",
+        "Title": "Color Discrimination",
+        "Description": "Tap the correct colour swatch to develop visual perception and colour naming.",
+        "CategoryId": 3,
+        "QuestionType": "Match",
+        "FeedbackCorrect": "Great job!",
+        "FeedbackWrong": "It was {color}"
+    },
+    {
+        "Code": "logical-relationships",
+        "Title": "Logical Relationships",
+        "Description": "Pick the item that logically belongs with the target to build categorisation skills.",
+        "CategoryId": 3,
+        "QuestionType": "MultipleChoice",
+        "FeedbackCorrect": "Great thinking!",
+        "FeedbackWrong": "Best match: {Emoji} {name}"
+    }
+]

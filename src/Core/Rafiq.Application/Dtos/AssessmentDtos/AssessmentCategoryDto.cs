@@ -8,6 +8,8 @@ public class AssessmentCategoryDto
     public string AssessmentCategoryDescription { get; set; } = string.Empty;
     public int AssessmentCurrentQuestion { get; set; }
     public int AssessmentTotalQuestions { get; set; }
+    public double QuestionsEarnedPoints { get; set; }
+    public double QuestionsMaxPoints { get; set; }
     public double Score { get; set; }
 
     public QuestionDto? Question { get; set; }

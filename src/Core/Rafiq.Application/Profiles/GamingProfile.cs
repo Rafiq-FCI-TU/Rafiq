@@ -10,6 +10,6 @@ public class GamingProfile : Profile
     {
         CreateMap<GameLevel, GamingOverviewLevelDto>();
         CreateMap<Game, GamingOverviewGameDto>();
-        CreateMap<GameCategory, GamingOverviewCategoryDto>();
+        CreateMap<PracticeCategory, GamingOverviewCategoryDto>();
     }
 }
