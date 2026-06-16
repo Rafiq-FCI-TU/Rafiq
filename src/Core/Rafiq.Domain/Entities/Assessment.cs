@@ -9,5 +9,5 @@ public class Assessment : BaseEntity
 
     public int PatientId { get; set; }
     public Patient Patient { get; set; } = null!;
-    public List<AssessmentCategory> Categories { get; set; } = [];
+    public List<PracticeCategory> Categories { get; set; } = [];
 }

@@ -1,0 +1,557 @@
+[
+    {
+        "GameLevelId": 1,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Cat",
+        "TargetEmoji": "🐱"
+    },
+    {
+        "GameLevelId": 1,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Dog",
+        "TargetEmoji": "🐶"
+    },
+    {
+        "GameLevelId": 1,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Apple",
+        "TargetEmoji": "🍎"
+    },
+    {
+        "GameLevelId": 1,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Car",
+        "TargetEmoji": "🚗"
+    },
+    {
+        "GameLevelId": 1,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Rabbit",
+        "TargetEmoji": "🐰"
+    },
+    {
+        "GameLevelId": 2,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Horse",
+        "TargetEmoji": "🐴"
+    },
+    {
+        "GameLevelId": 2,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Fish",
+        "TargetEmoji": "🐟"
+    },
+    {
+        "GameLevelId": 2,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Banana",
+        "TargetEmoji": "🍌"
+    },
+    {
+        "GameLevelId": 2,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Bear",
+        "TargetEmoji": "🐻"
+    },
+    {
+        "GameLevelId": 2,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Bird",
+        "TargetEmoji": "🐦"
+    },
+    {
+        "GameLevelId": 3,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Cow",
+        "TargetEmoji": "🐮"
+    },
+    {
+        "GameLevelId": 3,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Ball",
+        "TargetEmoji": "⚽"
+    },
+    {
+        "GameLevelId": 3,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Cat",
+        "TargetEmoji": "🐱"
+    },
+    {
+        "GameLevelId": 3,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Apple",
+        "TargetEmoji": "🍎"
+    },
+    {
+        "GameLevelId": 3,
+        "Prompt": "Find the matching one",
+        "TargetLabel": "Dog",
+        "TargetEmoji": "🐶"
+    },
+    {
+        "GameLevelId": 4,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Cup",
+        "TargetEmoji": "☕"
+    },
+    {
+        "GameLevelId": 4,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Toothbrush",
+        "TargetEmoji": "🪥"
+    },
+    {
+        "GameLevelId": 4,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Spoon",
+        "TargetEmoji": "🥄"
+    },
+    {
+        "GameLevelId": 4,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Soap",
+        "TargetEmoji": "🧼"
+    },
+    {
+        "GameLevelId": 4,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Ball",
+        "TargetEmoji": "⚽"
+    },
+    {
+        "GameLevelId": 5,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Pencil",
+        "TargetEmoji": "✏️"
+    },
+    {
+        "GameLevelId": 5,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Book",
+        "TargetEmoji": "📖"
+    },
+    {
+        "GameLevelId": 5,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Key",
+        "TargetEmoji": "🔑"
+    },
+    {
+        "GameLevelId": 5,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Comb",
+        "TargetEmoji": "🪮"
+    },
+    {
+        "GameLevelId": 5,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Scissors",
+        "TargetEmoji": "✂️"
+    },
+    {
+        "GameLevelId": 6,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Cup",
+        "TargetEmoji": "☕"
+    },
+    {
+        "GameLevelId": 6,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Toothbrush",
+        "TargetEmoji": "🪥"
+    },
+    {
+        "GameLevelId": 6,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Pencil",
+        "TargetEmoji": "✏️"
+    },
+    {
+        "GameLevelId": 6,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Soap",
+        "TargetEmoji": "🧼"
+    },
+    {
+        "GameLevelId": 6,
+        "Prompt": "What is it used for?",
+        "TargetLabel": "Key",
+        "TargetEmoji": "🔑"
+    },
+    {
+        "GameLevelId": 7,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Happy",
+        "TargetEmoji": "😊"
+    },
+    {
+        "GameLevelId": 7,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Sad",
+        "TargetEmoji": "😢"
+    },
+    {
+        "GameLevelId": 7,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Angry",
+        "TargetEmoji": "😠"
+    },
+    {
+        "GameLevelId": 7,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Sleepy",
+        "TargetEmoji": "😴"
+    },
+    {
+        "GameLevelId": 7,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Scared",
+        "TargetEmoji": "😨"
+    },
+    {
+        "GameLevelId": 8,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Excited",
+        "TargetEmoji": "🤩"
+    },
+    {
+        "GameLevelId": 8,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Surprised",
+        "TargetEmoji": "😲"
+    },
+    {
+        "GameLevelId": 8,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Shy",
+        "TargetEmoji": "😳"
+    },
+    {
+        "GameLevelId": 8,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Happy",
+        "TargetEmoji": "😊"
+    },
+    {
+        "GameLevelId": 8,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Angry",
+        "TargetEmoji": "😠"
+    },
+    {
+        "GameLevelId": 9,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Sad",
+        "TargetEmoji": "😢"
+    },
+    {
+        "GameLevelId": 9,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Scared",
+        "TargetEmoji": "😨"
+    },
+    {
+        "GameLevelId": 9,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Excited",
+        "TargetEmoji": "🤩"
+    },
+    {
+        "GameLevelId": 9,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Shy",
+        "TargetEmoji": "😳"
+    },
+    {
+        "GameLevelId": 9,
+        "Prompt": "How does this face feel?",
+        "TargetLabel": "Surprised",
+        "TargetEmoji": "😲"
+    },
+    {
+        "GameLevelId": 10,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child drinks milk calmly from a cup.",
+        "TargetEmoji": "🥛",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 10,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child stomps on food on the floor.",
+        "TargetEmoji": "🍝",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 10,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child greets and hugs their sister.",
+        "TargetEmoji": "🤗",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 10,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child throws a chair when angry.",
+        "TargetEmoji": "🪑",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 10,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child washes hands before eating.",
+        "TargetEmoji": "🧼",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 11,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child tears the pages of a book.",
+        "TargetEmoji": "📚",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 11,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child brushes teeth before bed.",
+        "TargetEmoji": "🦷",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 11,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child shouts loudly inside the classroom.",
+        "TargetEmoji": "🗣️",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 11,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child shares a toy with a friend.",
+        "TargetEmoji": "🤝",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 11,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child grabs food from someone's hand.",
+        "TargetEmoji": "🍪",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 12,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child drinks milk calmly from a cup.",
+        "TargetEmoji": "🥛",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 12,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child tears the pages of a book.",
+        "TargetEmoji": "📚",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 12,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child shouts loudly inside the classroom.",
+        "TargetEmoji": "🗣️",
+        "metaJson": "{\"correctAnswer\":\"wrong\"}"
+    },
+    {
+        "GameLevelId": 12,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child greets and hugs their sister.",
+        "TargetEmoji": "🤗",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 12,
+        "Prompt": "Is this behavior right or wrong?",
+        "TargetLabel": "A child shares a toy with a friend.",
+        "TargetEmoji": "🤝",
+        "metaJson": "{\"correctAnswer\":\"right\"}"
+    },
+    {
+        "GameLevelId": 13,
+        "Prompt": "Tap the Red color!",
+        "TargetLabel": "Red",
+        "metaJson": "{\"colorHex\":\"#EF4444\"}"
+    },
+    {
+        "GameLevelId": 13,
+        "Prompt": "Tap the Blue color!",
+        "TargetLabel": "Blue",
+        "metaJson": "{\"colorHex\":\"#3B82F6\"}"
+    },
+    {
+        "GameLevelId": 13,
+        "Prompt": "Tap the Green color!",
+        "TargetLabel": "Green",
+        "metaJson": "{\"colorHex\":\"#22C55E\"}"
+    },
+    {
+        "GameLevelId": 13,
+        "Prompt": "Tap the Yellow color!",
+        "TargetLabel": "Yellow",
+        "metaJson": "{\"colorHex\":\"#FACC15\"}"
+    },
+    {
+        "GameLevelId": 13,
+        "Prompt": "Tap the Pink color!",
+        "TargetLabel": "Pink",
+        "metaJson": "{\"colorHex\":\"#F472B6\"}"
+    },
+    {
+        "GameLevelId": 14,
+        "Prompt": "Tap the Purple color!",
+        "TargetLabel": "Purple",
+        "metaJson": "{\"colorHex\":\"#A855F7\"}"
+    },
+    {
+        "GameLevelId": 14,
+        "Prompt": "Tap the Orange color!",
+        "TargetLabel": "Orange",
+        "metaJson": "{\"colorHex\":\"#F97316\"}"
+    },
+    {
+        "GameLevelId": 14,
+        "Prompt": "Tap the Brown color!",
+        "TargetLabel": "Brown",
+        "metaJson": "{\"colorHex\":\"#B45309\"}"
+    },
+    {
+        "GameLevelId": 14,
+        "Prompt": "Tap the Red color!",
+        "TargetLabel": "Red",
+        "metaJson": "{\"colorHex\":\"#EF4444\"}"
+    },
+    {
+        "GameLevelId": 14,
+        "Prompt": "Tap the Blue color!",
+        "TargetLabel": "Blue",
+        "metaJson": "{\"colorHex\":\"#3B82F6\"}"
+    },
+    {
+        "GameLevelId": 15,
+        "Prompt": "Tap the Green color!",
+        "TargetLabel": "Green",
+        "metaJson": "{\"colorHex\":\"#22C55E\"}"
+    },
+    {
+        "GameLevelId": 15,
+        "Prompt": "Tap the Yellow color!",
+        "TargetLabel": "Yellow",
+        "metaJson": "{\"colorHex\":\"#FACC15\"}"
+    },
+    {
+        "GameLevelId": 15,
+        "Prompt": "Tap the Purple color!",
+        "TargetLabel": "Purple",
+        "metaJson": "{\"colorHex\":\"#A855F7\"}"
+    },
+    {
+        "GameLevelId": 15,
+        "Prompt": "Tap the Orange color!",
+        "TargetLabel": "Orange",
+        "metaJson": "{\"colorHex\":\"#F97316\"}"
+    },
+    {
+        "GameLevelId": 15,
+        "Prompt": "Tap the Brown color!",
+        "TargetLabel": "Brown",
+        "metaJson": "{\"colorHex\":\"#B45309\"}"
+    },
+    {
+        "GameLevelId": 16,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Cat",
+        "TargetEmoji": "🐱"
+    },
+    {
+        "GameLevelId": 16,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Apple",
+        "TargetEmoji": "🍎"
+    },
+    {
+        "GameLevelId": 16,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Spoon",
+        "TargetEmoji": "🥄"
+    },
+    {
+        "GameLevelId": 16,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Sun",
+        "TargetEmoji": "☀️"
+    },
+    {
+        "GameLevelId": 16,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Shirt",
+        "TargetEmoji": "👕"
+    },
+    {
+        "GameLevelId": 17,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Car",
+        "TargetEmoji": "🚗"
+    },
+    {
+        "GameLevelId": 17,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Pencil",
+        "TargetEmoji": "✏️"
+    },
+    {
+        "GameLevelId": 17,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Hand",
+        "TargetEmoji": "✋"
+    },
+    {
+        "GameLevelId": 17,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Bread",
+        "TargetEmoji": "🍞"
+    },
+    {
+        "GameLevelId": 17,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Cat",
+        "TargetEmoji": "🐱"
+    },
+    {
+        "GameLevelId": 18,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Sun",
+        "TargetEmoji": "☀️"
+    },
+    {
+        "GameLevelId": 18,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Shirt",
+        "TargetEmoji": "👕"
+    },
+    {
+        "GameLevelId": 18,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Apple",
+        "TargetEmoji": "🍎"
+    },
+    {
+        "GameLevelId": 18,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Spoon",
+        "TargetEmoji": "🥄"
+    },
+    {
+        "GameLevelId": 18,
+        "Prompt": "Which one goes best with…",
+        "TargetLabel": "Bread",
+        "TargetEmoji": "🍞"
+    }
+]

@@ -1,0 +1,128 @@
+[
+    {
+        "GameId": 1,
+        "Difficulty": "Easy",
+        "LevelPoints": 10,
+        "PointsPerQuestion": 2,
+        "UnlockThreshold": 0
+    },
+    {
+        "GameId": 1,
+        "Difficulty": "Medium",
+        "LevelPoints": 20,
+        "PointsPerQuestion": 4,
+        "UnlockThreshold": 40
+    },
+    {
+        "GameId": 1,
+        "Difficulty": "Hard",
+        "LevelPoints": 30,
+        "PointsPerQuestion": 6,
+        "UnlockThreshold": 85
+    },
+    {
+        "GameId": 2,
+        "Difficulty": "Easy",
+        "LevelPoints": 10,
+        "PointsPerQuestion": 2,
+        "UnlockThreshold": 0
+    },
+    {
+        "GameId": 2,
+        "Difficulty": "Medium",
+        "LevelPoints": 20,
+        "PointsPerQuestion": 4,
+        "UnlockThreshold": 40
+    },
+    {
+        "GameId": 2,
+        "Difficulty": "Hard",
+        "LevelPoints": 30,
+        "PointsPerQuestion": 6,
+        "UnlockThreshold": 85
+    },
+    {
+        "GameId": 3,
+        "Difficulty": "Easy",
+        "LevelPoints": 10,
+        "PointsPerQuestion": 2,
+        "UnlockThreshold": 0
+    },
+    {
+        "GameId": 3,
+        "Difficulty": "Medium",
+        "LevelPoints": 20,
+        "PointsPerQuestion": 4,
+        "UnlockThreshold": 40
+    },
+    {
+        "GameId": 3,
+        "Difficulty": "Hard",
+        "LevelPoints": 30,
+        "PointsPerQuestion": 6,
+        "UnlockThreshold": 85
+    },
+    {
+        "GameId": 4,
+        "Difficulty": "Easy",
+        "LevelPoints": 10,
+        "PointsPerQuestion": 2,
+        "UnlockThreshold": 0
+    },
+    {
+        "GameId": 4,
+        "Difficulty": "Medium",
+        "LevelPoints": 20,
+        "PointsPerQuestion": 4,
+        "UnlockThreshold": 40
+    },
+    {
+        "GameId": 4,
+        "Difficulty": "Hard",
+        "LevelPoints": 30,
+        "PointsPerQuestion": 6,
+        "UnlockThreshold": 85
+    },
+    {
+        "GameId": 5,
+        "Difficulty": "Easy",
+        "LevelPoints": 10,
+        "PointsPerQuestion": 2,
+        "UnlockThreshold": 0
+    },
+    {
+        "GameId": 5,
+        "Difficulty": "Medium",
+        "LevelPoints": 20,
+        "PointsPerQuestion": 4,
+        "UnlockThreshold": 40
+    },
+    {
+        "GameId": 5,
+        "Difficulty": "Hard",
+        "LevelPoints": 30,
+        "PointsPerQuestion": 6,
+        "UnlockThreshold": 85
+    },
+    {
+        "GameId": 6,
+        "Difficulty": "Easy",
+        "LevelPoints": 10,
+        "PointsPerQuestion": 2,
+        "UnlockThreshold": 0
+    },
+    {
+        "GameId": 6,
+        "Difficulty": "Medium",
+        "LevelPoints": 20,
+        "PointsPerQuestion": 4,
+        "UnlockThreshold": 40
+    },
+    {
+        "GameId": 6,
+        "Difficulty": "Hard",
+        "LevelPoints": 30,
+        "PointsPerQuestion": 6,
+        "UnlockThreshold": 85
+    }
+]

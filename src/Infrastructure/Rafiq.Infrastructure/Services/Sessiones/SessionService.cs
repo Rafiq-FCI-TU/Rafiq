@@ -1,17 +1,12 @@
 ﻿using AutoMapper;
-using Azure.Storage.Blobs;
-using Azure.Storage.Sas;
-using MediaToolkit;
-using MediaToolkit.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Rafiq.Application.Dtos.SessionDtos;
 using Rafiq.Application.Interfaces.Repositories;
 using Rafiq.Application.Interfaces.Services;
 using Rafiq.Application.Specifications;
+using Rafiq.Domain.Entities;
 using Rafiq.Domain.ErrorHandling;
 using Rafiq.Infrastructure.Settings;
-using Rafiq.Domain.Entities;
 
 namespace Rafiq.Infrastructure.Services.Sessiones;
 public class SessionService : ISessionService
@@ -19,11 +14,14 @@ public class SessionService : ISessionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly BlobHelperService _blobHelper;
-    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings, BlobHelperService blobHelper)
+    private readonly IRealtimeSessionService _realtimeSessionService;
+
+    public SessionService(IUnitOfWork unitOfWork, IConfiguration configuration, IMapper mapper , AzureBlobSettings azureBlobSettings, BlobHelperService blobHelper, IRealtimeSessionService realtimeSessionService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _blobHelper=blobHelper;
+        _realtimeSessionService=realtimeSessionService;
     }
 
     #region Create Session
@@ -34,7 +32,7 @@ public class SessionService : ISessionService
         {
             var mediaUrl = await _blobHelper.UploadFileAsync(dto.Media, "videos");
             var thumbnailUrl = await _blobHelper.UploadFileAsync(dto.Thumbnail, "thumbnails");
-            var duration =  _blobHelper.GetVideoDuration(dto.Media);
+            var duration = await _blobHelper.GetVideoDuration(dto.Media);
 
             var session = new Session
             {
@@ -51,6 +49,8 @@ public class SessionService : ISessionService
 
             await _unitOfWork.Repository<Session>().AddAsync(session);
             await _unitOfWork.CompleteAsync();
+
+             await _realtimeSessionService.PublishSessionAsync(session);
 
             return Result.Success(session.Id);
         }
@@ -101,13 +101,24 @@ public class SessionService : ISessionService
             spec.AddInclude("Specialist");
 
             var sessions = await _unitOfWork.Repository<Session>().GetAllAsync(spec);
-            var dtos = _mapper.Map<IEnumerable<SessionsBySpecialistDto>>(sessions);
+
+            if (!sessions.Any())
+                return Result.Success(Enumerable.Empty<SessionsBySpecialistDto>());
+
+            var count = sessions.Count();
+
+            var dtos = _mapper.Map<IEnumerable<SessionsBySpecialistDto>>(
+                sessions,
+                opt => opt.Items["NumberOfSessions"] = count
+            );
 
             return Result.Success(dtos);
         }
         catch (Exception ex)
         {
-            return Result.Failure<IEnumerable<SessionsBySpecialistDto>>(500, $"Failed to get sessions: {ex.Message}");
+            return Result.Failure<IEnumerable<SessionsBySpecialistDto>>(
+                500,
+                $"Failed to get sessions: {ex.Message}");
         }
     }
 
