@@ -800,17 +800,15 @@
         }
       }
     },
-    "/api/Gaming/overview/{patientId}": {
+    "/api/gaming/overview/{patientId}": {
       "get": {
         "tags": [
           "Gaming"
         ],
-        "summary": "Gets the full gaming overview for a patient, including all categories,\ngames, and levels with locked/unlocked status based on the patient's current score.",
         "parameters": [
           {
             "name": "patientId",
             "in": "path",
-            "description": "The patient's ID.",
             "required": true,
             "schema": {
               "type": "integer",
@@ -820,27 +818,36 @@
         ],
         "responses": {
           "200": {
-            "description": "Overview retrieved successfully.",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerGamingOverviewDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GamingOverviewCategoryDto"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerGamingOverviewDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GamingOverviewCategoryDto"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PlayerGamingOverviewDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GamingOverviewCategoryDto"
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "Patient or gaming record not found.",
+            "description": "Not Found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -860,72 +867,58 @@
             }
           },
           "500": {
-            "description": "Internal server error."
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/api/Gaming/submit/{patientId}": {
+    "/api/gaming/play": {
       "post": {
         "tags": [
           "Gaming"
         ],
-        "summary": "Submits a game level completion result. Awards reward points and updates the patient's total score.",
-        "parameters": [
-          {
-            "name": "patientId",
-            "in": "path",
-            "description": "The patient's ID.",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "requestBody": {
-          "description": "The game level completion data containing the gameLevelId.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitGameResultDto"
+                "$ref": "#/components/schemas/SubmitGamePlayRequestDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitGameResultDto"
+                "$ref": "#/components/schemas/SubmitGamePlayRequestDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmitGameResultDto"
+                "$ref": "#/components/schemas/SubmitGamePlayRequestDto"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Game result submitted successfully.",
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResultResponseDto"
+                  "$ref": "#/components/schemas/SubmitGamePlayResponseDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResultResponseDto"
+                  "$ref": "#/components/schemas/SubmitGamePlayResponseDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResultResponseDto"
+                  "$ref": "#/components/schemas/SubmitGamePlayResponseDto"
                 }
               }
             }
           },
           "400": {
-            "description": "Level is locked (insufficient score).",
+            "description": "Bad Request",
             "content": {
               "text/plain": {
                 "schema": {
@@ -945,7 +938,7 @@
             }
           },
           "404": {
-            "description": "Patient or game level not found.",
+            "description": "Not Found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -965,7 +958,7 @@
             }
           },
           "500": {
-            "description": "Internal server error."
+            "description": "Internal Server Error"
           }
         }
       }
@@ -1644,7 +1637,7 @@
         },
         "additionalProperties": false
       },
-      "GameCategoryDto": {
+      "GamingOverviewCategoryDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1655,17 +1648,21 @@
             "type": "string",
             "nullable": true
           },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
           "games": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GameDto"
+              "$ref": "#/components/schemas/GamingOverviewGameDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "GameDto": {
+      "GamingOverviewGameDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1676,21 +1673,21 @@
             "type": "string",
             "nullable": true
           },
-          "duration": {
+          "description": {
             "type": "string",
             "nullable": true
           },
           "levels": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GameLevelDto"
+              "$ref": "#/components/schemas/GamingOverviewLevelDto"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "GameLevelDto": {
+      "GamingOverviewLevelDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -1704,33 +1701,16 @@
             "type": "integer",
             "format": "int32"
           },
-          "rewardPoints": {
+          "maxScore": {
             "type": "integer",
             "format": "int32"
           },
           "isUnlocked": {
             "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "GameResultResponseDto": {
-        "type": "object",
-        "properties": {
-          "earnedPoints": {
+          },
+          "bestScore": {
             "type": "integer",
             "format": "int32"
-          },
-          "newTotalScore": {
-            "type": "number",
-            "format": "double"
-          },
-          "newlyUnlockedLevels": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1811,27 +1791,6 @@
             "minLength": 1,
             "type": "string",
             "description": "Allowed values: Male, Female"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PlayerGamingOverviewDto": {
-        "type": "object",
-        "properties": {
-          "patientId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalScore": {
-            "type": "number",
-            "format": "double"
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GameCategoryDto"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1962,10 +1921,6 @@
             "type": "string",
             "nullable": true
           },
-          "sequence": {
-            "type": "integer",
-            "format": "int32"
-          },
           "score": {
             "type": "integer",
             "format": "int32"
@@ -2016,10 +1971,6 @@
             "type": "string",
             "nullable": true
           },
-          "sequence": {
-            "type": "integer",
-            "format": "int32"
-          },
           "score": {
             "type": "integer",
             "format": "int32"
@@ -2062,7 +2013,6 @@
       },
       "SpecialistStep1Dto": {
         "required": [
-          "credentials",
           "email",
           "firstName",
           "gender",
@@ -2095,10 +2045,8 @@
             "type": "string"
           },
           "credentials": {
-            "maxLength": 20,
-            "minLength": 2,
             "type": "string",
-            "description": "Examples: MD, PhD, MSc"
+            "nullable": true
           },
           "specialty": {
             "maxLength": 50,
@@ -2146,12 +2094,52 @@
         },
         "additionalProperties": false
       },
-      "SubmitGameResultDto": {
+      "SubmitGamePlayRequestDto": {
         "type": "object",
         "properties": {
+          "patientId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "gameLevelId": {
             "type": "integer",
             "format": "int32"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubmitGamePlayResponseDto": {
+        "type": "object",
+        "properties": {
+          "levelId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "requiredScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "newBestScore": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextLevelUnlocked": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
