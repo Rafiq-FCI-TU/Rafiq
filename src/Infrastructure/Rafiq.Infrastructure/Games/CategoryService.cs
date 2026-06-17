@@ -1,6 +1,6 @@
 using Azure.Core;
 using Microsoft.EntityFrameworkCore;
-using Rafiq.Application.Common;
+//using Rafiq.Application.Common;
 using Rafiq.Application.Dtos.PracticeCategoryDtos;
 using Rafiq.Application.Games;
 using Rafiq.Application.Interfaces.Repositories;
