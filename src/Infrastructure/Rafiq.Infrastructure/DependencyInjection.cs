@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using Rafiq.Application.Common;
 using Rafiq.Application.Games;
 using Rafiq.Application.Interfaces.Repositories;
-using Rafiq.Infrastructure.Common;
 using Rafiq.Infrastructure.Games;
 using Rafiq.Persistence;
 
